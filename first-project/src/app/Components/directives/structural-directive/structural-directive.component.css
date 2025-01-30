@@ -1,0 +1,24 @@
+.div-1 {
+  background-color: red;
+  color: white;
+}
+
+.div-2 {
+  background-color: green;
+  color: white;
+}
+
+.div-3 {
+  background-color: gray;
+  color: white;
+}
+
+.div-4 {
+  background-color: blue;
+  color: white;
+}
+
+.custom-div {
+  padding: 20px;
+  border-radius: 5px;
+}

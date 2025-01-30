@@ -1,0 +1,117 @@
+<div style="margin: 20px; padding: 20px">
+  <div class="card" style="margin-bottom: 20px">
+    <div class="card-header">
+      <h5 class="card-title">
+        Test your typing...
+        <!-- <button (click)="changeParagraph(10)"    type="button" class="btn btn-secondary float-right mx-4">
+            Change Paragraph
+          </button> -->
+
+        <div
+          *ngIf="start === true"
+          class="btn-group float-right"
+          role="group"
+          aria-label="Typing time options"
+          
+        >
+          <a
+            href="#"
+            *ngIf="defaultWords !== 0"
+            class="color-secondary"
+            style="color: rgba(0, 0, 0, 0.664)"
+          >
+            <span
+              (click)="changeParagraph(defaultWords)"
+              class="material-symbols-outlined mt-2 mx-2"
+              style="font-size: 1.5em"
+            >
+              refresh
+            </span>
+          </a>
+          <button
+            type="button"
+            [class.active]="defaultWords === 20"
+            class="btn btn-outline-secondary"
+            (click)="button20(20)"
+          >
+            20
+          </button>
+          <button
+            type="button"
+            [class.active]="defaultWords === 60"
+            class="btn btn-outline-secondary"
+            (click)="button60(60)"
+          >
+            60
+          </button>
+          <button
+            type="button"
+            [class.active]="defaultWords === 120"
+            class="btn btn-outline-secondary"
+            (click)="button120(120)"
+          >
+            120
+          </button>
+          <button type="button" disabled class="btn btn-secondary">
+            Words
+          </button>
+          <div
+            [class]="
+              timer <= 5 ? 'btn-outline-danger' : 'btn-outline-secondary'
+            "
+            class="btn"
+            id="clock"
+            style="font-size: 1.5em; padding: 5px 10px"
+          >
+            <span>Time:</span>
+            00:@if(timer < 10){0{{ timer }}} @else {{{timer}}}
+          </div>
+        </div>
+      </h5>
+    </div>
+    <div class="card-body">
+      <p class="card-text" *ngIf="start === true">
+        @for (words of randomWords; track $index) {
+        <span [ngClass]="">{{ words }}</span>
+        <span>&nbsp;</span>
+        }
+      </p>
+      <a
+        href="#"
+        *ngIf="start === false"
+        class="btn btn-secondary"
+        (click)="startTyping()"
+        >Start Typing</a
+      >
+    </div>
+  </div>
+  <div *ngIf="start === true" class="typing-test" style="margin-top: 20px">
+    <label for="typingTest">Typing Test:</label>
+    <input
+      [(ngModel)]="userInputArray"
+      [disabled]="timer === 0"
+      
+      type="text"
+      id="typingTest"
+      class="form-control"
+      placeholder="Start typing here..."
+      style="margin-top: 10px"
+    />
+  </div>
+</div>
+<h4 *ngIf="userInputArray.length > 0">User Input:</h4>
+@for (words of userInputArray; track $index) {
+<span>{{ words }}</span>
+<span>{{ $index }}</span>
+
+}
+<br />
+<h4 *ngIf=" wordsArray.length > 0">Array Value:</h4>
+@for (words of wordsArray; track $index) {
+
+<span>{{ words }}</span>
+<span>{{ $index }}</span>
+<span>&nbsp;</span>
+}
+
+<h2>Mistakes: {{ mistakes }}</h2>

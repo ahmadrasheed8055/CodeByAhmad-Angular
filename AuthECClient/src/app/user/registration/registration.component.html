@@ -1,0 +1,22 @@
+<div class="mb-3 text-center">
+    <h2 style="color: rgb(0, 0, 0);">Registration Form</h2>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="onsubmit()">
+    <div class="mb-3">
+      <input type="text" class="form-control bg-body-secondary" formControlName="fullName" placeholder="Full Name">
+      
+    </div>
+    <div class="mb-3">
+      <input type="email" class="form-control bg-body-secondary" id="exampleInputEmail1" aria-describedby="emailHelp"  formControlName="email" placeholder="Email address">
+      
+    </div>
+    <div class="mb-3">
+      <input type="password" class="form-control bg-body-secondary" id="exampleInputPassword1" placeholder="Password"  formControlName="password" >
+    </div>
+    <div class="mb-3">
+      <input type="password" class="form-control bg-body-secondary" id="exampleInputPassword1" placeholder="Confirm Password" formControlName="confirmPassword" >
+    </div>
+   
+    <button type="submit" class="btn btn-success w-100 rounded-3">Register</button>
+</form>

@@ -1,0 +1,61 @@
+<div class="container mt-5">
+  <p class="text-success fw-bold">Data-binding works!</p>
+
+  <table class="table table-bordered text-center">
+    <thead class="table-dark">
+      <tr>
+        <th>Name</th>
+        <th>Roll Number</th>
+        <th>Pakistani</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ Name }}</td>
+        <td>{{ RollNumber }}</td>
+        <td>{{ Pakistani }}</td>
+      </tr>
+      <tr>
+        <td
+          class="border bg-primary text-white"
+          style="cursor: pointer"
+          (click)="showName()"
+        >
+          Show Name
+        </td>
+        <td
+          class="border bg-primary text-white"
+          style="cursor: pointer"
+          (click)="showRollNumber()"
+        >
+          Show Roll Number
+        </td>
+        <td
+          class="border bg-primary text-white"
+          style="cursor: pointer"
+          (click)="showPakistani()"
+        >
+          Show Pakistani
+        </td>
+      </tr>
+
+      
+    </tbody>
+  </table>
+</div>
+
+<div class="container mt-5">
+    <h4>Change Name</h4>
+    <input type="text" [(ngModel)]="Name" >
+</div>
+
+<div class="container mt-5">
+    <h4>Change Roll Number</h4>
+    <input type="number" [(ngModel)]="RollNumber">
+</div>
+
+<div class="container mt-5">
+    <h4>Change Pakistani</h4>
+    <input type="radio"  [(ngModel)]="Pakistani"> Pakistani
+</div>
+

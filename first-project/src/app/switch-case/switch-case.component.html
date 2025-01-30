@@ -1,0 +1,36 @@
+<div class="form-group">
+  <label for="usr">Select Number:</label>
+  <input [(ngModel)]="dayNumber" type="text" class="form-control" id="usr" />
+  
+</div>
+
+  <label for="comment">Day:</label>
+  <div>
+    @switch(dayNumber){ 
+    @case ('1'){
+    <span> Monday</span>
+    } 
+    @case ('2'){
+    <span> Tuesday</span>
+    }
+    @case ('3'){
+    <span> Wednesday</span>
+    }
+    @case ('4'){
+    <span> Thursday</span>
+    }
+    @case ('5'){
+    <span> Friday</span>
+    }
+    @case ('6'){
+    <span> Saturday</span>
+    }
+    @case ('7'){
+    <span> Sunday</span>
+    }
+    @default{
+    <span> Invalid Input</span>
+     }
+    }
+  </div>
+

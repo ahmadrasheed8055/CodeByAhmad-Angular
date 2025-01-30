@@ -1,0 +1,167 @@
+<div class="row">
+  <!-- all products -->
+  <div
+    class="col-8 my-4"
+    [ngClass]="showAddProduct == true ? 'col-8' : 'col-12'"
+  >
+    <div class="card">
+      <div class="card-header bg-success">
+        All Products
+        <button
+          class="btn btn-dark float-right"
+          *ngIf="showAddProduct == false"
+          (click)="addProductButton()"
+        >
+          Add Product
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Products Cards -->
+          
+          <div class="col-3" *ngFor="let product of allProducts">
+            <div class="card" >
+              <img class="card-img-top" [src]="product.productImageUrl" alt="Card image cap">
+              <div class="card-body">
+                <h5 class="card-title">{{ product.productName }}</h5>
+                <!-- <p class="card-text">{{ product.productDescription }}</p> -->
+                <p class="card-text"><small class="text-muted">Price: {{ product.productPrice }}</small></p>
+                <button class="btn btn-primary btn-sm"  (click)="editProduct(product)">Edit</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteProduct(product)">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- new product form -->
+  <div class="col-4 my-4" *ngIf="showAddProduct == true">
+    <div class="card">
+      <div class="card-header bg-success">
+        Add new product
+        <button class="btn btn-dark float-right" (click)="closeForm()">
+          Close
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="productSku">Product SKU</label>
+            <input
+              type="text"
+              class="form-control"
+              id="productSku"
+              [(ngModel)]="addProductObj.productSku"
+              name="productSku"
+              required
+            />
+          </div>
+          <div class="form-group col-6">
+            <label for="productName">Product Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="productName"
+              [(ngModel)]="addProductObj.productName"
+              name="productName"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="productPrice">Product Price</label>
+            <input
+              type="number"
+              class="form-control"
+              id="productPrice"
+              [(ngModel)]="addProductObj.productPrice"
+              name="productPrice"
+              required
+            />
+          </div>
+          <div class="form-group col-6">
+            <label for="productShortName">Product Short Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="productShortName"
+              [(ngModel)]="addProductObj.productShortName"
+              name="productShortName"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="createdDate">Created Date</label>
+            <input
+              type="date"
+              class="form-control"
+              id="createdDate"
+              [(ngModel)]="addProductObj.createdDate"
+              name="createdDate"
+              required
+            />
+          </div>
+          <div class="form-group col-6">
+            <label for="deliveryTimeSpan">Delivery Time Span</label>
+            <input
+              type="text"
+              class="form-control"
+              id="deliveryTimeSpan"
+              [(ngModel)]="addProductObj.deliveryTimeSpan"
+              name="deliveryTimeSpan"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="categoryId">Select Category</label>
+            <select
+              class="form-control"
+              id="categoryId"
+              [(ngModel)]="addProductObj.categoryId"
+              name="categoryId"
+              required
+            >
+              <option *ngFor="let cat of categories" [value]="cat.categoryId">
+                {{ cat.categoryName }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group col-6">
+            <label for="productImageUrl">Product Image URL</label>
+            <input
+              type="text"
+              class="form-control"
+              id="productImageUrl"
+              [(ngModel)]="addProductObj.productImageUrl"
+              name="productImageUrl"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="productDescription">Product Description</label>
+          <textarea
+            class="form-control"
+            id="productDescription"
+            [(ngModel)]="addProductObj.productDescription"
+            name="productDescription"
+            required
+          ></textarea>
+        </div>
+        
+        <button type="button" *ngIf="(addProductObj.productId === 0) " class="btn btn-success" (click)="editProduct(addProductObj)">
+          Save Product
+        </button>
+        <button type="button" *ngIf="(addProductObj.productId !== 0) " class="btn btn-primary" (click)="saveProduct()">
+          Update Product
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()">
+          Reset Form
+        </button>
+      </div>

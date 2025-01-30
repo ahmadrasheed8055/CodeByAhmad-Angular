@@ -1,0 +1,105 @@
+<!-- Header -->
+<div class="bg-success text-white text-center py-3 mb-3">
+  <h4>Post API - Create Department, Department List</h4>
+</div>
+<app-alerts [message]="'Welcome to Post API'"></app-alerts>
+<!-- Main Content -->
+<div class="container">
+  <div class="row">
+    <!-- Department List Table -->
+    <div class="col-md-8">
+      <h5 class="mb-3">Department List</h5>
+      <table class="table table-bordered table-hover text-center">
+        <thead class="table-secondary">
+          <tr>
+            <th scope="col">Sr No</th>
+            <th scope="col">Name</th>
+            <th scope="col">Logo</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loader) {
+          <!-- Loading spinner will go here -->
+          <tr>
+            <td colspan="4" class="text-center">
+              <button class="btn btn-primary" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Loading...
+              </button>
+            </td>
+          </tr>
+          } @else{ @for (data of allData; track $index) {
+          <!-- Table rows will go here -->
+          <tr>
+            <td>{{ data.departmentId }}</td>
+            <td>{{ data.departmentName }}</td>
+            <td>{{ data.departmentLogo }}</td>
+            <td>
+              <!-- Update Button -->
+              <button
+                class="btn btn-primary btn-sm me-2"
+                (click)="updateData(data)"
+              >
+                Update
+              </button>
+
+              <!-- Delete Button -->
+              <button
+                class="btn btn-danger btn-sm"
+                (click)="deleteData(data.departmentId)"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+
+          }}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- New Department Form -->
+    <div class="col-md-4">
+      <h5 class="mb-3">New Department</h5>
+      <form>
+        <div class="mb-3">
+          <label for="departmentName" class="form-label">Department Name</label>
+          <input
+            name="departmentName"
+            [(ngModel)]="departmentObject.departmentName"
+            type="text"
+            class="form-control"
+            id="departmentName"
+            placeholder="Enter Name"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="departmentLogo" class="form-label">Department Logo</label>
+          <input
+            name="departmentLogo"
+            [(ngModel)]="departmentObject.departmentLogo"
+            type="text"
+            class="form-control"
+            id="departmentLogo"
+            placeholder="Enter Logo URL"
+          />
+        </div>
+        <div class="d-flex justify-content-between">
+          <button type="reset" class="btn btn-secondary">Reset</button>
+
+          @if(departmentObject.departmentId == 0){
+
+          <button type="submit" class="btn btn-success" (click)="saveData()">
+            Save
+          </button>
+          }@else {
+          <button type="submit" class="btn btn-warning" (click)="onUpdate()">
+            Update
+          </button>
+          }
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

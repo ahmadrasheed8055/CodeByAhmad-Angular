@@ -1,0 +1,30 @@
+<div class="container">
+  <h2>Get Data</h2>
+  <app-alerts [message]="'Welcome to Get API'"></app-alerts>
+
+  <button type="button" (click)="getAllData()">Get All Data</button>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#User Id</th>
+        <th scope="col">Id</th>
+        <th scope="col">Title</th>
+        <th scope="col">Completed</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (allData) { @for (data of allData; track $index) {
+      <tr>
+        <th scope="row">{{ data.userId }}</th>
+        <td>{{ data.id }}</td>
+        <td>{{ data.title }}</td>
+        <td><input type="checkbox" [checked]="data.Completed" disabled /></td>
+      </tr>
+      } }@else {
+      <tr>
+        <td colspan="4">No data found</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

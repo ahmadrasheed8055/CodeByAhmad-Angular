@@ -1,0 +1,83 @@
+<div class="container mt-5">
+  <h3 class="mb-4">Template Form</h3>
+  <form>
+    <div class="row mb-3">
+      <!-- First Name -->
+      <div class="col-md-6">
+        <label for="firstName" class="form-label">First Name</label>
+        <input
+          type="text"
+          [(ngModel)]="user.firstName"
+          name="firstName"
+          class="form-control"
+          id="firstName"
+          placeholder="Enter your first name"
+        />
+      </div>
+      <!-- Last Name -->
+      <div class="col-md-6">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input
+          type="text"
+          name="lastName"
+          [(ngModel)]="user.lastName"
+          class="form-control"
+          id="lastName"
+          placeholder="Enter your last name"
+        />
+      </div>
+    </div>
+
+    <!-- Select City -->
+    <div class="mb-3">
+      <label for="city" class="form-label">City</label>
+      <select name="city" [(ngModel)]="user.city" class="form-select" id="city">
+        <option selected>Choose your city...</option>
+        <option value="1">Lahore</option>
+        <option value="2">Karachi</option>
+        <option value="3">Islamabad</option>
+        <option value="4">Multan</option>
+      </select>
+    </div>
+
+    <!-- ZIP Code -->
+    <div class="mb-3">
+      <label for="zip" class="form-label">ZIP Code</label>
+      <input
+        name="zip"
+        type="text"
+        [(ngModel)]="user.zip"
+        class="form-control"
+        id="zip"
+        placeholder="Enter ZIP code"
+      />
+    </div>
+
+    <!-- Check Button -->
+    <div class="mb-3 form-check">
+      <input
+        name="check"
+        [(ngModel)]="user.check"
+        type="checkbox"
+        class="form-check-input"
+        id="checkButton"
+      />
+      <label class="form-check-label" for="checkButton">Check me</label>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary" (click)="onSubmit()">
+      Submit
+    </button>
+  </form>
+  <div class="container mt-5">
+    <h4>Form Data</h4>
+    <div *ngIf="userData; else noData">
+        <pre>{{ userData | json }}</pre>
+    </div>
+    <ng-template #noData>
+        <p>No data available.</p>
+    </ng-template>
+</div>
+
+</div>

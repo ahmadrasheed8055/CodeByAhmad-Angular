@@ -1,0 +1,142 @@
+<div class="app-header">To-Do List App</div>
+
+<div class="task-container">
+  <div
+    *ngIf="welcome"
+    class="welcome-section"
+    style="text-align: center; margin-bottom: 20px"
+  >
+    <h1>Welcome to Your To-Do List</h1>
+    <p>Organize your tasks efficiently and stay productive!</p>
+    <button class="start-btn" (click)="addTaskButton()">Get Started</button>
+  </div>
+  <div class="add-task-form" *ngIf="addTaskForm">
+    <input
+      [(ngModel)]="todoObj.taskName"
+      class="form-control"
+      type="text"
+      id="taskName"
+      placeholder="Task Name"
+      required
+    />
+    <input
+  
+      [(ngModel)]="todoObj.dueDate"
+      class="form-control"
+      type="date"
+      id="dueDate"
+      required
+     
+    />
+  
+    <input
+      class="form-control"
+      [(ngModel)]="todoObj.tags"
+      type="text"
+      id="tags"
+      placeholder="Tags (comma-separated)"
+      required
+    />
+    <textarea
+      [(ngModel)]="todoObj.taskDescription"
+      placeholder="Task Description"
+      class="form-control"
+      id="exampleFormControlTextarea1"
+      rows="3"
+      style="outline: none"
+    ></textarea>
+    @if(todoObj.itemId == 0){
+
+      <button (click)="addTask()" type="button">Add Task</button>
+    }@else {
+      <button (click)="editTask()" type="button" class="btn btn-primary">Update Task</button>
+    }
+  </div>
+
+  <div class="task-list">
+    @if(loader){
+    <div>
+      <div class="task-card loading">
+        <div class="task-title loading-title"></div>
+        <div class="task-details loading-detail"></div>
+        <div class="task-details loading-detail"></div>
+        <div class="task-actions loading-actions">
+          <div class="loading-btn"></div>
+          <div class="loading-btn"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="task-card loading">
+        <div class="task-title loading-title"></div>
+        <div class="task-details loading-detail"></div>
+        <div class="task-details loading-detail"></div>
+        <div class="task-actions loading-actions">
+          <div class="loading-btn"></div>
+          <div class="loading-btn"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="task-card loading">
+        <div class="task-title loading-title"></div>
+        <div class="task-details loading-detail"></div>
+        <div class="task-details loading-detail"></div>
+        <div class="task-actions loading-actions">
+          <div class="loading-btn"></div>
+          <div class="loading-btn"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="task-card loading">
+        <div class="task-title loading-title"></div>
+        <div class="task-details loading-detail"></div>
+        <div class="task-details loading-detail"></div>
+        <div class="task-actions loading-actions">
+          <div class="loading-btn"></div>
+          <div class="loading-btn"></div>
+        </div>
+      </div>
+    </div>
+    } @for (task of todos; track $index) {
+      <div class="task-card">
+        <div class="task-title">{{ task.taskName }}</div>
+      
+        <div class="task-menu">
+          <mat-menu #appMenu="matMenu">
+            <button (click)="onEditTask(task)" mat-menu-item > 
+              <mat-icon>edit</mat-icon>
+              <span >Update</span>
+            </button>
+            <button (click)="deleteTodoTask(task.itemId)" mat-menu-item >
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+      
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="appMenu"
+            [matMenuTriggerData]="{ name: 'Sally' }"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+      
+        <div class="task-details">
+          <b>Due Date:</b> {{ task.dueDate | date: "dd-MMM-yyyy" }}
+        </div>
+        <div class="task-details">Tags: {{ task.tags }}</div>
+        <div class="task-actions">
+          <button class="complete-btn" >Mark Completed</button>
+        </div>
+     
+        
+      </div>
+      
+    }
+
+    <!-- Additional task cards will be dynamically added here -->
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<div class="container mt-5">
+    <h3 class="mb-4">Reactive Form</h3>
+    <form [formGroup]="students">
+        <div class="row mb-3">
+            <!-- First Name -->
+            <div class="col-md-6">
+                <label for="firstName" class="form-label">First Name</label>
+                <input formControlName="firstName" type="text" class="form-control" id="firstName" placeholder="Enter your first name">
+            </div>
+            <!-- Last Name -->
+            <div class="col-md-6">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input formControlName="lastName" type="text" class="form-control" id="lastName" placeholder="Enter your last name">
+            </div>
+        </div>
+
+        <!-- Select City -->
+        <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <select formControlName="city" class="form-select" id="city">
+                <option selected>Choose your city...</option>
+                <option value="1">Lahore</option>
+                <option value="2">Karachi</option>
+                <option value="3">Islamabad</option>
+                <option value="4">Multan</option>
+            </select>
+        </div>
+
+        <!-- ZIP Code -->
+        <div class="mb-3">
+            <label for="zip" class="form-label">ZIP Code</label>
+            <input formControlName="zip" type="text" class="form-control" id="zip" placeholder="Enter ZIP code">
+        </div>
+
+        <!-- Check Button -->
+        <div class="mb-3 form-check">
+            <input formControlName="check" type="checkbox" class="form-check-input" id="checkButton">
+            <label class="form-check-label" for="checkButton">Check me</label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary" (click)="submit()">Submit</button>
+    </form>
+</div>
+
+<div class="container mt-5">
+    <h4>Form Data</h4>
+    {{studentData | json}}
+</div>
