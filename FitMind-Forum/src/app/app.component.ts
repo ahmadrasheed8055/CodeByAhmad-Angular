@@ -5,11 +5,14 @@ import { NavbarComponent } from "./website/navbar/navbar.component";
 import { FooterComponent } from "./website/footer/footer.component";
 import { CategoriesComponent } from "./website/categories/categories.component";
 import { PostsComponent } from "./website/posts/posts.component";
-import { HttpClientModule } from '@angular/common/http';  // Import this
+import { HttpClientModule } from '@angular/common/http';
+import { HeroComponent } from "./website/hero/hero.component";
+import { LoginComponent } from "./website/auth/login/login.component";
+import { RegisterComponent } from "./website/auth/register/register.component";  // Import this
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent, FooterComponent,CategoriesComponent,PostsComponent,HttpClientModule],
+  imports: [RouterOutlet, NavbarComponent, FooterComponent, CategoriesComponent, PostsComponent, HttpClientModule, HeroComponent, LoginComponent, RegisterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

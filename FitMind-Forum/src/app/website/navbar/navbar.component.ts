@@ -8,4 +8,7 @@ import { Component } from '@angular/core';
 })
 export class NavbarComponent {
 
+loginModal:string = '#loginModal';
+registerModal:string = '#registerModal';
+
 }

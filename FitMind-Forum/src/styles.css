@@ -4,7 +4,7 @@
 /*
 * Author Name: ApexCodeStudios
 * Author URI: http://themeforest.net/user/apexcodestudios
-* Website: http://www.apexcodestudios.com 
+* Website: http://www.apexcodestudios.com
 */
 
 
@@ -12,62 +12,62 @@
 /* Table of Contents
 ----------------------------------------------------------------------
 0. Root Variables
-1. Reset                          
-2. Switcher Icon                          
-3. Back to Top                          
-4. Common styles                          
-5. Avatars                          
-6. Btns                          
-7. Form                          
-8. Brand Colors                          
-9. Basic Structure                          
-10. Navbar                          
-11. Footer                          
-12. Pagination                          
-13. Hero Sections                          
-14. Vine Header                          
+1. Reset
+2. Switcher Icon
+3. Back to Top
+4. Common styles
+5. Avatars
+6. Btns
+7. Form
+8. Brand Colors
+9. Basic Structure
+10. Navbar
+11. Footer
+12. Pagination
+13. Hero Sections
+14. Vine Header
 15. Filter Sections
-   - Filter 1    
-   - Filter 2                         
+   - Filter 1
+   - Filter 2
 16. Comment form Sections
-   - Comment form 1    
-   - Comment form 2                           
-17. Index v1 - Forum                         
-18. Index v2 - Community                          
-19. Index v3 - Q&A                          
-20. Index v4 - Support                          
-21. Index v5 - Social                          
-22. Index v6 - Timeline                          
-23. Discussion 7                            
-    - Topic Bar                            
-24. Content                            
-25. Discussion 2                           
+   - Comment form 1
+   - Comment form 2
+17. Index v1 - Forum
+18. Index v2 - Community
+19. Index v3 - Q&A
+20. Index v4 - Support
+21. Index v5 - Social
+22. Index v6 - Timeline
+23. Discussion 7
+    - Topic Bar
+24. Content
+25. Discussion 2
 26. Pages
-   - About Page 
-	 - Login Page     
-	 - Users Page 
-	 - User Profile Page  
-	 - Leaderboard Page 
-	 - Categories v1 Page 
-	 - Categories v2 Page  
-	 - Tags Page  
-	 - Faq Page  
-	 - Contact Page  
-	 - Pricing Page  
-	 - 404 Page                              
+   - About Page
+	 - Login Page
+	 - Users Page
+	 - User Profile Page
+	 - Leaderboard Page
+	 - Categories v1 Page
+	 - Categories v2 Page
+	 - Tags Page
+	 - Faq Page
+	 - Contact Page
+	 - Pricing Page
+	 - 404 Page
 27. Dashboard
-   - Sidebar 
-	 - Dashboard Card     
+   - Sidebar
+	 - Dashboard Card
 	 - Dashboard Overview
-	 - Invoices  
-	 - Pricing Plans 
-	 - Subscriptions 
-	 - Bookmarks  
-	 - Notifications  
-	 - Add Post  
-	 - Chat Messages 
+	 - Invoices
+	 - Pricing Plans
+	 - Subscriptions
+	 - Bookmarks
+	 - Notifications
+	 - Add Post
+	 - Chat Messages
 
----------------------------------------------------------------------- */ 
+---------------------------------------------------------------------- */
 
 :root{
     --white: #fff;
@@ -75,13 +75,13 @@
     --dark: #1f1e22;
     --gen-font-family: 'Karla',sans-serif;
     --blue-color: #0195ff;
-    --green-color: #08beab;
-    --green-color-hover: #26d8c6;
-    --link-color: #0baca9;
+    --green-color: #87bf17;
+    --green-color-hover: #9dc54c;
+    --link-color: #87bf17;
     --logo-width: 170px;
     --logo-height: 55px;
 }
-:root[data-theme="light"] { 
+:root[data-theme="light"] {
     --bg-color: #f0f2f5;
     --text-color: #5d5d66;
     --theme: #ec595a;
@@ -98,8 +98,8 @@
     --form-control: #f0f2f5;
     --text-muted: #6c757d;
 
-  }  
-  :root[data-theme="dark"] { 
+  }
+  :root[data-theme="dark"] {
     --bg-color: #111111;
     --text-color: #efefef;
     --theme: #ec595a;
@@ -332,7 +332,7 @@ html, body, div, span, applet, object, iframe, p, pre, a, abbr, acronym, address
   .border-start {
     border-left: none !important;
   }
-} 
+}
 .bg-repeat-0 {
   background-repeat: no-repeat !important;
 }
@@ -442,7 +442,7 @@ html, body, div, span, applet, object, iframe, p, pre, a, abbr, acronym, address
 }
 .btn-dark {
   background-color: var(--dark);
-  border-color: var(--dark);  
+  border-color: var(--dark);
   color: var(--text-color);
 }
 .btn-border {
@@ -466,7 +466,7 @@ html, body, div, span, applet, object, iframe, p, pre, a, abbr, acronym, address
 /*------------------------------------------------------------------
 * Form
 *-------------------------------------------------------------------*/
-label{    
+label{
   display: inline-block;
   font-family: var(--gen-font-family);
   font-size: 18px;
@@ -497,7 +497,7 @@ input, select{
 .search-form input {
   background-color: var(--bg-icons);
 }
-.form-check-input {  
+.form-check-input {
   width: 0.5em !important;
   height: 1em !important;
   margin-right: 5px;
@@ -506,7 +506,7 @@ input, select{
 }
 .form-check-input:checked {
   background-color: var(--green-color);
-  border-color: var(--green-color);   
+  border-color: var(--green-color);
 }
 .bg-body{
   background-color: var(--theme-white) !important;
@@ -591,11 +591,26 @@ input, select{
 /*------------------------------------------------------------------
 * Navbar
 *-------------------------------------------------------------------*/
+
+@font-face {
+  font-family: 'High Cruiser';
+  src: url(../public/fonts/HighCruiser-Font.otf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.fitmind-text {
+  font-family: 'High Cruiser', sans-serif;
+  font-size: 50px;
+  color: #87bf17;
+}
+
+
 .navbar-brand {
   display: flex;
 }
 .navbar-brand img{
-  width: var(--logo-width); 
+  width: var(--logo-width);
   height: var(--logo-height);
 }
 .offcanvas {
@@ -643,7 +658,7 @@ input, select{
 }
 .dropdown-menu .dropdown-item{
   color: var(--text-color);
-}  
+}
 .dropdown-menu .dropdown-item:hover{
   background: var(--bg-color);
   color: var(--text-color);
@@ -686,7 +701,7 @@ input, select{
 .dropdown-menu .dropdown-item img{
   width: 20px;
   height: 15px;
-}  
+}
 
 /* Mega Menu */
 .mega-dropdown-md .dropdown-menu {
@@ -751,7 +766,7 @@ input, select{
   padding: 0.2rem 0.3rem;
   line-height: 1.2;
   border-radius: 0.225rem;
-}  
+}
 .header-end .btn i{
   font-size: 16px;
 }
@@ -801,7 +816,7 @@ input, select{
   font-size: 12px;
   color: #a3a3af;
 }
- 
+
 
 /*------------------------------------------------------------------
 * Footer Section
@@ -817,7 +832,7 @@ input, select{
   margin-bottom: 24px;
 }
 .footer-top .footer-about .logo img{
-  width: var(--logo-width); 
+  width: var(--logo-width);
   height: var(--logo-height);
 }
 .footer-top .footer-about p {
@@ -895,7 +910,7 @@ input, select{
       flex-direction: column;
       align-items: center;
     }
-    
+
 }
 
 
@@ -908,7 +923,7 @@ input, select{
   margin: 60px 0px 10px 0;
 }
 .pagination .page-numbers {
-  
+
   display: flex;
   gap: 5px;
   height: 50px;
@@ -917,7 +932,7 @@ input, select{
   margin: 0 12px 10px 0;
 
   background-color: var(--theme-white);
-  
+
   -webkit-box-align: center;
   -webkit-align-items: center;
   -ms-flex-align: center;
@@ -927,7 +942,7 @@ input, select{
   -webkit-justify-content: center;
   -ms-flex-pack: center;
   justify-content: center;
-  
+
   font-size: 14px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -1023,21 +1038,21 @@ input, select{
   margin: 100px 0px;
 }
 .bg-img-1{
-  background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(/img/bg/1.jpg); 
+  background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(/img/bg/hero-bg.JPG);
 }
 .bg-img-2 {
-  background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(/img/bg/2.jpg); 
+  background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(/img/bg/2.jpg);
 }
 .bg-img-3 {
-  background-image: linear-gradient( rgba(35, 37, 38, 0.60), rgba(35, 37, 38, 0.60) ), url(/img/bg/4.png); 
+  background-image: linear-gradient( rgba(35, 37, 38, 0.60), rgba(35, 37, 38, 0.60) ), url(/img/bg/4.png);
 }
 .bg-img-1,
 .bg-img-2,
 .bg-img-3{
-  background-position: center center; 
-  background-repeat: no-repeat; 
+  background-position: center center;
+  background-repeat: no-repeat;
   background-size: cover;
-}  
+}
 
 /* Hero Content */
 .hero-content h1 {
@@ -1050,7 +1065,7 @@ input, select{
   color: #dddfe0;
   font-size: 20px;
   font-weight: 300;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 /* Banner-Content */
@@ -1063,7 +1078,7 @@ input, select{
   margin-bottom: 40px;
   color: var(--white);
 }
-.banner-content h1 span {   
+.banner-content h1 span {
   position: relative;
   display: inline-block;
   z-index: 1;
@@ -1197,7 +1212,7 @@ input, select{
   .vine-join{
     flex-direction: column;
   }
-  
+
 }
 @media (max-width: 768px) {
   .stats-box {
@@ -1215,7 +1230,7 @@ input, select{
   .stats-box p{
     font-size: 16px;
   }
-    
+
 }
 
 
@@ -1231,9 +1246,9 @@ input, select{
   margin-left: 0;
 }
 .breadcrumb-cover {
-  background-image: linear-gradient( rgba(35, 37, 38, 0.3), rgba(35, 37, 38, 0.3) ), url(/img/bg/3.jpg); 
-  background-position: center center; 
-  background-repeat: no-repeat; 
+  background-image: linear-gradient( rgba(35, 37, 38, 0.3), rgba(35, 37, 38, 0.3) ), url(/img/bg/3.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
   background-size: cover;
   padding: 70px 0;
 }
@@ -1399,7 +1414,7 @@ input, select{
   .filter {
     margin: 40px 0px;
    }
-  
+
 }
 @media (max-width: 768px) {
   .filter-toolbar{
@@ -1409,7 +1424,7 @@ input, select{
   .filter-item {
     margin-bottom: 10px;
   }
-  
+
 }
 
 /* ------------------------------------------------------------------- */
@@ -1442,7 +1457,7 @@ input, select{
   .filter-2 {
     margin: 40px 0px;
    }
-  
+
 }
 @media (max-width: 768px) {
   .filter-2{
@@ -1513,7 +1528,7 @@ input, select{
   color: var(--text-color);
 }
 
-/* ================================================================================================================================================================== 
+/* ==================================================================================================================================================================
   Forum index.html
 ===================================================================================================================================================================== */
 
@@ -1754,10 +1769,10 @@ border: none;
   background: var(--theme-white);
   color: var(--text-color);
   border-radius: 10px;
-} 
+}
 .card .card-header .card-action-wrap .dropdown-menu .dropdown-item{
   color: var(--text-color);
-}  
+}
 .card .card-header .card-action-wrap .dropdown-menu .dropdown-item:hover{
   background: var(--bg-color);
   color: var(--text-color);
@@ -1880,10 +1895,10 @@ border: none;
   .post-stats .post-item {
     height: 40px;
   }
-}  
+}
 
 
-/* ================================================================================================================================================================== 
+/* ==================================================================================================================================================================
   Community index-2.html
 ===================================================================================================================================================================== */
 
@@ -1965,7 +1980,7 @@ border: none;
 .post-box-2 .title-box .title-box-category {
   font-size: 14px;
   font-weight: 400;
-  line-height: 14px;   
+  line-height: 14px;
   color: #6c757d;
   background-color: rgba(121,127,135,.1);
   padding: 2px 10px;
@@ -2024,7 +2039,7 @@ border: none;
 
 
 
-/* ================================================================================================================================================================== 
+/* ==================================================================================================================================================================
   Questions index-3.html
 ===================================================================================================================================================================== */
 
@@ -2132,7 +2147,7 @@ border: none;
     border-right: 0px;
     border-bottom: 2px solid var(--border-color);
   }
-}  
+}
 
 
 
@@ -2178,7 +2193,7 @@ border: none;
  }
   .qa-box .qa-holder.solved{
     border: 2px dashed var(--green-color);
-  } 
+  }
   .qa-box .qa-holder .qa-badge {
     position: absolute;
     top: -12px;
@@ -2196,13 +2211,13 @@ border: none;
   /* QA Content */
   .qa-content{
     padding: 10px 0px;
-  }  
+  }
   .qa-content h1{
     font-size: 20px;
     line-height: 1.2;
     letter-spacing: -0.04em;
     margin-bottom: 4px;
-  }  
+  }
   .qa-content p {
     font-size: 15px;
     line-height: 1.47;
@@ -2226,7 +2241,7 @@ border: none;
   .qa-content .qa-category {
     font-size: 14px;
     font-weight: 400;
-    line-height: 14px;   
+    line-height: 14px;
     color: var(--text-color);
     background-color: rgba(121,127,135,.1);
     padding: 2px 10px;
@@ -2311,7 +2326,7 @@ border: none;
     line-height: 12px;
     color: var(--text-color);
   }
-  
+
   @media (max-width: 768px) {
     .qa-sidebar {
       margin-top: 50px;
@@ -2331,14 +2346,14 @@ border: none;
     }
   }
 
-/* ================================================================================================================================================================== 
+/* ==================================================================================================================================================================
   Support index-4.html
 ===================================================================================================================================================================== */
 /* Support Header */
 .support-top{
-  background-image: url(/img/bg/4.jpg); 
-  background-position: center center; 
-  background-repeat: no-repeat; 
+  background-image: url(/img/bg/4.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
   background-size: cover;
 
   margin-top: 100px;
@@ -2508,12 +2523,12 @@ border: none;
 .support-box .support-box-left .support-author .support-author-name a{
   font-size: 12px;
   color: var(--text-color);
-}  
+}
 .support-box .support-box-left .support-author .support-author-role{
   font-size: 12px;
   color: #6c757d;
   background-color: #ffe4aa;
-} 
+}
 .support-box .support-box-middle{
   padding: 15px 10px 10px;
   flex-grow: 1!important;
@@ -2578,7 +2593,7 @@ border: none;
   .support-box {
     width: 100%;
     display: block;
-}  
+}
   .support-box .support-box-left {
     padding: 25px 0 0;
     width: 70px;
@@ -2598,7 +2613,7 @@ border: none;
     float: none;
     padding-top: 15px;
     margin-right: 0;
-}  
+}
   .support-box .support-box-right {
     position: static;
     flex-direction: row;
@@ -2608,11 +2623,11 @@ border: none;
     padding: 10px;
     border-top: 1px solid #f1f1f1;
     border-left: none;
-  }  
+  }
   .support-vote-count {
     flex: 0 0 100px;
   }
-}  
+}
 
 .color-1{
   color: #9E4784;
@@ -2728,17 +2743,17 @@ border: none;
 .bg-19{
   background-color: #FF597B;
 }
- 
 
 
 
-/* ================================================================================================================================================================== 
+
+/* ==================================================================================================================================================================
   Social index-5.html
 ===================================================================================================================================================================== */
 .vine-social{
   margin: 100px 0px;
   padding: 10px 0px;
-} 
+}
 
 /* Social Sidebar */
 .social-sidebar.position-sticky{
@@ -2817,10 +2832,10 @@ border: none;
   font-size: 0.75rem;
   font-weight: normal;
   color: var(--text-color);
-} 
+}
 .nav-trend .view svg{
   margin-right: 10px;
-} 
+}
 
 .flex-1 {
   -webkit-box-flex: 1;
@@ -2885,7 +2900,7 @@ border: none;
 
 
 
-/* ================================================================================================================================================================== 
+/* ==================================================================================================================================================================
   Timeline index-6.html
 ===================================================================================================================================================================== */
 .timeline {
@@ -2945,7 +2960,7 @@ border: none;
 
 
 
-/* ================================================================================================================================================================== 
+/* ==================================================================================================================================================================
   Disscussion 7 disscussion-7.html
 ===================================================================================================================================================================== */
 
@@ -3007,7 +3022,7 @@ border: none;
 .comment-box .comment-content .qa-category {
   font-size: 14px;
   font-weight: 400;
-  line-height: 14px;   
+  line-height: 14px;
   color: var(--text-color);
   background-color: rgba(121,127,135,.1);
   padding: 2px 10px;
@@ -3036,7 +3051,7 @@ border: none;
   line-height: 1.2;
   letter-spacing: -0.04em;
   margin-bottom: 4px;
-}  
+}
 .comment-box .comment-content .dx-comment-date {
   display: block;
   font-size: .875rem;
@@ -3054,9 +3069,9 @@ border: none;
   .comment-box {
     padding: 30px 30px;
   }
-}  
+}
 
-/* ============================================================== 
+/* ==============================================================
   Topic Bar
 =================================================================== */
 .topic-bar{
@@ -3152,7 +3167,7 @@ border: none;
   }
 }
 
-/* ============================================================== 
+/* ==============================================================
   Content Section
 =================================================================== */
 .content{
@@ -3336,7 +3351,7 @@ border: none;
 }
 
 
-/* ================================================================================================================================================================== 
+/* ==================================================================================================================================================================
   Discussion 2 (discussion-2.html)
 ===================================================================================================================================================================== */
 .discussion-title-2 h1{
@@ -3362,7 +3377,7 @@ border: none;
 .discussion-title-2 .qa-category {
   font-size: 14px;
   font-weight: 400;
-  line-height: 14px;   
+  line-height: 14px;
   color: var(--text-color);
   background-color: rgba(121,127,135,.1);
   padding: 2px 10px;
@@ -3508,7 +3523,7 @@ border: none;
 
 
 
-/* ================================================================================================================================================================== 
+/* ==================================================================================================================================================================
   Pages
 ===================================================================================================================================================================== */
 
@@ -3728,10 +3743,10 @@ display: block;
   .landing-container-join-main .join-user-3,
   .landing-container-join-main .join-user-4 {
     display: none;
-  }  
+  }
   .landing-container-join-main .line {
     display: none;
-  }  
+  }
 }
 @media (max-width:768px) {
   .counter-item-wrap .list-wrap li:nth-child(4) .counter-item {
@@ -3746,13 +3761,13 @@ display: block;
   min-height: 500px;
   background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(/img/bg/login.jpg);
   background-position: 50%;
-  background-repeat: no-repeat; 
+  background-repeat: no-repeat;
   background-size: cover;
 
   position: relative;
   display: flex;
   align-items: center;
-}  
+}
 .login .shape {
   position: absolute;
   right: 0;
@@ -3874,7 +3889,7 @@ display: block;
 .profile-banner{
   background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(/img/bg/1.jpg);
   background-position: 50%;
-  background-repeat: no-repeat; 
+  background-repeat: no-repeat;
   background-size: cover;
   height: 250px;
   margin-top: 100px;
@@ -4121,18 +4136,18 @@ display: block;
     padding: 20px;
     flex: 0 0 350px;
   }
-}  
+}
 @media (max-width:991px) {
   .category-box .category-stats{
     padding: 20px;
     flex: 0 0 250px;
   }
-} 
+}
 
 @media (max-width:991px) {
   .category-box {
     flex-direction: column;
-  }  
+  }
   .category-box .category-info{
     flex-direction: column;
     border: none;
@@ -4148,7 +4163,7 @@ display: block;
     padding: 20px 0px;
     border-top: 2px solid var(--border-color);
   }
-} 
+}
 
 
 /* ------------------------------------------------------------------- */
@@ -4221,14 +4236,14 @@ display: block;
   .category-box-2 .category-content-top,
   .category-box-2 .category-content-bottom{
     flex-direction: column;
-  }  
+  }
   .category-box-2 .category-content-top .category-details{
     margin-bottom: 15px;
-  }  
+  }
   .category-box-2 .category-content-bottom .category-topics{
     margin-bottom: 15px;
   }
-} 
+}
 
 
 /* ------------------------------------------------------------------- */
@@ -4374,7 +4389,7 @@ display: block;
 }
 .contact-icon i{
   font-size: 25px;
-}  
+}
 .contact-box-content{
   padding-left: 20px;
 }
@@ -4392,7 +4407,7 @@ display: block;
     padding: 30px 20px;
     margin-top: 40px;
   }
-  
+
 }
 
 /* ------------------------------------------------------------------- */
@@ -4522,7 +4537,7 @@ display: block;
 }
 
 
-/* ============================================================================================================================================================================= 
+/* =============================================================================================================================================================================
   Dashboard
 ================================================================================================================================================================================ */
 .dashboard{
@@ -4597,7 +4612,7 @@ display: block;
   -webkit-transform-origin: 50% 0;
           transform-origin: 50% 0;
   width: 100%;
-} 
+}
 .navbar-collapse{
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
@@ -4679,8 +4694,8 @@ display: block;
 }
 .dashboard-bg-box {
   min-height: 250px !important;
-  background-position: center center; 
-  background-repeat: no-repeat; 
+  background-position: center center;
+  background-repeat: no-repeat;
   background-size: cover;
 }
 
@@ -5008,7 +5023,7 @@ a.close-list-item {
   .price.price-grey-bg {
     padding: 20px 15px;
     border-radius: 0px 0px 20px 20px;
-  }  
+  }
 }
 
 
@@ -5111,7 +5126,7 @@ a.close-list-item {
     max-height: 20px;
     line-height: 20px;
     font-size: 18px;
-  }  
+  }
 }
 
 
@@ -5190,15 +5205,15 @@ a.close-list-item {
 .chat-box .chat-message .chat-text-left{
   background: var(--bg-icons);
   color: var(--text-color);
-  border-top-right-radius: .5rem; 
-  border-bottom-right-radius: .5rem; 
+  border-top-right-radius: .5rem;
+  border-bottom-right-radius: .5rem;
   border-bottom-left-radius: .5rem;
 }
 .chat-box .chat-message .chat-text-right{
   background: var(--green-color);
   color: var(--white);
-  border-top-left-radius: .5rem; 
-  border-bottom-right-radius: .5rem; 
+  border-top-left-radius: .5rem;
+  border-bottom-right-radius: .5rem;
   border-bottom-left-radius: .5rem;
 }
 .chat-box .chat-message p{
@@ -5302,3 +5317,4 @@ a.close-list-item {
   cursor: pointer;
   transition: all 0.25s linear;
 }
+

@@ -1,0 +1,49 @@
+<!-- Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+
+
+      <div class="modal-body">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+
+            <h3 class="text-center mb-3">Register</h3>
+            <!-- <p class="text-center text-muted">Join our awesome community.</p> -->
+            <div class="text-center">
+              <small class="text-muted">Already have an account?</small>
+              <a href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal" class="small fw-bold">Login</a>
+            </div>
+            <form>
+              <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" name="Name" class="form-control" placeholder="Rachel Roth">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email address</label>
+                <input type="email" name="Email" class="form-control" placeholder="name@example.com">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="Password" class="form-control" placeholder="***********">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="ConfirmPassword" class="form-control" placeholder="***********">
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button class="w-100 btn btn-mint">Create account</button>
+      </div>
+
+    </div>
+  </div>
+</div>
