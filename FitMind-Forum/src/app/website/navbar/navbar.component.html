@@ -12,10 +12,10 @@ Navbar
   <nav class="navbar navbar-expand-lg">
     <div class="container align-items-center">
       <div class="logo">
-        <a class="navbar-brand" href="index.html">
+        <a class="navbar-brand" type="button" (click)="test()">
           <!-- <img class="logo-dark" src="img/logo dark.png" alt="Logo"> -->
 
-          <h1 class="fitmind-text">Fit Mind</h1>
+          <h1  class="fitmind-text">Fit Mind</h1>
         </a>
       </div>
       <div class="offcanvas nav-offcanvas offcanvas-start" tabindex="-1" id="offcanvas_Header_01"
@@ -56,7 +56,7 @@ Navbar
             <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal"><i
                   class="bi bi-box-arrow-in-right me-2"></i>Login</a> </li>
 
-            <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="registerModal"><i
+            <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="emailVarificationModal"><i
                   class="bi bi-person-plus me-2"></i>Register</a>
             </li>
 

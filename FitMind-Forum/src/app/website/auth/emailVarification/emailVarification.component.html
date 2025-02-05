@@ -1,0 +1,53 @@
+<!-- Modal -->
+<div class="modal fade" id="emailVarificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4">
+
+            <h3 class="text-center mb-3">Get Started</h3>
+            <p class="text-center text-muted">Enter your email to receive a registration link.</p>
+
+
+              <div class="mb-3">
+                <!-- <label class="form-label">Email address</label> -->
+                <input [(ngModel)]="email" type="text" name="email"  class="form-control" placeholder="name@example.com" required>
+                 
+              </div>
+              <div class="text-center">
+                <small class="text-muted">Already have an account?</small>
+                <a href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal" class="small fw-bold">Login</a>
+              </div>
+
+            
+                <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+                <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+              
+
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer border-0">
+
+        <button class="w-100 btn btn-mint" (click)="sendEmail()" [disabled]="loading || !email" >
+        
+
+          @if(loading){
+            Sending...
+          }@else if (successMessage) {
+            Resend Email
+          }@else {
+            Send Email
+          }
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+

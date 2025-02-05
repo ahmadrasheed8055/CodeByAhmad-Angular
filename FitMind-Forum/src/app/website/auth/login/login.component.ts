@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
+
+
+templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
@@ -13,5 +16,6 @@ export class LoginComponent implements OnInit {
   }
 
   registerModal:string = '#registerModal';
+  emailVarificationModal:string = '#emailVarificationModal';
 
 }
