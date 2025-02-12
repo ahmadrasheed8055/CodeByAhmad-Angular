@@ -14,35 +14,47 @@
 
               <div class="mb-3">
                 <!-- <label class="form-label">Email address</label> -->
-                <input [(ngModel)]="email" type="text" name="email"  class="form-control" placeholder="name@example.com" required>
-                 
+                <input
+                #emailInput="ngModel"
+                [(ngModel)]="email"
+                type="email"
+                name="email"
+                (ngModelChange)="onInputClear($event)"
+                class="form-control"
+                placeholder="name@example.com"
+                [ngModel]="email"
+                [pattern]="emailPattern"
+                required>
+
+                <!-- <p>Current Value: {{ email }}</p> -->
               </div>
               <div class="text-center">
                 <small class="text-muted">Already have an account?</small>
                 <a href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal" class="small fw-bold">Login</a>
               </div>
 
-            
-                <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+
+                <!-- <div  *ngIf="emailInput.invalid && emailInput.touched" class="alert alert-danger mt-3">Please enter valid email.</div> -->
+                <div  *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
                 <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
-              
+
 
           </div>
         </div>
       </div>
-      
+
       <div class="modal-footer border-0">
 
-        <button class="w-100 btn btn-mint" (click)="sendEmail()" [disabled]="loading || !email" >
-        
+        <button class="w-100 btn btn-mint"   (click)="sendEmail()" [disabled]="loading || !email || emailInput.invalid" >
 
-          @if(loading){
+          {{emailSentingFormButton}}
+          <!-- @if(loading){
             Sending...
           }@else if (successMessage) {
             Resend Email
           }@else {
             Send Email
-          }
+          } -->
         </button>
 
       </div>

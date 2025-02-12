@@ -7,7 +7,7 @@ import { MasterService } from "./../../../Shared/master.service";
 @Component({
   selector: "app-emailVarification",
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule],
 
   templateUrl: "./emailVarification.component.html",
   styleUrls: ["./emailVarification.component.css"],
@@ -18,48 +18,76 @@ export class EmailVarificationComponent implements OnInit {
   ngOnInit() {}
   loginModal: string = "#loginModal";
 
-  email: string = '';
-  
+  email: string = "";
+
   loading: boolean = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
-
+  emailSentingFormButton: string = "Send Email";
+  countDown: number = 0;
+  emailPattern: string = "^[a-zA-Z0-9._%+-]+@gmail\.com$";
 
   service = inject(MasterService);
 
-  test(){
-    debugger;
-    alert('clicked');
-  }
+  // test() {
+  //   debugger;
+  //   alert("clicked");
+  // }
 
   sendEmail() {
     // debugger;
     this.loading = true;
+    this.emailSentingFormButton = "Sending...";
     this.errorMessage = null;
-    this.successMessage = null; 
-  
+    this.successMessage = null;
+
     // Trim email input
-    if (!this.email || this.email.trim() === '') {
+    if (!this.email || this.email.trim() === "") {
       this.errorMessage = "Please enter a valid email address.";
       this.loading = false;
+      this.emailSentingFormButton = "Send email";
+
       return;
     }
-  
+
     this.service.sendRegistrationEmail(this.email.trim()).subscribe(
-     responce =>{
-      this.successMessage = "Email sent successfully.";
-      this.loading = false;
-     },error => {
-      this.errorMessage = "An error occurred while sending email. Please try again later.";
-      this.loading = false;
-     }
-     
+      (responce) => {
+        // this.loading = false;
+        //count down functionality
+        this.countDownTimer();
+        this.successMessage = "Email sent successfully.";
+      },
+      (error) => {
+        this.errorMessage =
+          "An error occurred while sending email. Please try again later.";
+        this.loading = false;
+        this.emailSentingFormButton = "Send email";
+      }
     );
   }
 
-  clearSuccessMessage(){
-    this.successMessage = null;
-    
+  countDownTimer() {
+    this.countDown = 60;
+    let interval = setInterval(() => {
+      this.countDown--;
+
+      if (this.countDown > 0) {
+        this.emailSentingFormButton = "Resend email in " + this.countDown + "s";
+      } else {
+        clearInterval(interval); // Stop the countdown
+        this.emailSentingFormButton = "Resend email";
+        this.loading = false;
+      }
+    }, 1000);
+    // this.loading = false;
   }
 
+  onInputClear(value: string) {
+    if (!this.email) {
+      this.errorMessage = null;
+      this.successMessage = null;
+      this.emailSentingFormButton = "Send Email";
+      this.countDown = 0;
+    }
+  }
 }
