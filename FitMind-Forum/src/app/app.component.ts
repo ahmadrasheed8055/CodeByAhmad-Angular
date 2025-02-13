@@ -11,12 +11,14 @@ import { HeroComponent } from "./website/hero/hero.component";
 import { LoginComponent } from "./website/auth/login/login.component";
 import { RegisterComponent } from "./website/auth/register/register.component";
 import { EmailVarificationComponent } from "./website/auth/emailVarification/emailVarification.component";  // Import this
+import { HomeComponent } from './website/home/home.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, FooterComponent, CategoriesComponent, HttpClientModule, HeroComponent, LoginComponent, RegisterComponent, EmailVarificationComponent],
-  templateUrl: './app.component.html',
+  imports: [HomeComponent,RouterOutlet, NavbarComponent, FooterComponent, CategoriesComponent, HttpClientModule, HeroComponent, LoginComponent, RegisterComponent, EmailVarificationComponent],
+
+templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {

@@ -43,8 +43,10 @@ export class MasterService {
   sendRegistrationEmail(email: string) {
 
     // debugger;
-    const url = this.API_URL + this.SEND_EMAIL_API + encodeURIComponent(email); 
+    const url = this.API_URL + this.SEND_EMAIL_API + encodeURIComponent(email);
     return this.http.post(url, {});
-    
+
   }
+
+
 }
