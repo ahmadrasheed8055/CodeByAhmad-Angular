@@ -2,7 +2,7 @@ import { ICategories } from "./../Model/categories";
 
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-// i was missing this import statement in app.config.ts file , add this into the config file
+// it was missing this import statement in app.config.ts file , add this into the config file
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 
@@ -38,15 +38,27 @@ export class MasterService {
   }
 
   //=====Email Varification API=====
-  SEND_EMAIL_API = "EmailSending?receptor=";
+  SEND_EMAIL_API = "EmailSending/send-email?receptor=";
 
   sendRegistrationEmail(email: string) {
 
     // debugger;
     const url = this.API_URL + this.SEND_EMAIL_API + encodeURIComponent(email);
+
     return this.http.post(url, {});
 
   }
 
+  //========Validation on emial registration page
+  EMAIL_TOKEN_VALIDATION_API = "EmailSending/validate-email-token";
 
+  validateEmailToken(token: string) {
+    const url = this.API_URL + this.EMAIL_TOKEN_VALIDATION_API + "?token=" + token;
+
+    return this.http.get(url, { });
+  }
 }
+
+/*
+create guard then implement or add in route like array, then add conditions
+*/

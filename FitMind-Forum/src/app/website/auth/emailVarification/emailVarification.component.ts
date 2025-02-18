@@ -1,4 +1,4 @@
-import { Component, OnInit, NgModule, inject } from "@angular/core";
+import { Component, OnInit, NgModule, inject, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
 import { MasterService } from "./../../../Shared/master.service";
@@ -41,8 +41,10 @@ export class EmailVarificationComponent implements OnInit {
     this.errorMessage = null;
     this.successMessage = null;
 
+    const regex = new RegExp(this.emailPattern);
+
     // Trim email input
-    if (!this.email || this.email.trim() === "") {
+    if (!this.email || this.email.trim() === "" || regex.test(this.email.trim()) == false) {
       this.errorMessage = "Please enter a valid email address.";
       this.loading = false;
       this.emailSentingFormButton = "Send email";
@@ -67,7 +69,7 @@ export class EmailVarificationComponent implements OnInit {
   }
 
   countDownTimer() {
-    this.countDown = 60;
+    this.countDown = 10;
     let interval = setInterval(() => {
       this.countDown--;
 
@@ -90,4 +92,6 @@ export class EmailVarificationComponent implements OnInit {
       this.countDown = 0;
     }
   }
+
+ 
 }

@@ -16,7 +16,7 @@ import { HomeComponent } from './website/home/home.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HomeComponent,RouterOutlet, NavbarComponent, FooterComponent, CategoriesComponent, HttpClientModule, HeroComponent, LoginComponent, RegisterComponent, EmailVarificationComponent],
+  imports: [RouterOutlet,  FooterComponent,  HttpClientModule],
 
 templateUrl: './app.component.html',
   styleUrl: './app.component.css'
