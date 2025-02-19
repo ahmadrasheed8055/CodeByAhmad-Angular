@@ -12,9 +12,11 @@ export class RegisterComponent implements OnInit {
   constructor(private route: ActivatedRoute) { }
  
   services = inject(MasterService);
-
+  message: string = '';
   ngOnInit() {
-
+    this.route.queryParams.subscribe((p)=>{
+      this.message = p['message'];
+    })
   }
 
   loginModal:string = '#loginModal';

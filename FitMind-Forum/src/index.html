@@ -9,17 +9,11 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 
   <script>
-    //Check local storage
-    let localS = localStorage.getItem('theme')
-    themeToSet = localS
+    // Set theme to light always
+    let themeToSet = 'light';
 
-    // If local storage is not set, we check the OS preference
-    if (!localS) {
-      themeToSet = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    }
-
-    //Set the correct theme
-    document.documentElement.setAttribute('data-theme', themeToSet)
+    // Set the correct theme
+    document.documentElement.setAttribute('data-theme', themeToSet);
   </script>
 
   <!-- ==============================================

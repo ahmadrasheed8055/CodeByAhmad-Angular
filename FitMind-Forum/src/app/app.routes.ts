@@ -4,6 +4,7 @@ import { AppComponent } from "./app.component";
 import { HomeComponent } from "./website/home/home.component";
 import { authGuard } from './Shared/auth.guard';
 import { emailTokenGuardGuard } from "./Shared/email-token-guard.guard";
+import { ErrorComponent } from "./website/error/error.component";
 
 export const routes: Routes = [
   {
@@ -21,8 +22,11 @@ export const routes: Routes = [
   },
   {
     path: "register",
-    component: RegisterComponent,
-    canActivate: [emailTokenGuardGuard]
-
+    canActivate: [emailTokenGuardGuard],
+    component: RegisterComponent
+  },
+  {
+    path: "error",
+    component:ErrorComponent
   }
 ];

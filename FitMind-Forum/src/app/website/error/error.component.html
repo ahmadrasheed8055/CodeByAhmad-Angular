@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-8 col-md-8 offset-lg-2 offset-md-2 d-flex justify-content-center">
+            <div class="error-content aos-init aos-animate" data-aos="fade-up" data-aos-easing="linear">
+                @if(status == 404){
+
+                    <h1>4<span>0</span>4</h1>
+                    <h2>Sorry Page Was Not Found!</h2>
+                }@else if (status == 500 ) {
+                    <h2>Token not found!</h2>
+                    
+                }@else if (status == 400) {
+                    <h2>Token is missing!</h2>
+
+                }@else{
+                    <h2> {{message}} </h2>
+                }
+                <p>An error occurred while you trying to access the registration page. Please try again later.</p>
+                <a class="btn btn-mint w-100 mt-4"  (click)="goHome()" >Back To Home</a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
