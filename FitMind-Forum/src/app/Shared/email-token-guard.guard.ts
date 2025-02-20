@@ -19,6 +19,7 @@ export const emailTokenGuardGuard: CanActivateFn = (
   const service = inject(MasterService); // Inject the HttpClient service
 
   let message: string = '';
+  let email:string = '';
 
   // debugger;
   // Extract the token from the query parameters
@@ -35,8 +36,10 @@ export const emailTokenGuardGuard: CanActivateFn = (
     map((response: any) => {
       // debugger;
 
-      console.log(response);
-      message = response.message;
+      // console.log(response);
+      // message = response.message;
+      email = response.email;
+      localStorage.setItem('userEmail', email);
       // router.navigate(['/home'], { queryParams: { status: 1 } });
       return true;
     }),

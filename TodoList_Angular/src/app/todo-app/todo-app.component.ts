@@ -1,7 +1,7 @@
 import { ITask } from './../model/tasks';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { MasterService } from '../shared/master.service';
-import { IApiResponse, ITask, Task } from '../model/tasks';
+import { IApiResponse,  Task } from '../model/tasks';
 import { CommonModule, DatePipe, formatDate } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';

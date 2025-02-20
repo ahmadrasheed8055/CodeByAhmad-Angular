@@ -1,53 +1,80 @@
-
-
-  <!-- ==============================================
+<!-- ==============================================
    Main
-  =============================================== -->
-
-
-  <div class="vine-login mt-5">
-    <div class="container">
-
-      <div class="row gy-5 justify-content-center">
-        <div class="col-md-6 col-lg-6 col-xxl-6">
-          <div class="card">
-            <div class="card-body p-4 p-xl-5">
-              <div class="login-header">
-                <h1  class="fitmind-text">Fit Mind</h1>
-                
-                <p class="small mb-4">Join our awesome community.</p>
-              </div>
-              <form>
-                <div class="pb-3">
-                  <label class="form-label">Name</label>
-                  <input type="text" name="Name" class="" placeholder="Rachel Roth">
-                </div>
-                <div class="pb-3">
-                  <label class="form-label">Email address</label>
-                  <input type="text" name="Email" class="" placeholder="name@example.com">
-                </div>
-                <div class="pb-3">
-                  <label class="form-label">Password</label>
-                  <input type="text" name="Password" class="" placeholder="***********'">
-                </div>
-                <div class="pb-3">
-                  <label class="form-label">Confrim Password</label>
-                  <input type="text" name="Password" class="" placeholder="***********'">
-                </div>
-                <div class="form-check m-0 pb-3">
-                  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                  <label class="form-check-label" for="flexCheckDefault">I agree to the <a href="#">terms and
-                      conditions</a></label>
-                </div>
-                <div class="pb-3"><button class="w-100 btn btn-mint">Create account</button></div>
-                <div class="text-center"><small>Already have an account?</small> <a href="login.html"
-                    class="small font-weight-bold">Login</a></div>
-              </form>
+=============================================== -->
+<div class="vine-login mt-5">
+  <div class="container">
+    <div class="row gy-5 justify-content-center">
+      <div class="col-md-6 col-lg-6 col-xxl-6">
+        <div class="card">
+          <div class="card-body p-4 p-xl-5">
+            <div class="login-header text-center">
+              <h1 class="fitmind-text">Fit Mind</h1>
+              <p class="small mb-4">Join our awesome community.</p>
             </div>
+
+            <!-- Form Start -->
+            <form [formGroup]="appForm">
+              <!-- Name Field -->
+              <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input formControlName="userName" type="text" class="form-control" placeholder="Rachel Roth">
+                <!-- Required Validation -->
+                <span class="text-danger small"
+                  *ngIf="appForm.controls['userName'].errors?.['required'] && appForm.controls['userName'].touched">
+                  Username is required.
+                </span>
+
+                <!-- Min Length Validation -->
+                <span class="text-danger small"
+                  *ngIf="appForm.controls['userName'].errors?.['minlength'] && appForm.controls['userName'].touched">
+                  Username must be at least 3 characters long.
+                </span>
+              </div>
+
+              <!-- Email Field (Read-Only) -->
+              <div class="mb-3">
+                <label class="form-label">Email address</label>
+                <input formControlName="email" type="email" class="form-control" placeholder="name@example.com"
+                  readonly>
+              </div>
+
+              <!-- Password Field -->
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input formControlName="password" type="password" class="form-control" placeholder="***********">
+                <!-- Error Messages -->
+                <span class="text-danger small"
+                  *ngIf="appForm.controls['password'].errors?.['required'] && appForm.controls['password'].touched">
+                  Password is required.
+                </span>
+
+                <span class="text-danger small"
+                  *ngIf="appForm.controls['password'].errors?.['minlength'] && appForm.controls['password'].touched">
+                  Password must be at least 6 characters long.
+                </span>
+
+                <span class="text-danger small"
+                  *ngIf="appForm.controls['password'].errors?.['pattern'] && appForm.controls['password'].touched">
+                  Password must contain at least one uppercase letter and one number.
+                </span>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="mb-3">
+                <button type="submit" class="w-100 btn btn-mint" [disabled]="appForm.invalid">Create Account</button>
+              </div>
+
+              <!-- Login Redirect -->
+              <div class="text-center">
+                <small>Already have an account?</small>
+                <a routerLink="/login" class="small font-weight-bold">Login</a>
+              </div>
+            </form>
+            <!-- Form End -->
+
           </div>
         </div>
       </div>
-
     </div>
   </div>
-
+</div>
