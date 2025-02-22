@@ -33,7 +33,7 @@ export interface IAppUser {
       this.isDeleted = false;
       this.joinedDate = new Date();
       this.updatedAt = new Date();
-      this.status = 0;
+      this.status = 1;
     }
   }
   

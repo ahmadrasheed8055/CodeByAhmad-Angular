@@ -5,6 +5,7 @@ import { HttpClient } from "@angular/common/http";
 // it was missing this import statement in app.config.ts file , add this into the config file
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
+import { AppUser, IAppUser } from "../Model/AppUsers";
 
 @Injectable({
   providedIn: "root",
@@ -56,6 +57,14 @@ export class MasterService {
     const url = this.API_URL + this.EMAIL_TOKEN_VALIDATION_API + "?token=" + token;
 
     return this.http.get(url, { });
+  }
+
+  //==========User registration==============
+  APP_USER_REGISTRATION_URL = "AppUsers/add-app-user";
+
+  addAppUser(userObj: AppUser):Observable<IAppUser>{
+    const url = this.API_URL + this.APP_USER_REGISTRATION_URL;
+    return this.http.post<IAppUser>(url, userObj);
   }
 }
 

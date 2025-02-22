@@ -1,5 +1,5 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MasterService } from '../../../Shared/master.service';
 import { AppUser, IAppUser } from '../../../Model/AppUsers';
 import {
@@ -10,6 +10,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { response } from 'express';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +23,7 @@ export class RegisterComponent implements OnInit {
   constructor(private route: ActivatedRoute) {
     this.user = new AppUser();
   }
-  user: IAppUser;
+  user: AppUser;
 
   appForm!: FormGroup;
 
@@ -30,13 +31,16 @@ export class RegisterComponent implements OnInit {
     this.user.email = localStorage.getItem('userEmail') || '';
 
     this.appForm = new FormGroup({
-      userName: new FormControl(this.user.username, [Validators.required, Validators.minLength(3)]),
-      email: new FormControl(this.user.email),
-      password: new FormControl(this.user.passwordHash, [
+      userName: new FormControl('', [
         Validators.required,
-        Validators.minLength(6),  // Minimum length of 6 characters
-        Validators.pattern('^(?=.*[A-Z])(?=.*\\d).+$') // At least one uppercase letter & one number
-      ])
+        Validators.minLength(3),
+      ]),
+      email: new FormControl(this.user.email),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6), // Minimum length of 6 characters
+        Validators.pattern('^(?=.*[A-Z])(?=.*\\d).+$'), // At least one uppercase letter & one number
+      ]),
     });
 
     this.route.queryParams.subscribe((p) => {
@@ -47,5 +51,33 @@ export class RegisterComponent implements OnInit {
   services = inject(MasterService);
   message: string = '';
   loginModal: string = '#loginModal';
+  router = inject(Router);
   //user object
+
+  
+
+
+  addUser() {
+    const formData = this.appForm.value;
+    const userEmail = localStorage.getItem('userEmail');
+    const newUser: AppUser = {
+      username: formData.userName,
+      email: userEmail || '',
+      passwordHash: formData.password,
+      emailConfirmed: true,
+      isDeleted: false,
+      joinedDate: new Date(),
+      updatedAt: new Date(),
+      status: 2,
+    };
+    this.services.addAppUser(newUser).subscribe(
+      (next: any) => {
+        console.log('User Added!');
+        this.router.navigateByUrl('/home');
+      },
+      (error: any) => {
+        console.log(error + 'Error adding this users');
+      }
+    );
+  }
 }

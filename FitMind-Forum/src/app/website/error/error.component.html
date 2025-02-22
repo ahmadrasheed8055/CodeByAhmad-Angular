@@ -6,13 +6,12 @@
                 @if(status == 404){
 
                     <h1>4<span>0</span>4</h1>
-                    <h2>Sorry Page Was Not Found!</h2>
+                    <h2>Token not found!</h2>
                 }@else if (status == 500 ) {
                     <h2>Token not found!</h2>
                     
                 }@else if (status == 400) {
                     <h2>Token is missing!</h2>
-
                 }@else{
                     <h2> {{message}} </h2>
                 }

@@ -5,13 +5,13 @@
 
 
     <li class="mb-3">
-      <h5 data-aos="fade-up" data-aos-easing="linear">Categories</h5>
+      <h5 data-aos-easing="linear">Categories</h5>
     </li>
 
     <!-- Error handling -->
     @if (!this.categories) {
 
-    <li class="nav-item" data-aos="fade-up" data-aos-easing="linear">
+    <li class="nav-item" data-aos-easing="linear">
       <span class="nav-link-text">Not Fount </span>
     </li>
 
@@ -25,12 +25,12 @@
     @for (item of this.categories; track $index) {
     @if (item.isActive) {
 
-      <li class="nav-item" data-aos="fade-up" data-aos-easing="linear">
-        <a class="nav-link" href="index.html">
-          <span class="nav-icon-wrap"><img src=" {{item.imageUrl}} " class="img-fluid rounded-2" alt="Category"></span>
-          <span class="nav-link-text"> {{item.name}} </span>
-        </a>
-      </li>
+    <li class="nav-item" data-aos="fade-up" data-aos-easing="linear">
+      <a class="nav-link" href="index.html">
+        <span class="nav-icon-wrap"><img src=" {{item.imageUrl}} " class="img-fluid rounded-2" alt="Category"></span>
+        <span class="nav-link-text"> {{item.name}} </span>
+      </a>
+    </li>
 
     }
     }
