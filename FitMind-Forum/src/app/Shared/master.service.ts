@@ -66,6 +66,9 @@ export class MasterService {
     const url = this.API_URL + this.APP_USER_REGISTRATION_URL;
     return this.http.post<IAppUser>(url, userObj);
   }
+
+
+  
 }
 
 /*

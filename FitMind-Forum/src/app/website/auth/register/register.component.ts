@@ -11,6 +11,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { response } from 'express';
+import { AuthService } from '../../../Shared/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -49,13 +50,11 @@ export class RegisterComponent implements OnInit {
   }
 
   services = inject(MasterService);
+  authServices = inject(AuthService);
   message: string = '';
   loginModal: string = '#loginModal';
   router = inject(Router);
   //user object
-
-  
-
 
   addUser() {
     const formData = this.appForm.value;
@@ -72,6 +71,8 @@ export class RegisterComponent implements OnInit {
     };
     this.services.addAppUser(newUser).subscribe(
       (next: any) => {
+        const encryptedUser = this.authServices.encryptUser(newUser);
+        sessionStorage.setItem('appUser', encryptedUser);
         console.log('User Added!');
         this.router.navigateByUrl('/home');
       },
@@ -80,4 +81,11 @@ export class RegisterComponent implements OnInit {
       }
     );
   }
+
+  logout(){
+    sessionStorage.removeItem('appUser');
+  }
+
+ 
+
 }

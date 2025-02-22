@@ -1,6 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from '@angular/router';
+import { AuthService } from "../../Shared/auth.service";
 
 @Component({
   selector: "app-navbar",
@@ -15,5 +16,11 @@ export class NavbarComponent {
   emailVarificationModal: string = "#emailVarificationModal";
   test() {
     debugger;
+  }
+  authServices = inject(AuthService);
+
+
+  logout(){
+    sessionStorage.removeItem('appUser');
   }
 }

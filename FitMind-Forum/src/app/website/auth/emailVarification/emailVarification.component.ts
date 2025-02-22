@@ -1,31 +1,31 @@
-import { Component, OnInit, NgModule, inject, Input } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { CommonModule } from "@angular/common";
-import { MasterService } from "./../../../Shared/master.service";
+import { Component, OnInit, NgModule, inject, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MasterService } from './../../../Shared/master.service';
 // import { BrowserModule } from "@angular/platform-browser";
 
 @Component({
-  selector: "app-emailVarification",
+  selector: 'app-emailVarification',
   standalone: true,
   imports: [FormsModule, CommonModule],
 
-  templateUrl: "./emailVarification.component.html",
-  styleUrls: ["./emailVarification.component.css"],
+  templateUrl: './emailVarification.component.html',
+  styleUrls: ['./emailVarification.component.css'],
 })
 export class EmailVarificationComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
-  loginModal: string = "#loginModal";
+  loginModal: string = '#loginModal';
 
-  email: string = "";
+  email: string = '';
 
   loading: boolean = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
-  emailSentingFormButton: string = "Send Email";
+  emailSentingFormButton: string = 'Send Email';
   countDown: number = 0;
-  emailPattern: string = "^[a-zA-Z0-9._%+-]+@gmail\.com$";
+  emailPattern: string = '^[a-zA-Z0-9._%+-]+@gmail.com$';
 
   service = inject(MasterService);
 
@@ -37,17 +37,21 @@ export class EmailVarificationComponent implements OnInit {
   sendEmail() {
     // debugger;
     this.loading = true;
-    this.emailSentingFormButton = "Sending...";
+    this.emailSentingFormButton = 'Sending...';
     this.errorMessage = null;
     this.successMessage = null;
 
     const regex = new RegExp(this.emailPattern);
 
     // Trim email input
-    if (!this.email || this.email.trim() === "" || regex.test(this.email.trim()) == false) {
-      this.errorMessage = "Please enter a valid email address.";
+    if (
+      !this.email ||
+      this.email.trim() === '' ||
+      regex.test(this.email.trim()) == false
+    ) {
+      this.errorMessage = 'Please enter a valid email address.';
       this.loading = false;
-      this.emailSentingFormButton = "Send email";
+      this.emailSentingFormButton = 'Send email';
 
       return;
     }
@@ -56,14 +60,23 @@ export class EmailVarificationComponent implements OnInit {
       (responce) => {
         // this.loading = false;
         //count down functionality
+        console.log(responce);
+        // debugger;
         this.countDownTimer();
-        this.successMessage = "Email sent successfully.";
+        this.successMessage = 'Email sent successfully.';
       },
       (error) => {
-        this.errorMessage =
-          "An error occurred while sending email. Please try again later.";
+        // debugger;
+        console.log(error);
         this.loading = false;
-        this.emailSentingFormButton = "Send email";
+        this.emailSentingFormButton = 'Send email';
+        if (error.status === 400) {
+          this.errorMessage = 'Email address is already registered.';
+          return;
+        }
+        this.errorMessage =
+          'An error occurred while sending email. Please try again later.';
+        return;
       }
     );
   }
@@ -74,10 +87,10 @@ export class EmailVarificationComponent implements OnInit {
       this.countDown--;
 
       if (this.countDown > 0) {
-        this.emailSentingFormButton = "Resend email in " + this.countDown + "s";
+        this.emailSentingFormButton = 'Resend email in ' + this.countDown + 's';
       } else {
         clearInterval(interval); // Stop the countdown
-        this.emailSentingFormButton = "Resend email";
+        this.emailSentingFormButton = 'Resend email';
         this.loading = false;
       }
     }, 1000);
@@ -88,10 +101,8 @@ export class EmailVarificationComponent implements OnInit {
     if (!this.email) {
       this.errorMessage = null;
       this.successMessage = null;
-      this.emailSentingFormButton = "Send Email";
+      this.emailSentingFormButton = 'Send Email';
       this.countDown = 0;
     }
   }
-
- 
 }

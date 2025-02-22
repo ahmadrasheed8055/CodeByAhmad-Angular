@@ -39,9 +39,13 @@ Navbar
 
         </div>
       </div>
+      @if (authServices.isLoggedIn()) {
+      <a href="" class="btn btn-md btn-mint rounded-pill" (click)="logout()" >Logout</a>
+      }@else {
 
-      <a href="" class="btn btn-md btn-mint rounded-pill" data-bs-toggle="modal"
-        [attr.data-bs-target]="loginModal">Login</a>
+        <a href="" class="btn btn-md btn-mint rounded-pill" data-bs-toggle="modal"
+          [attr.data-bs-target]="loginModal">Login</a>
+      }
       <div class="header-end d-flex justify-content-end">
         <!-- Translate dropdown START -->
         <div class="nav-item dropdown h-col d-none d-lg-block">

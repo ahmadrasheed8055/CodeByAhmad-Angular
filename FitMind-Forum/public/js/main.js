@@ -67,8 +67,8 @@ $(document).ready(function () {
 			}
 		}
 
-		//Add event listener for the theme switcher
-		document.querySelector('#theme-switcher').addEventListener('click', switchTheme);
+		// //Add event listener for the theme switcher
+		// document.querySelector('#theme-switcher').addEventListener('click', switchTheme);
 
 		/* ==========================================================================
 		AOS Animations
