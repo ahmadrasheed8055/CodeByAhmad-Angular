@@ -25,14 +25,22 @@ export class CategoriesComponent implements OnInit {
   service = inject(MasterService);
   categories: ICategories[] = [];
   errorMessage: string = '';
+  loading: boolean = false;
 
   getAllCategories() {
+    this.loading = true;
     this.service.getAllCategories().subscribe(
+      
       (data: any) => {
         this.categories = data;
-
+        this.loading = false;
       },(error)=>{
-        console.error('Error: ', error);
+        this.loading = false;
+        if(error.status == 404){
+          this.errorMessage = 'No categories found';
+          return;
+        }
+        // console.error('Error: ', error);
 
         this.errorMessage = error;
       }

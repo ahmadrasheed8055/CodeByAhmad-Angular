@@ -9,13 +9,13 @@ Navbar
 
 
 <header class="vine-navbar fixed-top">
-  <nav class="navbar navbar-expand-lg">
+  <nav class="navbar navbar-expand-lg py-0">
     <div class="container align-items-center">
       <div class="logo">
         <a class="navbar-brand" type="button" (click)="test()">
           <!-- <img class="logo-dark" src="img/logo dark.png" alt="Logo"> -->
 
-          <h1  class="fitmind-text">Fit Mind</h1>
+          <h1 class="fitmind-text">Fit Mind</h1>
         </a>
       </div>
       <div class="offcanvas nav-offcanvas offcanvas-start" tabindex="-1" id="offcanvas_Header_01"
@@ -40,39 +40,118 @@ Navbar
         </div>
       </div>
       @if (authServices.isLoggedIn()) {
-      <a href="" class="btn btn-md btn-mint rounded-pill" (click)="logout()" >Logout</a>
+      <div class="header-end d-flex justify-content-end">
+
+        <!--  Add Post Start -->
+        <div class="h-col h-plus-toggle">
+          <a class="btn btn-mint rounded-circle" href="/">
+            <i class="bi bi-plus-lg"></i>
+          </a>
+        </div>
+        <!-- Add Post END -->
+
+
+
+        <!-- Account -->
+        <div class="nav-item ms-3 dropdown h-col">
+          <a href="#" id="navbarShoppingCartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+            data-bs-dropdown-animation="">
+            <div class="d-flex">
+              <img class="avatar-sm avatar-img rounded-circle" src="img/avatar/1.jpg" alt="Image Description">
+              <div class="profile-text d-none d-sm-block">
+                <div class="profile-head text-muted">Hello,</div>
+                <div class="text-nowrap"> {{user.username}} </div>
+              </div>
+            </div>
+          </a>
+
+          <div class="dropdown-menu dropdown-animation dropdown-menu-end dropdown-menu-size-md p-2 shadow-lg border-0"
+            aria-labelledby="navbarShoppingCartDropdown" style="min-width: 16rem;">
+            <!-- <a class="d-flex align-items-center p-2" href="#">
+              <div class="flex-shrink-0">
+                <img class="avatar" src="img/avatar/1.jpg" alt="Image Description">
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <span class="d-block fw-semibold">{{user.username}} </span>
+                <span class="d-block text-muted small">{{user.email}}</span>
+              </div>
+            </a> -->
+             <a class="dropdown-item" href="#">
+              <span class="dropdown-item-icon">
+                <i class="bi-person"></i>
+              </span> View Profile
+            </a>
+
+            <a class="dropdown-item" href=''><span class="dropdown-item-icon"><i class="bi-person"></i></span>
+              Dashboard</a>
+            <!-- <a class="dropdown-item" href="dash-settings.html"><span class="dropdown-item-icon"><i class="bi bi-gear"></i></span> Settings </a> -->
+            <!-- <a class="dropdown-item" href="dash-bookmarks.html"><span class="dropdown-item-icon"><i class="bi-bookmarks"></i></span> Bookmarks </a> -->
+            <!-- <a class="dropdown-item" href="dash-subscriptions.html"><span class="dropdown-item-icon"><i class="bi-wallet2"></i></span> Subscriptions</a> -->
+
+            <div class="dropdown-divider"></div>
+
+           
+            <a class="dropdown-item" href="#">
+              <span class="dropdown-item-icon">
+                <i class="bi-question-circle"></i>
+              </span> Help
+            </a>
+            <a (click)="logout()" class="dropdown-item">
+              <span class="dropdown-item-icon">
+                <i class="bi-box-arrow-right"></i>
+              </span> Log out
+            </a>
+          </div>
+        </div><!-- End Account -->
+
+        <!-- Mobile Toggle -->
+        <div class="h-col h-toggler d-xl-none">
+          <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_Header_01"
+            aria-controls="offcanvas_Header_01">
+            <span class="px-navbar-toggler-icon"></span>
+          </button>
+        </div>
+      </div>
       }@else {
 
-        <a href="" class="btn btn-md btn-mint rounded-pill" data-bs-toggle="modal"
-          [attr.data-bs-target]="loginModal">Login</a>
-      }
-      <div class="header-end d-flex justify-content-end">
-        <!-- Translate dropdown START -->
-        <div class="nav-item dropdown h-col d-none d-lg-block">
-          <a class="h-translate-icon h-icon" href="#" id="languageDropdown" role="button" data-bs-auto-close="outside"
-            data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-three-dots"></i>
 
-          </a>
-          <ul class="dropdown-menu dropdown-animation dropdown-menu-end min-w-auto mt-2"
-            aria-labelledby="languageDropdown">
 
-            <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal"><i
-                  class="bi bi-box-arrow-in-right me-2"></i>Login</a> </li>
 
-            <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="emailVarificationModal"><i
-                  class="bi bi-person-plus me-2"></i>Register</a>
-            </li>
-
-            <li> <a class="dropdown-item me-4" href="#"><i class="bi bi-envelope me-2"></i>Contact</a> </li>
-            <li> <a class="dropdown-item me-4" routerLink="/register"><i class="bi bi-envelope me-2"></i>Registration page</a> </li>
-            <li> <!-- Button trigger modal -->
-
-            </li>
-          </ul>
+      <a href="" class="btn btn-md btn-mint rounded-pill" data-bs-toggle="modal"
+        [attr.data-bs-target]="loginModal">Login</a>
+        <div class="header-end d-flex justify-content-end">
+          <!-- Translate dropdown START -->
+          <div class="nav-item dropdown h-col d-none d-lg-block">
+            <a class="h-translate-icon h-icon" href="#" id="languageDropdown" role="button" data-bs-auto-close="outside"
+              data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-three-dots"></i>
+  
+            </a>
+            <ul class="dropdown-menu dropdown-animation dropdown-menu-end min-w-auto mt-2"
+              aria-labelledby="languageDropdown">
+              @if (authServices.isLoggedIn()) {
+              <li> <a class="dropdown-item me-4" href="" (click)="logout()"><i
+                    class="bi bi-box-arrow-in-right me-2"></i>Logout</a>
+              </li>
+              }@else {
+              <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal"><i
+                    class="bi bi-box-arrow-in-right me-2"></i>Login</a> </li>
+  
+              <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal"
+                  [attr.data-bs-target]="emailVarificationModal"><i class="bi bi-person-plus me-2"></i>Register</a>
+              </li>
+  
+              <li> <a class="dropdown-item me-4" href="#"><i class="bi bi-envelope me-2"></i>Contact</a> </li>
+              }
+              <!-- <li> <a class="dropdown-item me-4" routerLink="/register"><i class="bi bi-envelope me-2"></i>Registration page</a> </li>
+              <li> Button trigger modal -->
+  
+              <!-- </li> -->
+            </ul>
+          </div>
+          <!-- Translate dropdown END -->
         </div>
-        <!-- Translate dropdown END -->
-      </div>
+      }
 
 
     </div>

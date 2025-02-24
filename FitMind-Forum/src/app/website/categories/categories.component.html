@@ -1,41 +1,44 @@
 <div class="vine-categories mb-4 pb-3">
-
   <ul class="navbar-nav flex-column">
 
-
-
+    <!-- Dropdown Button for Categories -->
     <li class="mb-3">
-      <h5 data-aos-easing="linear">Categories</h5>
+      <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center" 
+              data-bs-toggle="collapse" data-bs-target="#categoriesDropdown" aria-expanded="false">
+        Categories
+        <i class="bi bi-chevron-down"></i>
+      </button>
     </li>
 
-    <!-- Error handling -->
-    @if (!this.categories) {
+    <!-- Categories List -->
+    <div id="categoriesDropdown" class="collapse show">
+      <!-- Error Handling -->
+      @if (!this.categories) {
+        <li class="nav-item" data-aos-easing="linear">
+          <span class="nav-link-text">Not Found</span>
+        </li>
+      }
+      @else if (this.errorMessage) {
+        <span> {{this.errorMessage}} </span>
+      }
+      @if(loading){
+        <div class="spinner-border align-items-center" role="status">
+          <span class="sr-only"></span>
+        </div>
+      }
 
-    <li class="nav-item" data-aos-easing="linear">
-      <span class="nav-link-text">Not Fount </span>
-    </li>
-
-    }@else if (this.errorMessage) {
-
-    <span> {{this.errorMessage}} </span>
-    }
-
-
-
-    @for (item of this.categories; track $index) {
-    @if (item.isActive) {
-
-    <li class="nav-item" data-aos="fade-up" data-aos-easing="linear">
-      <a class="nav-link" href="index.html">
-        <span class="nav-icon-wrap"><img src=" {{item.imageUrl}} " class="img-fluid rounded-2" alt="Category"></span>
-        <span class="nav-link-text"> {{item.name}} </span>
-      </a>
-    </li>
-
-    }
-    }
-
-
+      @for (item of this.categories; track $index) {
+      @if (item.isActive) {
+        <li class="nav-item" data-aos="fade-up" data-aos-easing="linear">
+          <a class="nav-link" href="index.html">
+            <span class="nav-icon-wrap">
+              <img src="{{item.imageUrl}}" class="img-fluid rounded-2" alt="Category">
+            </span>
+            <span class="nav-link-text"> {{item.name}} </span>
+          </a>
+        </li>
+      }
+      }
+    </div>
   </ul>
-
 </div><!--/Vine-categories-->
