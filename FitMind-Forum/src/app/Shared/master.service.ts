@@ -5,7 +5,7 @@ import { HttpClient } from "@angular/common/http";
 // it was missing this import statement in app.config.ts file , add this into the config file
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { AppUser, IAppUser } from "../Model/AppUsers";
+import { AppUser, IAppUser, UserLoginDTO } from "../Model/AppUsers";
 
 @Injectable({
   providedIn: "root",
@@ -67,7 +67,16 @@ export class MasterService {
     return this.http.post<IAppUser>(url, userObj);
   }
 
+  //==========User login==============
+  APP_USER_LOGIN_URL = "AppUsers/login-user";
 
+  loginUser(userlogin: UserLoginDTO):Observable<AppUser>{
+    // debugger; 
+    const url = this.API_URL + this.APP_USER_LOGIN_URL ;
+    return this.http.post<AppUser>(url, userlogin,{
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
   
 }
 

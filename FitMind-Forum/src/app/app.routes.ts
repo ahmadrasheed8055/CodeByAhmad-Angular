@@ -17,10 +17,6 @@ export const routes: Routes = [
     component: HomeComponent,
   },
   {
-    path: "app",
-    component: AppComponent,
-  },
-  {
     path: "register",
     canActivate: [emailTokenGuardGuard],
     component: RegisterComponent

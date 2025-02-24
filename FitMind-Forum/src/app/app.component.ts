@@ -16,7 +16,7 @@ import { HomeComponent } from './website/home/home.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet,  FooterComponent,  HttpClientModule],
+  imports: [RouterOutlet, FooterComponent, HttpClientModule],
 
 templateUrl: './app.component.html',
   styleUrl: './app.component.css'

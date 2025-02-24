@@ -35,6 +35,17 @@ export interface IAppUser {
       this.updatedAt = new Date();
       this.status = 1;
     }
+
+  }
+
+  //api response model prop and frontend model prop should be same
+  export class UserLoginDTO{
+    Email: string;
+    HashedPassword: string;
+    constructor(){
+      this.Email = "";
+      this.HashedPassword = "";
+    }
   }
   
   

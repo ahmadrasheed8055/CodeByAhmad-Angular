@@ -26,6 +26,8 @@ export class AuthService {
     return JSON.parse(decryptedUser);
   }
 
+  
+
   //checking user is logged in or not
   isLoggedIn() {
     const user = sessionStorage.getItem('appUser');

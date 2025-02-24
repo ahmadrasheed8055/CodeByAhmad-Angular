@@ -77,7 +77,7 @@ export class RegisterComponent implements OnInit {
         this.router.navigateByUrl('/home');
       },
       (error: any) => {
-        console.log(error + 'Error adding this users');
+        console.log(error + 'Error adding this user');
       }
     );
   }
