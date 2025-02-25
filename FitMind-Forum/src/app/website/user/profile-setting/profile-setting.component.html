@@ -1,0 +1,659 @@
+<section class="dashboard">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-sm-12 col-lg-3 mb-5">
+
+        <div class="dash-sidebar position-sticky aos-init aos-animate" data-aos="fade-right" data-aos-easing="linear">
+
+          <div class="ps-3 d-flex align-items-center">
+            <div class="media align-items-center">
+              <div class="media-head me-2">
+                <div class="avatar avatar-lg">
+                  <img src="img/avatar/1.jpg" alt="user" class="avatar-img rounded-circle">
+                </div>
+              </div>
+              <div class="media-body">
+                <h5> {{user.username}} </h5>
+                <p class="small mb-0"> {{joinDate }} </p>
+              </div>
+            </div>
+
+            <!-- Responsive navbar toggler -->
+            <button class="navbar-toggler ms-auto d-block d-xl-none" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav2" aria-controls="navbarNav2" aria-expanded="false"
+              aria-label="Toggle navigation">
+              <span class="navbar-toggler-animation">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </button>
+          </div>
+
+          <div class="navbar-collapse d-xl-block collapse" id="navbarNav2">
+            <ul class="navbar-nav flex-column">
+              <li class="nav-info">Dashboard </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-overview.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-person-check"></i></span>
+                  <span class="nav-link-text">Overview</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-addpost.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-plus-circle-dotted"></i></span>
+                  <span class="nav-link-text">Add Post</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-posts.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-journals"></i></span>
+                  <span class="nav-link-text">Posts</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-comments.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-chat-left-dots"></i></span>
+                  <span class="nav-link-text">Comments</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-bookmarks.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-bookmarks"></i></span>
+                  <span class="nav-link-text">Bookmarks</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-messages.html">
+                  <span class="nav-icon-wrap"><i class="b bi-chat-left-text"></i></span>
+                  <span class="nav-link-text">Messages</span>
+                  <span class="badge bg-red ms-auto">4</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-notifications.html">
+                  <span class="nav-icon-wrap"><i class="b bi-bell"></i></span>
+                  <span class="nav-link-text">Notifications</span>
+                  <span class="badge bg-red ms-auto">12</span>
+                </a>
+              </li>
+              <li class="nav-info">Account </li>
+              <li class="nav-item active">
+                <a class="nav-link" href="dash-settings.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-gear"></i></span>
+                  <span class="nav-link-text">Settings</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-plans.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-credit-card-2-front"></i></span>
+                  <span class="nav-link-text">Plans</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-subscriptions.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-arrow-repeat"></i></span>
+                  <span class="nav-link-text">Subscriptions</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="dash-invoice.html">
+                  <span class="nav-icon-wrap"><i class="bi bi-receipt"></i></span>
+                  <span class="nav-link-text">Invoice</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="login.html">
+                  <span class="nav-icon-wrap"><i class="b bi-power"></i></span>
+                  <span class="nav-link-text">Logout</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+
+        </div>
+
+      </div><!--/col-lg-3-->
+
+      <div class="col-12 col-lg-9">
+
+        <h4 class="mb-4 aos-init aos-animate" data-aos="fade-down" data-aos-easing="linear"><i
+            class="bi bi-gear me-2"></i>Settings</h4>
+        <div class="row g-4 aos-init aos-animate" data-aos="fade-up" data-aos-easing="linear">
+          <div class="col-12">
+            <div class="vine-tabs pb-0 px-2 px-lg-0 rounded-top">
+              <ul class="nav nav-tabs nav-bottom-line nav-responsive border-0 nav-justified" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link mb-0 active" data-bs-toggle="tab" href="#tab-1" aria-selected="true" role="tab">
+                    <i class="bi bi-gear fa-fw me-2"></i>Edit Profile
+                  </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-2" aria-selected="false" role="tab"
+                    tabindex="-1">
+                    <i class="bi bi-bell fa-fw me-2"></i>Notification Settings
+                  </a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-3" aria-selected="false" role="tab"
+                    tabindex="-1">
+                    <i class="bi bi-lock me-2"></i> Security Settings
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12">
+            <div class="tab-content aos-init aos-animate" data-aos="fade-up" data-aos-easing="linear">
+              <div class="tab-pane active show" id="tab-1" role="tabpanel">
+
+                <div class="dashboard-card">
+                  <div class="dashboard-header">
+                    <h4>Profile Details</h4>
+                  </div>
+                  <div class="dashboard-body">
+
+                    <div class="dashboard-user-box rounded-3 mb-5">
+                      <div class="d-flex align-items-center"><img class="rounded-2" src="img/avatar/1.jpg" alt="User">
+                        <div class="ps-4">
+                          <input  class="btn btn-mint btn-shadow btn-sm mb-2" type="file" (change)="onUpload($event)">
+                          <!-- <span class="text-danger small"
+                          *ngIf="imageErrorMessage != '' ">
+                         {{imageErrorMessage}}
+                        </span> -->
+                          <!-- <button class="btn btn-mint btn-shadow btn-sm mb-2" type="button">
+                            <i class="bi bi-arrow-repeat me-2"></i>Change <span
+                              class="d-none d-sm-inline">avatar</span></button>
+                          <div class="p mb-0 fs-sm text-muted">Upload JPG, GIF or PNG image. 300 x 300 required.</div> -->
+                        </div>
+                      </div>
+                    </div><!--/dashboard-user-box-->
+
+
+                    <form>
+                      <div class="row g-3">
+                        <div class="col-sm-6">
+                          <label class="form-label">First Name</label>
+                          <input type="text" name="First" placeholder="First Name">
+                        </div>
+                        <div class="col-sm-6">
+                          <label class="form-label">Last Name</label>
+                          <input type="text" name="Last" placeholder="Last Name">
+                        </div>
+                        <div class="col-sm-6">
+                          <label class="form-label">Phone</label>
+                          <input type="text" name="Phone" placeholder="Phone">
+                        </div>
+                        <div class="col-sm-6">
+                          <label class="form-label">Email</label>
+                          <input type="text" name="email" [value]="user.email" readonly>
+                        </div>
+                        <div class="col-sm-12">
+                          <label>User Name</label>
+                          <span class="d-block text-muted fs-sm">www.apexcodestudios.com/</span>
+                          <input type="text" placeholder="abram_marvynn">
+                        </div>
+                        <div class="col-lg-12">
+                          <div class="mb-3">
+                            <label class="form-label">Profile Visibility</label>
+
+                            <div class="mt-1">
+                              <div class="form-check form-check-inline">
+                                <input type="radio" class="form-check-input" name="visibilityPublic">
+                                <label class="form-check-label">Public</label>
+                              </div>
+
+                              <div class="form-check form-check-inline ms-3">
+                                <input type="radio" class="form-check-input" name="visibilityPrivate">
+                                <label class="form-check-label">Private</label>
+                              </div>
+                            </div>
+
+                            <small class="form-text text-muted mt-2">
+                              Making your profile public means anyone can see your information
+                            </small>
+                          </div>
+                        </div>
+                        <div class="col-sm-12">
+                          <label class="form-label">Bio</label>
+                          <textarea rows="5" placeholder="Bio"></textarea>
+                        </div>
+                        <div class="col-sm-6">
+                          <label>Location</label>
+                          <input type="text" placeholder="Ex.San Francisco, CA">
+                        </div>
+                        <div class="col-sm-6">
+                          <label>Country</label>
+                          <select>
+                            <option value="country">Country</option>
+                            <option value="AFG">Afghanistan</option>
+                            <option value="ALA">Ƭand Islands</option>
+                            <option value="ALB">Albania</option>
+                            <option value="DZA">Algeria</option>
+                            <option value="ASM">American Samoa</option>
+                            <option value="AND">Andorra</option>
+                            <option value="AGO">Angola</option>
+                            <option value="AIA">Anguilla</option>
+                            <option value="ATA">Antarctica</option>
+                            <option value="ATG">Antigua and Barbuda</option>
+                            <option value="ARG">Argentina</option>
+                            <option value="ARM">Armenia</option>
+                            <option value="ABW">Aruba</option>
+                            <option value="AUS">Australia</option>
+                            <option value="AUT">Austria</option>
+                            <option value="AZE">Azerbaijan</option>
+                            <option value="BHS">Bahamas</option>
+                            <option value="BHR">Bahrain</option>
+                            <option value="BGD">Bangladesh</option>
+                            <option value="BRB">Barbados</option>
+                            <option value="BLR">Belarus</option>
+                            <option value="BEL">Belgium</option>
+                            <option value="BLZ">Belize</option>
+                            <option value="BEN">Benin</option>
+                            <option value="BMU">Bermuda</option>
+                            <option value="BTN">Bhutan</option>
+                            <option value="BOL">Bolivia, Plurinational State of</option>
+                            <option value="BES">Bonaire, Sint Eustatius and Saba</option>
+                            <option value="BIH">Bosnia and Herzegovina</option>
+                            <option value="BWA">Botswana</option>
+                            <option value="BVT">Bouvet Island</option>
+                            <option value="BRA">Brazil</option>
+                            <option value="IOT">British Indian Ocean Territory</option>
+                            <option value="BRN">Brunei Darussalam</option>
+                            <option value="BGR">Bulgaria</option>
+                            <option value="BFA">Burkina Faso</option>
+                            <option value="BDI">Burundi</option>
+                            <option value="KHM">Cambodia</option>
+                            <option value="CMR">Cameroon</option>
+                            <option value="CAN">Canada</option>
+                            <option value="CPV">Cape Verde</option>
+                            <option value="CYM">Cayman Islands</option>
+                            <option value="CAF">Central African Republic</option>
+                            <option value="TCD">Chad</option>
+                            <option value="CHL">Chile</option>
+                            <option value="CHN">China</option>
+                            <option value="CXR">Christmas Island</option>
+                            <option value="CCK">Cocos (Keeling) Islands</option>
+                            <option value="COL">Colombia</option>
+                            <option value="COM">Comoros</option>
+                            <option value="COG">Congo</option>
+                            <option value="COD">Congo, the Democratic Republic of the</option>
+                            <option value="COK">Cook Islands</option>
+                            <option value="CRI">Costa Rica</option>
+                            <option value="CIV">C𴥠d'Ivoire</option>
+                            <option value="HRV">Croatia</option>
+                            <option value="CUB">Cuba</option>
+                            <option value="CUW">Cura袯</option>
+                            <option value="CYP">Cyprus</option>
+                            <option value="CZE">Czech Republic</option>
+                            <option value="DNK">Denmark</option>
+                            <option value="DJI">Djibouti</option>
+                            <option value="DMA">Dominica</option>
+                            <option value="DOM">Dominican Republic</option>
+                            <option value="ECU">Ecuador</option>
+                            <option value="EGY">Egypt</option>
+                            <option value="SLV">El Salvador</option>
+                            <option value="GNQ">Equatorial Guinea</option>
+                            <option value="ERI">Eritrea</option>
+                            <option value="EST">Estonia</option>
+                            <option value="ETH">Ethiopia</option>
+                            <option value="FLK">Falkland Islands (Malvinas)</option>
+                            <option value="FRO">Faroe Islands</option>
+                            <option value="FJI">Fiji</option>
+                            <option value="FIN">Finland</option>
+                            <option value="FRA">France</option>
+                            <option value="GUF">French Guiana</option>
+                            <option value="PYF">French Polynesia</option>
+                            <option value="ATF">French Southern Territories</option>
+                            <option value="GAB">Gabon</option>
+                            <option value="GMB">Gambia</option>
+                            <option value="GEO">Georgia</option>
+                            <option value="DEU">Germany</option>
+                            <option value="GHA">Ghana</option>
+                            <option value="GIB">Gibraltar</option>
+                            <option value="GRC">Greece</option>
+                            <option value="GRL">Greenland</option>
+                            <option value="GRD">Grenada</option>
+                            <option value="GLP">Guadeloupe</option>
+                            <option value="GUM">Guam</option>
+                            <option value="GTM">Guatemala</option>
+                            <option value="GGY">Guernsey</option>
+                            <option value="GIN">Guinea</option>
+                            <option value="GNB">Guinea-Bissau</option>
+                            <option value="GUY">Guyana</option>
+                            <option value="HTI">Haiti</option>
+                            <option value="HMD">Heard Island and McDonald Islands</option>
+                            <option value="VAT">Holy See (Vatican City State)</option>
+                            <option value="HND">Honduras</option>
+                            <option value="HKG">Hong Kong</option>
+                            <option value="HUN">Hungary</option>
+                            <option value="ISL">Iceland</option>
+                            <option value="IND">India</option>
+                            <option value="IDN">Indonesia</option>
+                            <option value="IRN">Iran, Islamic Republic of</option>
+                            <option value="IRQ">Iraq</option>
+                            <option value="IRL">Ireland</option>
+                            <option value="IMN">Isle of Man</option>
+                            <option value="ISR">Israel</option>
+                            <option value="ITA">Italy</option>
+                            <option value="JAM">Jamaica</option>
+                            <option value="JPN">Japan</option>
+                            <option value="JEY">Jersey</option>
+                            <option value="JOR">Jordan</option>
+                            <option value="KAZ">Kazakhstan</option>
+                            <option value="KEN">Kenya</option>
+                            <option value="KIR">Kiribati</option>
+                            <option value="PRK">Korea, Democratic People's Republic of</option>
+                            <option value="KOR">Korea, Republic of</option>
+                            <option value="KWT">Kuwait</option>
+                            <option value="KGZ">Kyrgyzstan</option>
+                            <option value="LAO">Lao People's Democratic Republic</option>
+                            <option value="LVA">Latvia</option>
+                            <option value="LBN">Lebanon</option>
+                            <option value="LSO">Lesotho</option>
+                            <option value="LBR">Liberia</option>
+                            <option value="LBY">Libya</option>
+                            <option value="LIE">Liechtenstein</option>
+                            <option value="LTU">Lithuania</option>
+                            <option value="LUX">Luxembourg</option>
+                            <option value="MAC">Macao</option>
+                            <option value="MKD">Macedonia, the former Yugoslav Republic of</option>
+                            <option value="MDG">Madagascar</option>
+                            <option value="MWI">Malawi</option>
+                            <option value="MYS">Malaysia</option>
+                            <option value="MDV">Maldives</option>
+                            <option value="MLI">Mali</option>
+                            <option value="MLT">Malta</option>
+                            <option value="MHL">Marshall Islands</option>
+                            <option value="MTQ">Martinique</option>
+                            <option value="MRT">Mauritania</option>
+                            <option value="MUS">Mauritius</option>
+                            <option value="MYT">Mayotte</option>
+                            <option value="MEX">Mexico</option>
+                            <option value="FSM">Micronesia, Federated States of</option>
+                            <option value="MDA">Moldova, Republic of</option>
+                            <option value="MCO">Monaco</option>
+                            <option value="MNG">Mongolia</option>
+                            <option value="MNE">Montenegro</option>
+                            <option value="MSR">Montserrat</option>
+                            <option value="MAR">Morocco</option>
+                            <option value="MOZ">Mozambique</option>
+                            <option value="MMR">Myanmar</option>
+                            <option value="NAM">Namibia</option>
+                            <option value="NRU">Nauru</option>
+                            <option value="NPL">Nepal</option>
+                            <option value="NLD">Netherlands</option>
+                            <option value="NCL">New Caledonia</option>
+                            <option value="NZL">New Zealand</option>
+                            <option value="NIC">Nicaragua</option>
+                            <option value="NER">Niger</option>
+                            <option value="NGA">Nigeria</option>
+                            <option value="NIU">Niue</option>
+                            <option value="NFK">Norfolk Island</option>
+                            <option value="MNP">Northern Mariana Islands</option>
+                            <option value="NOR">Norway</option>
+                            <option value="OMN">Oman</option>
+                            <option value="PAK">Pakistan</option>
+                            <option value="PLW">Palau</option>
+                            <option value="PSE">Palestinian Territory, Occupied</option>
+                            <option value="PAN">Panama</option>
+                            <option value="PNG">Papua New Guinea</option>
+                            <option value="PRY">Paraguay</option>
+                            <option value="PER">Peru</option>
+                            <option value="PHL">Philippines</option>
+                            <option value="PCN">Pitcairn</option>
+                            <option value="POL">Poland</option>
+                            <option value="PRT">Portugal</option>
+                            <option value="PRI">Puerto Rico</option>
+                            <option value="QAT">Qatar</option>
+                            <option value="REU">R궮ion</option>
+                            <option value="ROU">Romania</option>
+                            <option value="RUS">Russian Federation</option>
+                            <option value="RWA">Rwanda</option>
+                            <option value="BLM">Saint Barthꭥmy</option>
+                            <option value="SHN">Saint Helena, Ascension and Tristan da Cunha</option>
+                            <option value="KNA">Saint Kitts and Nevis</option>
+                            <option value="LCA">Saint Lucia</option>
+                            <option value="MAF">Saint Martin (French part)</option>
+                            <option value="SPM">Saint Pierre and Miquelon</option>
+                            <option value="VCT">Saint Vincent and the Grenadines</option>
+                            <option value="WSM">Samoa</option>
+                            <option value="SMR">San Marino</option>
+                            <option value="STP">Sao Tome and Principe</option>
+                            <option value="SAU">Saudi Arabia</option>
+                            <option value="SEN">Senegal</option>
+                            <option value="SRB">Serbia</option>
+                            <option value="SYC">Seychelles</option>
+                            <option value="SLE">Sierra Leone</option>
+                            <option value="SGP">Singapore</option>
+                            <option value="SXM">Sint Maarten (Dutch part)</option>
+                            <option value="SVK">Slovakia</option>
+                            <option value="SVN">Slovenia</option>
+                            <option value="SLB">Solomon Islands</option>
+                            <option value="SOM">Somalia</option>
+                            <option value="ZAF">South Africa</option>
+                            <option value="SGS">South Georgia and the South Sandwich Islands</option>
+                            <option value="SSD">South Sudan</option>
+                            <option value="ESP">Spain</option>
+                            <option value="LKA">Sri Lanka</option>
+                            <option value="SDN">Sudan</option>
+                            <option value="SUR">Suriname</option>
+                            <option value="SJM">Svalbard and Jan Mayen</option>
+                            <option value="SWZ">Swaziland</option>
+                            <option value="SWE">Sweden</option>
+                            <option value="CHE">Switzerland</option>
+                            <option value="SYR">Syrian Arab Republic</option>
+                            <option value="TWN">Taiwan, Province of China</option>
+                            <option value="TJK">Tajikistan</option>
+                            <option value="TZA">Tanzania, United Republic of</option>
+                            <option value="THA">Thailand</option>
+                            <option value="TLS">Timor-Leste</option>
+                            <option value="TGO">Togo</option>
+                            <option value="TKL">Tokelau</option>
+                            <option value="TON">Tonga</option>
+                            <option value="TTO">Trinidad and Tobago</option>
+                            <option value="TUN">Tunisia</option>
+                            <option value="TUR">Turkey</option>
+                            <option value="TKM">Turkmenistan</option>
+                            <option value="TCA">Turks and Caicos Islands</option>
+                            <option value="TUV">Tuvalu</option>
+                            <option value="UGA">Uganda</option>
+                            <option value="UKR">Ukraine</option>
+                            <option value="ARE">United Arab Emirates</option>
+                            <option value="GBR">United Kingdom</option>
+                            <option value="USA" selected="">United States</option>
+                            <option value="UMI">United States Minor Outlying Islands</option>
+                            <option value="URY">Uruguay</option>
+                            <option value="UZB">Uzbekistan</option>
+                            <option value="VUT">Vanuatu</option>
+                            <option value="VEN">Venezuela, Bolivarian Republic of</option>
+                            <option value="VNM">Viet Nam</option>
+                            <option value="VGB">Virgin Islands, British</option>
+                            <option value="VIR">Virgin Islands, U.S.</option>
+                            <option value="WLF">Wallis and Futuna</option>
+                            <option value="ESH">Western Sahara</option>
+                            <option value="YEM">Yemen</option>
+                            <option value="ZMB">Zambia</option>
+                            <option value="ZWE">Zimbabwe</option>
+                          </select>
+                        </div>
+
+
+                        <div class="col-12">
+                          <label class="form-label">Connect with Twitter</label>
+                          <div class="d-flex justify-content-center">
+                            <span class="input-group-text border-0 bg-input" id="basic-addon1_"><i
+                                class="bi-twitter"></i></span>
+                            <input type="text" name="twitter" placeholder="Username">
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Connect with Facebook</label>
+                          <div class="d-flex justify-content-center">
+                            <span class="input-group-text border-0 bg-input" id="basic-addon1_01"><i
+                                class="bi-facebook"></i></span>
+                            <input type="text" name="facebook" placeholder="Username">
+                          </div>
+                        </div>
+                        <div class="col-12"><label class="form-label">Connect with Instagram</label>
+                          <div class="d-flex justify-content-center">
+                            <span class="input-group-text border-0 bg-input" id="basic-addon1_02"><i
+                                class="bi-instagram"></i></span>
+                            <input type="text" name="Instagram" placeholder="Username">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="d-flex pt-5">
+                        <button class="btn btn-mint me-3">Save Changes</button>
+                        <button class="btn btn-secondary">Cancel</button>
+                      </div>
+                    </form>
+
+                  </div>
+                </div><!--/dashboard-card-->
+
+                <div class="dashboard-card">
+                  <div class="dashboard-header">
+                    <h4>Background Image</h4>
+                  </div>
+                  <div class="dashboard-body">
+                    <div
+                      class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"
+                      style="background-image: url(assets/img/bg/1.jpg);">
+                      <button class="btn btn-light"><i class="bi-upload btn-icon"></i> Upload Cover</button>
+                    </div>
+                  </div>
+                </div><!--/dashboard-card-->
+
+
+              </div><!-- Tab content 1 END -->
+
+              <div class="tab-pane" id="tab-2" role="tabpanel">
+                <div class="dashboard-card">
+                  <div class="dashboard-header">
+                    <h4>Notifications</h4>
+                  </div>
+                  <div class="dashboard-body">
+                    <form class="ps-md-3 ps-lg-0">
+
+                      <div class="row align-items-end pb-3 mb-2 mb-sm-4">
+                        <div class="col-lg-6 col-sm-7">
+                          <label class="form-label fs-base">Your email</label>
+                          <input type="text" name="email" value="abram_marvynn@gmail.com" readonly="">
+                        </div>
+                      </div>
+
+                      <div class="form-check form-switch form-switch-success d-flex mb-4">
+                        <input type="checkbox" id="activity" class="form-check-input flex-shrink-0" checked="">
+                        <label class="form-check-label ps-3">
+                          <span class="h6 d-block mb-2">Someone mentions me</span>
+                          <span class="fs-sm text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et
+                            facilis, soluta vitae porro, praesentium deserunt explicabo.</span>
+                        </label>
+                      </div>
+                      <div class="form-check form-switch form-switch-success d-flex mb-4">
+                        <input type="checkbox" id="letters" class="form-check-input flex-shrink-0">
+                        <label class="form-check-label ps-3">
+                          <span class="h6 d-block mb-2">Someone replies to my Posts</span>
+                          <span class="fs-sm text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et
+                            facilis, soluta vitae porro, praesentium deserunt explicabo.</span>
+                        </label>
+                      </div>
+                      <div class="form-check form-switch form-switch-success d-flex mb-4">
+                        <input type="checkbox" id="account" class="form-check-input flex-shrink-0" checked="">
+                        <label class="form-check-label ps-3">
+                          <span class="h6 d-block mb-2">Someone shares my content</span>
+                          <span class="fs-sm text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et
+                            facilis, soluta vitae porro, praesentium deserunt explicabo.</span>
+                        </label>
+                      </div>
+                      <div class="form-check form-switch form-switch-success d-flex mb-4">
+                        <input type="checkbox" id="promoions" class="form-check-input flex-shrink-0">
+                        <label class="form-check-label ps-3">
+                          <span class="h6 d-block mb-2">New published post from people I follow</span>
+                          <span class="fs-sm text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et
+                            facilis, soluta vitae porro, praesentium deserunt explicabo.</span>
+                        </label>
+                      </div>
+                      <div class="form-check form-switch form-switch-success d-flex mb-4">
+                        <input type="checkbox" id="summary" class="form-check-input flex-shrink-0">
+                        <label class="form-check-label ps-3">
+                          <span class="h6 d-block mb-2">Daily summary emails</span>
+                          <span class="fs-sm text-muted">Condimentum nunc, massa, nibh maecenas bibendum morbi
+                            neque.</span>
+                        </label>
+                      </div>
+                      <div class="d-flex pt-3 mb-3">
+                        <button type="submit" class="btn btn-mint">Save changes</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div><!-- Tab content 2 END -->
+
+              <div class="tab-pane" id="tab-3" role="tabpanel">
+
+                <div class="dashboard-card">
+                  <div class="dashboard-header">
+                    <h4>Change Password</h4>
+                  </div>
+                  <div class="dashboard-body">
+
+                    <!-- Password -->
+                    <form>
+                      <div class="row">
+                        <div class="col-sm-12 mb-4">
+                          <label class="form-label fs-base">Current password</label>
+                          <div class="password-toggle">
+                            <input type="password" placeholder="Current Password">
+                            <label class="password-toggle-btn" aria-label="Show/hide password">
+                              <input class="password-toggle-check" type="checkbox">
+                              <span class="password-toggle-indicator"></span>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 mb-4">
+                          <label class="form-label fs-base">New password</label>
+                          <div class="password-toggle">
+                            <input type="password" placeholder="Password">
+                            <label class="password-toggle-btn" aria-label="Show/hide password">
+                              <input class="password-toggle-check" type="checkbox">
+                              <span class="password-toggle-indicator"></span>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-sm-12 mb-4">
+                          <label class="form-label fs-base">Confirm new password</label>
+                          <div class="password-toggle">
+                            <input type="password" placeholder="Confirm New Password">
+                            <label class="password-toggle-btn" aria-label="Show/hide password">
+                              <input class="password-toggle-check" type="checkbox">
+                              <span class="password-toggle-indicator"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="d-flex mb-3 pt-2">
+                        <button type="submit" class="btn btn-mint me-3">Save changes</button>
+                        <button type="reset" class="btn btn-secondary">Cancel</button>
+                      </div>
+                    </form>
+
+                  </div>
+                </div><!--/dashboard-card-->
+              </div><!-- Tab content 3 END -->
+            </div>
+          </div>
+        </div>
+
+      </div><!--/col-lg-9-->
+
+    </div>
+  </div>
+</section>

@@ -76,13 +76,13 @@ Navbar
                 <span class="d-block text-muted small">{{user.email}}</span>
               </div>
             </a> -->
-             <a class="dropdown-item" href="#">
+             <a class="dropdown-item" routerLink="profile-setting" href="#">
               <span class="dropdown-item-icon">
                 <i class="bi-person"></i>
               </span> View Profile
             </a>
 
-            <a class="dropdown-item" href=''><span class="dropdown-item-icon"><i class="bi-person"></i></span>
+            <a class="dropdown-item" routerLink="home"><span class="dropdown-item-icon"><i class="bi-person"></i></span>
               Dashboard</a>
             <!-- <a class="dropdown-item" href="dash-settings.html"><span class="dropdown-item-icon"><i class="bi bi-gear"></i></span> Settings </a> -->
             <!-- <a class="dropdown-item" href="dash-bookmarks.html"><span class="dropdown-item-icon"><i class="bi-bookmarks"></i></span> Bookmarks </a> -->
@@ -157,3 +157,8 @@ Navbar
     </div>
   </nav>
 </header>
+<app-emailVarification></app-emailVarification>
+<app-login></app-login>
+<router-outlet></router-outlet>
+
+

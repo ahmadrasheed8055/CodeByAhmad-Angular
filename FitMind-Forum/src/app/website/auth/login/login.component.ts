@@ -32,6 +32,8 @@ export class LoginComponent implements OnInit {
   authServices = inject(AuthService);
   route = inject(Router);
   errorMessage: string = '';
+  loginBtn:string = 'Login';
+  loginBtnLoading:boolean = false;
 
   constructor() {
     // this.user = new UserLoginDTO();
@@ -59,8 +61,11 @@ export class LoginComponent implements OnInit {
 
 
   login() {
+
     // debugger;
     if (this.formData.valid) {
+      this.loginBtn = 'Loading...';
+      this.loginBtnLoading = true;
       const formValues = this.formData.value;
       this.user = {
         Email: formValues.email,
@@ -69,15 +74,19 @@ export class LoginComponent implements OnInit {
 
       this.serviecs.loginUser(this.user).subscribe(
         (next) => {
+          
           const encrypUser = this.authServices.encryptUser(next);
           sessionStorage.setItem('appUser', encrypUser);
-          //closing modal
-          this.closeModal();
+          
 
-          this.route.navigate(['/home']);
-          console.log('User added: ' + next);
+          this.route.navigate(['/home']).then(()=>{
+            window.location.reload();
+          });
+          // console.log('User added: ' + next);
         },
         (error) => {
+          this.loginBtn = 'Login';
+          this.loginBtnLoading = false;
           if (error.status === 404) {
             this.errorMessage = 'User not found';
           } else if (error.status === 400) {

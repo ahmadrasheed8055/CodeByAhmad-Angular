@@ -5,12 +5,14 @@ import { EmailVarificationComponent } from "../auth/emailVarification/emailVarif
 import { CategoriesComponent } from "../categories/categories.component";
 import { NavbarComponent } from "../navbar/navbar.component";
 import { FooterComponent } from "../footer/footer.component";
+import { ProfileSettingComponent } from "../user/profile-setting/profile-setting.component";
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  imports: [HeroComponent, LoginComponent, EmailVarificationComponent, CategoriesComponent, NavbarComponent, FooterComponent]
+  imports: [HeroComponent, CategoriesComponent, FooterComponent, RouterModule]
 })
 export class HomeComponent implements OnInit {
 

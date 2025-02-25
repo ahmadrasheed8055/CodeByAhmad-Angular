@@ -43,7 +43,7 @@
               </div>
               <div  *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
               <div class="modal-footer border-0">
-                <button type="submit" class="w-100 btn btn-mint" [disabled]="formData.invalid">Login</button>
+                <button type="submit" class="w-100 btn btn-mint" [disabled]="formData.invalid || loginBtnLoading">{{loginBtn}}</button>
               </div>
             </form>
 
