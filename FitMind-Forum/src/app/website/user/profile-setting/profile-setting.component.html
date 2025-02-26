@@ -10,9 +10,10 @@
             <div class="media align-items-center">
               <div class="media-head me-2">
                 <div class="avatar avatar-lg">
-                  <img src="img/avatar/1.jpg" alt="user" class="avatar-img rounded-circle">
+                  <img [src]="user.ProfilePhoto ? user.ProfilePhoto: 'img/avatar/default.png'" alt="user" class="avatar-img rounded-circle">
                 </div>
               </div>
+
               <div class="media-body">
                 <h5> {{user.username}} </h5>
                 <p class="small mb-0"> {{joinDate }} </p>
@@ -157,15 +158,20 @@
                     <h4>Profile Details</h4>
                   </div>
                   <div class="dashboard-body">
-
+                  
                     <div class="dashboard-user-box rounded-3 mb-5">
-                      <div class="d-flex align-items-center"><img class="rounded-2" src="img/avatar/1.jpg" alt="User">
+                      <div class="d-flex align-items-center">
+                        <img class="rounded-2" [src]="user.ProfilePhoto ? user.ProfilePhoto: 'img/avatar/default.png'" alt="User">
                         <div class="ps-4">
                           <input  class="btn btn-mint btn-shadow btn-sm mb-2" type="file" (change)="onUpload($event)">
-                          <!-- <span class="text-danger small"
-                          *ngIf="imageErrorMessage != '' ">
+                          <span class="text-danger small"
+                          *ngIf="imageErrorMessage">
                          {{imageErrorMessage}}
-                        </span> -->
+                        </span>
+                          <span class="text-success small"
+                          *ngIf="imageSuccessMessage">
+                         {{imageSuccessMessage}}
+                        </span>
                           <!-- <button class="btn btn-mint btn-shadow btn-sm mb-2" type="button">
                             <i class="bi bi-arrow-repeat me-2"></i>Change <span
                               class="d-none d-sm-inline">avatar</span></button>
@@ -524,7 +530,7 @@
                   <div class="dashboard-body">
                     <div
                       class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"
-                      style="background-image: url(assets/img/bg/1.jpg);">
+                      style="background-image: url(img/bg/1.jpg);">
                       <button class="btn btn-light"><i class="bi-upload btn-icon"></i> Upload Cover</button>
                     </div>
                   </div>

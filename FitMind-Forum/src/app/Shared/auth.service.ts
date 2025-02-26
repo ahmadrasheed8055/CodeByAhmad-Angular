@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
-import { IAppUser } from '../Model/AppUsers';
+import { inject, Injectable } from '@angular/core';
+import { AppUser, IAppUser } from '../Model/AppUsers';
 import * as CryptoJs from 'crypto-js';
+import { MasterService } from './master.service';
+import { Subject } from 'rxjs';
 const SECURE_KEY = 'FITMIND8055';
 
 @Injectable({
@@ -9,6 +11,8 @@ const SECURE_KEY = 'FITMIND8055';
 export class AuthService {
   constructor() {}
 
+  masterServices = inject(MasterService);
+  private user = new AppUser();
   // Encrypt the user object
   encryptUser(user: IAppUser): string {
     const encryptedUser = CryptoJs.AES.encrypt(
@@ -26,7 +30,30 @@ export class AuthService {
     return JSON.parse(decryptedUser);
   }
 
-  
+  setUser(user: IAppUser) {
+    sessionStorage.setItem('appUser', this.encryptUser(user));
+  }
+
+  //get user
+  getUser(): IAppUser {
+    debugger;
+    const user = sessionStorage.getItem('appUser');
+    if (user) {
+      this.user = this.decryptUser(user);
+
+      this.masterServices.getProfilePicture(this.user.id).subscribe(
+        (image) => {
+          this.user.ProfilePhoto = 'data:image/jpeg;base64,' + image;
+
+          sessionStorage.setItem('userProfilePhoto', this.user.ProfilePhoto);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
+    return this.user;
+  }
 
   //checking user is logged in or not
   isLoggedIn() {

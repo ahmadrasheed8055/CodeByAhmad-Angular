@@ -60,6 +60,7 @@ export class RegisterComponent implements OnInit {
     const formData = this.appForm.value;
     const userEmail = localStorage.getItem('userEmail');
     const newUser: AppUser = {
+      id: 0,
       username: formData.userName,
       email: userEmail || '',
       passwordHash: formData.password,

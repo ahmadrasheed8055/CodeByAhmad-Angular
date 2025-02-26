@@ -5,6 +5,7 @@ import { AuthService } from '../../Shared/auth.service';
 import { AppUser } from '../../Model/AppUsers';
 import { EmailVarificationComponent } from "../auth/emailVarification/emailVarification.component";
 import { LoginComponent } from "../auth/login/login.component";
+import { MasterService } from '../../Shared/master.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,29 +18,26 @@ export class NavbarComponent implements OnInit {
   loginModal: string = '#loginModal';
   registerModal: string = '#registerModal';
   emailVarificationModal: string = '#emailVarificationModal';
-  user: AppUser;
+  user!: AppUser;
   authServices = inject(AuthService);
   router = inject(Router);
+  masterServices = inject(MasterService);
 
-  test() {
-    debugger;
-  }
 
   ngOnInit() {
-    this.decruptUser();
-  }
-  constructor() {
-    this.user = new AppUser();
-  }
-
-
-  decruptUser() {
-    const dUser = sessionStorage.getItem('appUser');
-    if (dUser) {
-      this.user = this.authServices.decryptUser(dUser);
-      // console.log(this.user);
+    debugger;
+    // this.getProfile();
+    const userData = this.authServices.getUser();
+    if (userData) {
+      this.user =  userData;
+      this.user.ProfilePhoto =  sessionStorage.getItem('userProfilePhoto') || '';
     }
   }
+  
+  constructor() {
+    // this.user = new AppUser();
+  }
+
 
   logout() {
     sessionStorage.removeItem('appUser');
@@ -48,3 +46,14 @@ export class NavbarComponent implements OnInit {
     });
   }
 }
+
+
+
+// decruptUser() {
+  //   const dUser = sessionStorage.getItem('appUser');
+  //   if (dUser) {
+  //     this.user = this.authServices.decryptUser(dUser);
+  //   //  console.log(this.getProfile());
+   
+  //   }
+  // }

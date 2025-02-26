@@ -78,7 +78,6 @@ export class LoginComponent implements OnInit {
           const encrypUser = this.authServices.encryptUser(next);
           sessionStorage.setItem('appUser', encrypUser);
           
-
           this.route.navigate(['/home']).then(()=>{
             window.location.reload();
           });

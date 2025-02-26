@@ -15,6 +15,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   // console.log(token);
   
   if (sessionStorage.getItem('appUser')) {
+    
     return true;
   } else {
     router.navigate(['/home']);

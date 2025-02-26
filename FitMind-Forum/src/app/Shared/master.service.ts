@@ -78,6 +78,20 @@ export class MasterService {
     });
   }
   
+  //==========Uploading profile picture==============
+  UPLOAD_PROFILE_PICTURE_URL = "AppUsers/upload-image/";
+  
+  uploadProfilePicture(formData:FormData, userId: number){
+    const url = this.API_URL + this.UPLOAD_PROFILE_PICTURE_URL + userId;
+    return this.http.put(url, formData);
+  }
+  //==========Get profile picture==============
+  GET_PROFILE_PICTURE_URL = "AppUsers/get-image/";
+
+  getProfilePicture(userId: number){
+    const url = this.API_URL + this.GET_PROFILE_PICTURE_URL + userId;
+    return this.http.get(url);
+  }
 }
 
 /*

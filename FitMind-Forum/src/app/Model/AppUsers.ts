@@ -4,7 +4,7 @@ Class -> used as data manipulation
 */
 
 export interface IAppUser {
-  // id: number;
+  id: number;
   username: string;
   email: string;
   passwordHash: string;
@@ -24,6 +24,7 @@ export interface IAppUser {
 }
 
 export class AppUser {
+  id: number;
   username: string;
   email: string;
   passwordHash: string;
@@ -41,6 +42,7 @@ export class AppUser {
   InstagramLink: string;
   ProfilePhoto: string;
   constructor() {
+    this.id = 0;
     this.username = '';
     this.email = '';
     this.passwordHash = '';
