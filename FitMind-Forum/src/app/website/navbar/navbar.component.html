@@ -12,7 +12,7 @@ Navbar
   <nav class="navbar navbar-expand-lg py-0">
     <div class="container align-items-center">
       <div class="logo">
-        <a class="navbar-brand" type="button" >
+        <a class="navbar-brand" type="button">
           <!-- <img class="logo-dark" src="img/logo dark.png" alt="Logo"> -->
 
           <h1 class="fitmind-text">Fit Mind</h1>
@@ -57,10 +57,12 @@ Navbar
           <a href="#" id="navbarShoppingCartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
             data-bs-dropdown-animation="">
             <div class="d-flex">
-              <img class="avatar-sm avatar-img rounded-circle" [src]="user.ProfilePhoto ? user.ProfilePhoto: 'img/avatar/default.png'" alt="Image Description">
+              <img class="avatar-sm avatar-img rounded-circle"
+                [src]="authServices.user.ProfilePhoto ? authServices.user.ProfilePhoto : 'img/assets/default.png'"
+                alt="Image Description">
               <div class="profile-text d-none d-sm-block">
                 <div class="profile-head text-muted">Hello,</div>
-                <div class="text-nowrap"> {{user.username}} </div>
+                <div class="text-nowrap"> {{authServices.user.username}} </div>
               </div>
             </div>
           </a>
@@ -76,21 +78,24 @@ Navbar
                 <span class="d-block text-muted small">{{user.email}}</span>
               </div>
             </a> -->
-             <a class="dropdown-item" routerLink="profile-setting" href="#">
+            <a class="dropdown-item" routerLink="home">
+              <span class="dropdown-item-icon">
+                <i class="bi-house"></i>
+              </span>Home</a>
+            <!-- <a class="dropdown-item" routerLink="profile-setting" href="#">
               <span class="dropdown-item-icon">
                 <i class="bi-person"></i>
               </span> View Profile
-            </a>
+            </a> -->
 
-            <a class="dropdown-item" routerLink="home"><span class="dropdown-item-icon"><i class="bi-person"></i></span>
-              Dashboard</a>
-            <!-- <a class="dropdown-item" href="dash-settings.html"><span class="dropdown-item-icon"><i class="bi bi-gear"></i></span> Settings </a> -->
+          
+            <a class="dropdown-item" routerLink="profile-setting" href=""><span class="dropdown-item-icon"><i class="bi bi-gear"></i></span> Settings </a>
             <!-- <a class="dropdown-item" href="dash-bookmarks.html"><span class="dropdown-item-icon"><i class="bi-bookmarks"></i></span> Bookmarks </a> -->
             <!-- <a class="dropdown-item" href="dash-subscriptions.html"><span class="dropdown-item-icon"><i class="bi-wallet2"></i></span> Subscriptions</a> -->
 
             <div class="dropdown-divider"></div>
 
-           
+
             <a class="dropdown-item" href="#">
               <span class="dropdown-item-icon">
                 <i class="bi-question-circle"></i>
@@ -119,38 +124,38 @@ Navbar
 
       <a href="" class="btn btn-md btn-mint rounded-pill" data-bs-toggle="modal"
         [attr.data-bs-target]="loginModal">Login</a>
-        <div class="header-end d-flex justify-content-end">
-          <!-- Translate dropdown START -->
-          <div class="nav-item dropdown h-col d-none d-lg-block">
-            <a class="h-translate-icon h-icon" href="#" id="languageDropdown" role="button" data-bs-auto-close="outside"
-              data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-three-dots"></i>
-  
-            </a>
-            <ul class="dropdown-menu dropdown-animation dropdown-menu-end min-w-auto mt-2"
-              aria-labelledby="languageDropdown">
-              @if (authServices.isLoggedIn()) {
-              <li> <a class="dropdown-item me-4" href="" (click)="logout()"><i
-                    class="bi bi-box-arrow-in-right me-2"></i>Logout</a>
-              </li>
-              }@else {
-              <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal"><i
-                    class="bi bi-box-arrow-in-right me-2"></i>Login</a> </li>
-  
-              <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal"
-                  [attr.data-bs-target]="emailVarificationModal"><i class="bi bi-person-plus me-2"></i>Register</a>
-              </li>
-  
-              <li> <a class="dropdown-item me-4" href="#"><i class="bi bi-envelope me-2"></i>Contact</a> </li>
-              }
-              <!-- <li> <a class="dropdown-item me-4" routerLink="/register"><i class="bi bi-envelope me-2"></i>Registration page</a> </li>
+      <div class="header-end d-flex justify-content-end">
+        <!-- Translate dropdown START -->
+        <div class="nav-item dropdown h-col d-none d-lg-block">
+          <a class="h-translate-icon h-icon" href="#" id="languageDropdown" role="button" data-bs-auto-close="outside"
+            data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-three-dots"></i>
+
+          </a>
+          <ul class="dropdown-menu dropdown-animation dropdown-menu-end min-w-auto mt-2"
+            aria-labelledby="languageDropdown">
+            @if (authServices.isLoggedIn()) {
+            <li> <a class="dropdown-item me-4" href="" (click)="logout()"><i
+                  class="bi bi-box-arrow-in-right me-2"></i>Logout</a>
+            </li>
+            }@else {
+            <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal"><i
+                  class="bi bi-box-arrow-in-right me-2"></i>Login</a> </li>
+
+            <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal"
+                [attr.data-bs-target]="emailVarificationModal"><i class="bi bi-person-plus me-2"></i>Register</a>
+            </li>
+
+            <li> <a class="dropdown-item me-4" href="#"><i class="bi bi-envelope me-2"></i>Contact</a> </li>
+            }
+            <!-- <li> <a class="dropdown-item me-4" routerLink="/register"><i class="bi bi-envelope me-2"></i>Registration page</a> </li>
               <li> Button trigger modal -->
-  
-              <!-- </li> -->
-            </ul>
-          </div>
-          <!-- Translate dropdown END -->
+
+            <!-- </li> -->
+          </ul>
         </div>
+        <!-- Translate dropdown END -->
+      </div>
       }
 
 
@@ -160,5 +165,3 @@ Navbar
 <app-emailVarification></app-emailVarification>
 <app-login></app-login>
 <router-outlet></router-outlet>
-
-

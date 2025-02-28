@@ -25,16 +25,16 @@ export class NavbarComponent implements OnInit {
 
 
   ngOnInit() {
-    debugger;
+    // debugger;
+    
     // this.getProfile();
-    const userData = this.authServices.getUser();
-    if (userData) {
-      this.user =  userData;
-      this.user.ProfilePhoto =  sessionStorage.getItem('userProfilePhoto') || '';
-    }
+    this.authServices.getUser();
+    
   }
   
   constructor() {
+    
+    
     // this.user = new AppUser();
   }
 
