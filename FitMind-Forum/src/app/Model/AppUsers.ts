@@ -20,7 +20,10 @@ export interface IAppUser {
   Phone: number;
   FacebookLink: string;
   InstagramLink: string;
+  Location: string;
+  Country:string;
   ProfilePhoto: string;
+  BackgroundPhoto:string;
 }
 
 export class AppUser {
@@ -40,7 +43,10 @@ export class AppUser {
   Phone: number;
   FacebookLink: string;
   InstagramLink: string;
+  Location: string;
+  Country:string;
   ProfilePhoto: string;
+  BackgroundPhoto:string;
   constructor() {
     this.id = 0;
     this.username = '';
@@ -57,7 +63,10 @@ export class AppUser {
     this.Phone = 0;
     this.FacebookLink = '';
     this.InstagramLink = '';
+    this.Location = '';
+    this.Country = '';
     this.ProfilePhoto = '';
+    this.BackgroundPhoto='';
   }
 }
 

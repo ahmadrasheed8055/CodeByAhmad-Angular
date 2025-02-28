@@ -70,13 +70,17 @@ export class RegisterComponent implements OnInit {
       updatedAt: new Date(),
       status: 2,
       UniqueName: '',
-      UserVisibility: 1,
+      UserVisibility: 0,
       Bio: '',
       Phone: 0,
       FacebookLink: '',
       InstagramLink: '',
-      ProfilePhoto: ''
+      Location: '',
+      Country:'',
+      ProfilePhoto: '',
+      BackgroundPhoto:''
     };
+    
     this.services.addAppUser(newUser).subscribe(
       (next: any) => {
         const encryptedUser = this.authServices.encryptUser(newUser);

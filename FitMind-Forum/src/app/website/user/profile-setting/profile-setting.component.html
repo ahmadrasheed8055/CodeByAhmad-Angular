@@ -7,18 +7,7 @@
         <div class="dash-sidebar position-sticky aos-init aos-animate" data-aos="fade-right" data-aos-easing="linear">
 
           <div class="ps-3 d-flex align-items-center">
-            <div class="media align-items-center">
-              <div class="media-head me-2">
-                <div class="avatar avatar-lg">
-                  <img [src]="user.ProfilePhoto ? user.ProfilePhoto: 'img/avatar/default.png'" alt="user" class="avatar-img rounded-circle">
-                </div>
-              </div>
 
-              <div class="media-body">
-                <h5> {{user.username}} </h5>
-                <p class="small mb-0"> {{joinDate }} </p>
-              </div>
-            </div>
 
             <!-- Responsive navbar toggler -->
             <button class="navbar-toggler ms-auto d-block d-xl-none" type="button" data-bs-toggle="collapse"
@@ -158,67 +147,84 @@
                     <h4>Profile Details</h4>
                   </div>
                   <div class="dashboard-body">
-                  
+
                     <div class="dashboard-user-box rounded-3 mb-5">
                       <div class="d-flex align-items-center">
-                        <img class="rounded-2" [src]="user.ProfilePhoto ? user.ProfilePhoto: 'img/avatar/default.png'" alt="User">
+                        <img class="rounded-2"
+                          [src]="(authServices.user.ProfilePhoto ? authServices.user.ProfilePhoto: 'img/avatar/default.png' ) "
+                          lt="User">
                         <div class="ps-4">
-                          <input  class="btn btn-mint btn-shadow btn-sm mb-2" type="file" (change)="onUpload($event)">
-                          <span class="text-danger small"
-                          *ngIf="imageErrorMessage">
-                         {{imageErrorMessage}}
-                        </span>
-                          <span class="text-success small"
-                          *ngIf="imageSuccessMessage">
-                         {{imageSuccessMessage}}
-                        </span>
-                          <!-- <button class="btn btn-mint btn-shadow btn-sm mb-2" type="button">
-                            <i class="bi bi-arrow-repeat me-2"></i>Change <span
-                              class="d-none d-sm-inline">avatar</span></button>
-                          <div class="p mb-0 fs-sm text-muted">Upload JPG, GIF or PNG image. 300 x 300 required.</div> -->
+                          <input #profilePhoto type="file" (change)="onUpload($event)" hidden>
+                          <button (click)="profilePhoto.click()" class="btn btn-mint btn-shadow btn-sm mb-2" type="button">
+                            <i class="bi bi-arrow-repeat me-2"></i>
+                            {{authServices.user.ProfilePhoto ? 'Change' :
+                            'Upload'}} 
+                            <span class="d-none d-sm-inline">avatar</span></button>
+                          <div class="p mb-0 fs-sm text-muted">Upload JPG, GIF or PNG image. 300 x 300 required.</div>
                         </div>
                       </div>
                     </div><!--/dashboard-user-box-->
 
 
-                    <form>
+                    <form [formGroup]="formGroup" (ngSubmit)="updateUser()">
                       <div class="row g-3">
                         <div class="col-sm-6">
-                          <label class="form-label">First Name</label>
-                          <input type="text" name="First" placeholder="First Name">
+                          <label class="form-label">Name<span class="text-danger "
+                              *ngIf="formGroup.controls['fullName'].invalid && formGroup.controls['fullName'].touched">
+                              *
+                            </span></label>
+                          <input formControlName="fullName" [value]="authServices.user.username" type="text" name="name"
+                            placeholder="Full Name">
+
                         </div>
+
                         <div class="col-sm-6">
-                          <label class="form-label">Last Name</label>
-                          <input type="text" name="Last" placeholder="Last Name">
-                        </div>
-                        <div class="col-sm-6">
-                          <label class="form-label">Phone</label>
-                          <input type="text" name="Phone" placeholder="Phone">
+                          <label class="form-label">Phone<span class="text-danger "
+                              *ngIf="formGroup.controls['phone'].invalid && formGroup.controls['phone'].touched">
+                              *
+                            </span></label>
+                          <input formControlName="phone" type="text" name="Phone" placeholder="Phone">
+
                         </div>
                         <div class="col-sm-6">
                           <label class="form-label">Email</label>
-                          <input type="text" name="email" [value]="user.email" readonly>
+                          <input type="text" name="email" [value]="authServices.user.email" readonly>
+
                         </div>
-                        <div class="col-sm-12">
-                          <label>User Name</label>
-                          <span class="d-block text-muted fs-sm">www.apexcodestudios.com/</span>
-                          <input type="text" placeholder="abram_marvynn">
+                        <div class="col-sm-6">
+                          <label>User Name <span class="text-danger "
+                              *ngIf="formGroup.controls['userName'].invalid && formGroup.controls['userName'].touched">
+                              *
+                            </span></label>
+                          <!-- <span class="d-block text-muted fs-sm">www.apexcodestudios.com/</span> -->
+                          <input formControlName="userName" type="text"
+                            [value]="authServices.user.UniqueName ? authServices.user.UniqueName : ''"
+                            placeholder="ahmad_rasheed">
+
                         </div>
                         <div class="col-lg-12">
                           <div class="mb-3">
-                            <label class="form-label">Profile Visibility</label>
+                            <label class="form-label">Profile Visibility<span class="text-danger "
+                                *ngIf="formGroup.controls['visibility'].invalid && formGroup.controls['visibility'].touched">
+                                *
+                              </span></label>
 
                             <div class="mt-1">
                               <div class="form-check form-check-inline">
-                                <input type="radio" class="form-check-input" name="visibilityPublic">
-                                <label class="form-check-label">Public</label>
+                                <input id="public" type="radio" class="form-check-input" name="visibility"
+                                  [checked]="authServices.user.UserVisibility == 0" formControlName="visibility"
+                                  value="0">
+                                <label class="form-check-label" for="public">Public</label>
                               </div>
 
-                              <div class="form-check form-check-inline ms-3">
-                                <input type="radio" class="form-check-input" name="visibilityPrivate">
-                                <label class="form-check-label">Private</label>
+                              <div class="form-check form-check-inline">
+                                <input id="private" type="radio" class="form-check-input" name="visibility"
+                                  [checked]="authServices.user.UserVisibility == 1" formControlName="visibility"
+                                  value="1">
+                                <label class="form-check-label" for="private">Private</label>
                               </div>
                             </div>
+
 
                             <small class="form-text text-muted mt-2">
                               Making your profile public means anyone can see your information
@@ -226,16 +232,28 @@
                           </div>
                         </div>
                         <div class="col-sm-12">
-                          <label class="form-label">Bio</label>
-                          <textarea rows="5" placeholder="Bio"></textarea>
+                          <label class="form-label">Bio<span class="text-danger "
+                              *ngIf="formGroup.controls['bio'].invalid && formGroup.controls['bio'].touched">
+                              *
+                            </span></label>
+                          <textarea rows="5" [value]="authServices.user.Bio ? authServices.user.Bio : ''"
+                            formControlName="bio" placeholder="Bio"></textarea>
+
                         </div>
                         <div class="col-sm-6">
-                          <label>Location</label>
-                          <input type="text" placeholder="Ex.San Francisco, CA">
+                          <label>Location<span class="text-danger "
+                              *ngIf="formGroup.controls['location'].invalid && formGroup.controls['location'].touched">
+                              *
+                            </span></label>
+                          <input formControlName="location" type="text" placeholder="Ex.San Francisco, CA">
+
                         </div>
                         <div class="col-sm-6">
-                          <label>Country</label>
-                          <select>
+                          <label for="country">Country<span class="text-danger "
+                              *ngIf="formGroup.controls['country'].invalid && formGroup.controls['country'].touched">
+                              *
+                            </span></label>
+                          <select [value]="authServices.user.Country" id="country" formControlName="country">
                             <option value="country">Country</option>
                             <option value="AFG">Afghanistan</option>
                             <option value="ALA">Ƭand Islands</option>
@@ -487,36 +505,39 @@
                             <option value="ZMB">Zambia</option>
                             <option value="ZWE">Zimbabwe</option>
                           </select>
+
                         </div>
 
 
-                        <div class="col-12">
-                          <label class="form-label">Connect with Twitter</label>
-                          <div class="d-flex justify-content-center">
-                            <span class="input-group-text border-0 bg-input" id="basic-addon1_"><i
-                                class="bi-twitter"></i></span>
-                            <input type="text" name="twitter" placeholder="Username">
-                          </div>
-                        </div>
-                        <div class="col-12">
+
+                        <div class="col-6">
                           <label class="form-label">Connect with Facebook</label>
                           <div class="d-flex justify-content-center">
                             <span class="input-group-text border-0 bg-input" id="basic-addon1_01"><i
                                 class="bi-facebook"></i></span>
-                            <input type="text" name="facebook" placeholder="Username">
+                            <input formControlName="facebookLink"
+                              [value]="authServices.user.FacebookLink ? authServices.user.FacebookLink : ''" type="text"
+                              name="facebook" placeholder="Facebook profile link">
+                            <span class="text-danger ">
+
+                            </span>
                           </div>
                         </div>
-                        <div class="col-12"><label class="form-label">Connect with Instagram</label>
+                        <div class="col-6"><label class="form-label">Connect with Instagram</label>
                           <div class="d-flex justify-content-center">
                             <span class="input-group-text border-0 bg-input" id="basic-addon1_02"><i
                                 class="bi-instagram"></i></span>
-                            <input type="text" name="Instagram" placeholder="Username">
+                            <input formControlName="instagramLink"
+                              [value]="authServices.user.InstagramLink ? authServices.user.InstagramLink : ''"
+                              type="text" name="Instagram" placeholder="Instagram profile link">
                           </div>
                         </div>
                       </div>
                       <div class="d-flex pt-5">
-                        <button class="btn btn-mint me-3">Save Changes</button>
+                        <button [disabled]="formGroup.invalid" type="submit" class="btn btn-mint me-3">Save
+                          Changes</button>
                         <button class="btn btn-secondary">Cancel</button>
+
                       </div>
                     </form>
 
@@ -530,11 +551,16 @@
                   <div class="dashboard-body">
                     <div
                       class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"
-                      style="background-image: url(img/bg/1.jpg);">
-                      <button class="btn btn-light"><i class="bi-upload btn-icon"></i> Upload Cover</button>
+                      [style.background-image]="'url(' + this.authServices.user.BackgroundPhoto + ')'">
+                      <input #BGButton class="form-control auto-height" type="file"
+                        (change)="updateBackgroundImage($event)" hidden>
+                      <button (click)="BGButton.click()" class="btn btn-light"><i class="bi-upload btn-icon"></i>
+                        {{this.authServices.user.BackgroundPhoto ? 'Change' : 'Upload'}}
+                      </button>
                     </div>
                   </div>
                 </div><!--/dashboard-card-->
+
 
 
               </div><!-- Tab content 1 END -->
