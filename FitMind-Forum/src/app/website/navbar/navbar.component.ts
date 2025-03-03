@@ -28,7 +28,8 @@ export class NavbarComponent implements OnInit {
     // debugger;
     
     // this.getProfile();
-    this.authServices.getUser();
+   this.user =  this.authServices.getUser();
+    console.log(this.user);
     
   }
   

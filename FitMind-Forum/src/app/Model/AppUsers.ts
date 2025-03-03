@@ -14,16 +14,17 @@ export interface IAppUser {
   updatedAt: Date;
   status: number;
 
-  UniqueName: string;
-  UserVisibility: number;
-  Bio: string;
-  Phone: number;
-  FacebookLink: string;
-  InstagramLink: string;
-  Location: string;
-  Country:string;
-  ProfilePhoto: string;
-  BackgroundPhoto:string;
+  uniqueName: string;
+  userVisibility: number;
+  bio: string;
+  phone: number;
+  facebookLink: string;
+  instagramLink: string;
+  location: string;
+  country:string;
+  
+  profilePhoto: string;
+  backgroundPhoto:string;
 }
 
 export class AppUser {
@@ -37,16 +38,16 @@ export class AppUser {
   updatedAt: Date;
   status: number;
   //other detail
-  UniqueName: string;
-  UserVisibility: number;
-  Bio: string;
-  Phone: number;
-  FacebookLink: string;
-  InstagramLink: string;
-  Location: string;
-  Country:string;
-  ProfilePhoto: string;
-  BackgroundPhoto:string;
+  uniqueName: string;
+  userVisibility: number;
+  bio: string;
+  phone: number;
+  facebookLink: string;
+  instagramLink: string;
+  location: string;
+  country:string;
+  profilePhoto: string;
+  backgroundPhoto:string;
   constructor() {
     this.id = 0;
     this.username = '';
@@ -57,16 +58,16 @@ export class AppUser {
     this.joinedDate = new Date();
     this.updatedAt = new Date();
     this.status = 1;
-    this.UniqueName = '';
-    this.UserVisibility = 1;
-    this.Bio = '';
-    this.Phone = 0;
-    this.FacebookLink = '';
-    this.InstagramLink = '';
-    this.Location = '';
-    this.Country = '';
-    this.ProfilePhoto = '';
-    this.BackgroundPhoto='';
+    this.uniqueName = '';
+    this.userVisibility = 1;
+    this.bio = '';
+    this.phone = 0;
+    this.facebookLink = '';
+    this.instagramLink = '';
+    this.location = '';
+    this.country = '';
+    this.profilePhoto = '';
+    this.backgroundPhoto='';
   }
 }
 
@@ -77,5 +78,33 @@ export class UserLoginDTO {
   constructor() {
     this.Email = '';
     this.HashedPassword = '';
+  }
+}
+
+
+export class UpdateAppUserDTO{
+
+  Id:number;
+  Username: string;
+  UniqueName: string;
+  UserVisibility: number;
+  Bio: string;
+  Phone: number;
+  FacebookLink: string;
+  InstagramLink: string;
+  Location: string;
+  Country:string;
+
+  constructor(){
+    this.Id=0;
+    this.Username = '';
+    this.UniqueName = '';
+    this.UserVisibility = 1;
+    this.Bio = '';
+    this.Phone = 0;
+    this.FacebookLink = '';
+    this.InstagramLink = '';
+    this.Location = '';
+    this.Country = '';
   }
 }

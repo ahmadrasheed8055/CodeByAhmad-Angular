@@ -9,12 +9,14 @@ const SECURE_KEY = 'FITMIND8055';
   providedIn: 'root',
 })
 export class AuthService {
-  constructor() {}
+  constructor() {
+    this.user = new AppUser();
+  }
 
   // imageUrl$:Subject<any> = new Subject();
 
   masterServices = inject(MasterService);
-public user = new AppUser();
+  public user: AppUser;
   // Encrypt the user object
   encryptUser(user: IAppUser): string {
     const encryptedUser = CryptoJs.AES.encrypt(
@@ -42,40 +44,24 @@ public user = new AppUser();
     const user = sessionStorage.getItem('appUser');
     if (user) {
       this.user = this.decryptUser(user);
+      // debugger;
+      console.log(this.user);
+     
 
-      this.masterServices.getProfilePicture(this.user.id).subscribe(
-        (image) => {
-          // debugger;
-          this.user.ProfilePhoto = 'data:image/jpeg;base64,' + image;
-          this.setUser(this.user);
-        //  console.log(sessionStorage.getItem('appUser'));
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
-
-      this.masterServices.getBackgroundPicture(this.user.id).subscribe(
-        (image)=>{
-          this.user.BackgroundPhoto = 'data:image/jpeg;base64,' + image;
-          // console.log(this.user.BackgroundPhoto);
-        },
-        (error)=>{
-          console.log(error);
-        }
-      )
-      
+     this.updateProfilePhoto();
+     this.updateBackgroundPhoto();
+      this.setUser(this.user);
     }
     return this.user;
   }
 
-  updateProfilePhoto(){
+  updateProfilePhoto() {
     this.masterServices.getProfilePicture(this.user.id).subscribe(
       (image) => {
         // debugger;
-        this.user.ProfilePhoto = 'data:image/jpeg;base64,' + image;
+        this.user.profilePhoto = 'data:image/jpeg;base64,' + image;
         this.setUser(this.user);
-      //  console.log(sessionStorage.getItem('appUser'));
+        //  console.log(sessionStorage.getItem('appUser'));
       },
       (error) => {
         console.log(error);
@@ -83,19 +69,17 @@ public user = new AppUser();
     );
   }
 
-  updateBackgroundPhoto(){
+  updateBackgroundPhoto() {
     this.masterServices.getBackgroundPicture(this.user.id).subscribe(
-      (image)=>{
-        this.user.BackgroundPhoto = 'data:image/jpeg;base64,' + image;
+      (image) => {
+        this.user.backgroundPhoto = 'data:image/jpeg;base64,' + image;
       },
-      (error)=>{
+      (error) => {
         console.log(error);
       }
-    )
+    );
   }
 
-  //update background picture
-  
   //checking user is logged in or not
   isLoggedIn() {
     const user = sessionStorage.getItem('appUser');

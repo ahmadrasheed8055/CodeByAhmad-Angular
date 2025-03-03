@@ -53,16 +53,16 @@ Navbar
 
 
         <!-- Account -->
-        <div class="nav-item ms-3 dropdown h-col">
+        <div class="nav-item ms-3 dropdown h-col" >
           <a href="#" id="navbarShoppingCartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
             data-bs-dropdown-animation="">
             <div class="d-flex">
               <img class="avatar-sm avatar-img rounded-circle"
-                [src]="authServices.user.ProfilePhoto ? authServices.user.ProfilePhoto : 'img/assets/default.png'"
+                [src]="authServices.user.profilePhoto ? authServices.user.profilePhoto : 'public/img/assets/default.png'"
                 alt="Image Description">
               <div class="profile-text d-none d-sm-block">
                 <div class="profile-head text-muted">Hello,</div>
-                <div class="text-nowrap"> {{authServices.user.username}} </div>
+                <div class="text-nowrap"  > {{authServices.user.username}} </div>
               </div>
             </div>
           </a>

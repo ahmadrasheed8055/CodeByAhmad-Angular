@@ -72,12 +72,14 @@ export class LoginComponent implements OnInit {
         HashedPassword: formValues.password,
       };
 
+      debugger;
       this.serviecs.loginUser(this.user).subscribe(
         (next) => {
-          
+          debugger;
           const encrypUser = this.authServices.encryptUser(next);
+          console.log(next);
           sessionStorage.setItem('appUser', encrypUser);
-          
+     
           this.route.navigate(['/home']).then(()=>{
             window.location.reload();
           });

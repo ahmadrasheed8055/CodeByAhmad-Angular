@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 // it was missing this import statement in app.config.ts file , add this into the config file
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AppUser, IAppUser, UserLoginDTO } from '../Model/AppUsers';
+import { AppUser, IAppUser, UpdateAppUserDTO, UserLoginDTO } from '../Model/AppUsers';
 
 @Injectable({
   providedIn: 'root',
@@ -103,6 +103,15 @@ export class MasterService {
   getBackgroundPicture(userId:number){
     const url = this.API_URL + this.GET_BACKGROUND_PICTURE_URL + userId;
     return this.http.get(url);
+  }
+
+  //=============Update user===================
+  UPDATE_APP_USER = 'AppUsers/update-app-user/';
+  updateAppUser(userId: number, appUser: UpdateAppUserDTO) {
+    const url = this.API_URL + this.UPDATE_APP_USER + userId;
+    return this.http.put(url, appUser, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
 

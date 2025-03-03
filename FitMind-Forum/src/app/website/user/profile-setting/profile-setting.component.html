@@ -151,13 +151,13 @@
                     <div class="dashboard-user-box rounded-3 mb-5">
                       <div class="d-flex align-items-center">
                         <img class="rounded-2"
-                          [src]="(authServices.user.ProfilePhoto ? authServices.user.ProfilePhoto: 'img/avatar/default.png' ) "
+                          [src]="(authServices.user.profilePhoto ? authServices.user.profilePhoto: 'img/avatar/default.png' ) "
                           lt="User">
                         <div class="ps-4">
                           <input #profilePhoto type="file" (change)="onUpload($event)" hidden>
                           <button (click)="profilePhoto.click()" class="btn btn-mint btn-shadow btn-sm mb-2" type="button">
                             <i class="bi bi-arrow-repeat me-2"></i>
-                            {{authServices.user.ProfilePhoto ? 'Change' :
+                            {{authServices.user.profilePhoto ? 'Change' :
                             'Upload'}} 
                             <span class="d-none d-sm-inline">avatar</span></button>
                           <div class="p mb-0 fs-sm text-muted">Upload JPG, GIF or PNG image. 300 x 300 required.</div>
@@ -183,7 +183,7 @@
                               *ngIf="formGroup.controls['phone'].invalid && formGroup.controls['phone'].touched">
                               *
                             </span></label>
-                          <input formControlName="phone" type="text" name="Phone" placeholder="Phone">
+                          <input formControlName="phone" type="text" [value]="authServices.user.phone" name="Phone" placeholder="Phone">
 
                         </div>
                         <div class="col-sm-6">
@@ -198,7 +198,7 @@
                             </span></label>
                           <!-- <span class="d-block text-muted fs-sm">www.apexcodestudios.com/</span> -->
                           <input formControlName="userName" type="text"
-                            [value]="authServices.user.UniqueName ? authServices.user.UniqueName : ''"
+                            [value]="authServices.user.uniqueName ? authServices.user.uniqueName : ''"
                             placeholder="ahmad_rasheed">
 
                         </div>
@@ -212,14 +212,14 @@
                             <div class="mt-1">
                               <div class="form-check form-check-inline">
                                 <input id="public" type="radio" class="form-check-input" name="visibility"
-                                  [checked]="authServices.user.UserVisibility == 0" formControlName="visibility"
+                                  [checked]="authServices.user.userVisibility == 0" formControlName="visibility"
                                   value="0">
                                 <label class="form-check-label" for="public">Public</label>
                               </div>
 
                               <div class="form-check form-check-inline">
                                 <input id="private" type="radio" class="form-check-input" name="visibility"
-                                  [checked]="authServices.user.UserVisibility == 1" formControlName="visibility"
+                                  [checked]="authServices.user.userVisibility == 1" formControlName="visibility"
                                   value="1">
                                 <label class="form-check-label" for="private">Private</label>
                               </div>
@@ -236,7 +236,7 @@
                               *ngIf="formGroup.controls['bio'].invalid && formGroup.controls['bio'].touched">
                               *
                             </span></label>
-                          <textarea rows="5" [value]="authServices.user.Bio ? authServices.user.Bio : ''"
+                          <textarea rows="5" [value]="authServices.user.bio ? authServices.user.bio : ''"
                             formControlName="bio" placeholder="Bio"></textarea>
 
                         </div>
@@ -245,7 +245,7 @@
                               *ngIf="formGroup.controls['location'].invalid && formGroup.controls['location'].touched">
                               *
                             </span></label>
-                          <input formControlName="location" type="text" placeholder="Ex.San Francisco, CA">
+                          <input formControlName="location" type="text" [value]="authServices.user.location" placeholder="Ex.San Francisco, CA">
 
                         </div>
                         <div class="col-sm-6">
@@ -253,8 +253,8 @@
                               *ngIf="formGroup.controls['country'].invalid && formGroup.controls['country'].touched">
                               *
                             </span></label>
-                          <select [value]="authServices.user.Country" id="country" formControlName="country">
-                            <option value="country">Country</option>
+                          <select  name="country" id="country" formControlName="country">
+                            <option disabled value="country" selected>Country</option>
                             <option value="AFG">Afghanistan</option>
                             <option value="ALA">Ƭand Islands</option>
                             <option value="ALB">Albania</option>
@@ -516,7 +516,7 @@
                             <span class="input-group-text border-0 bg-input" id="basic-addon1_01"><i
                                 class="bi-facebook"></i></span>
                             <input formControlName="facebookLink"
-                              [value]="authServices.user.FacebookLink ? authServices.user.FacebookLink : ''" type="text"
+                              [value]="authServices.user.facebookLink!=null ? authServices.user.facebookLink : ''" type="text"
                               name="facebook" placeholder="Facebook profile link">
                             <span class="text-danger ">
 
@@ -528,7 +528,7 @@
                             <span class="input-group-text border-0 bg-input" id="basic-addon1_02"><i
                                 class="bi-instagram"></i></span>
                             <input formControlName="instagramLink"
-                              [value]="authServices.user.InstagramLink ? authServices.user.InstagramLink : ''"
+                              [value]="authServices.user.instagramLink ? authServices.user.instagramLink : ''"
                               type="text" name="Instagram" placeholder="Instagram profile link">
                           </div>
                         </div>
@@ -551,11 +551,11 @@
                   <div class="dashboard-body">
                     <div
                       class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"
-                      [style.background-image]="'url(' + this.authServices.user.BackgroundPhoto + ')'">
+                      [style.background-image]="'url(' + this.authServices.user.backgroundPhoto + ')'">
                       <input #BGButton class="form-control auto-height" type="file"
                         (change)="updateBackgroundImage($event)" hidden>
                       <button (click)="BGButton.click()" class="btn btn-light"><i class="bi-upload btn-icon"></i>
-                        {{this.authServices.user.BackgroundPhoto ? 'Change' : 'Upload'}}
+                        {{this.authServices.user.backgroundPhoto ? 'Change' : 'Upload'}}
                       </button>
                     </div>
                   </div>

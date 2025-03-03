@@ -69,16 +69,16 @@ export class RegisterComponent implements OnInit {
       joinedDate: new Date(),
       updatedAt: new Date(),
       status: 2,
-      UniqueName: '',
-      UserVisibility: 0,
-      Bio: '',
-      Phone: 0,
-      FacebookLink: '',
-      InstagramLink: '',
-      Location: '',
-      Country:'',
-      ProfilePhoto: '',
-      BackgroundPhoto:''
+      uniqueName: '',
+      userVisibility: 0,
+      bio: '',
+      phone: 0,
+      facebookLink: '',
+      instagramLink: '',
+      location: '',
+      country:'',
+      profilePhoto: '',
+      backgroundPhoto:''
     };
     
     this.services.addAppUser(newUser).subscribe(

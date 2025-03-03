@@ -1,9 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { AppUser } from '../../../Model/AppUsers';
+import { AppUser, UpdateAppUserDTO } from '../../../Model/AppUsers';
 import { AuthService } from '../../../Shared/auth.service';
 import { MasterService } from '../../../Shared/master.service';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { error } from 'jquery';
 
 @Component({
   selector: 'app-profile-setting',
@@ -19,34 +26,35 @@ export class ProfileSettingComponent implements OnInit {
   user!: AppUser;
   imageErrorMessage: string = '';
   imageSuccessMessage: string = '';
-  formGroup!:FormGroup;
+  formGroup!: FormGroup;
 
   constructor() {
     this.user = new AppUser();
   }
 
   ngOnInit() {
-
     this.formGroup = new FormGroup({
+      id: new FormControl(this.authServices.user.id),
       // fullName phone userName visibility  bio country facebookLink instagramLink
-      fullName: new FormControl(this.authServices.user.username, [Validators.required]),
-     phone: new FormControl('', [Validators.required]),
-     userName: new FormControl(this.authServices.user.UniqueName, [Validators.required]),
-     visibility: new FormControl(this.authServices.user.UserVisibility, [Validators.required]),
-     bio: new FormControl('', [Validators.required]),
-     location:new FormControl('', [Validators.required]),
-     country: new FormControl('', [Validators.required]),
-     facebookLink: new FormControl(''),
-     instagramLink: new FormControl(''),
+      fullName: new FormControl(this.authServices.user.username, [
+        Validators.required,
+      ]),
+      phone: new FormControl(this.authServices.user.phone, [Validators.required]),
+      userName: new FormControl(this.authServices.user.uniqueName, [
+        Validators.required,
+      ]),
+      visibility: new FormControl(this.authServices.user.userVisibility, [
+        Validators.required,
+      ]),
+      bio: new FormControl(this.authServices.user.bio, [Validators.required]),
+      location: new FormControl(this.authServices.user.location, [Validators.required]),
+      country: new FormControl(this.authServices.user.country, [Validators.required]),
+      facebookLink: new FormControl(this.authServices.user.facebookLink),
+      instagramLink: new FormControl(this.authServices.user.instagramLink),
     });
   }
 
-  getErrorMessage(field:string, name:string):string{
-    if(this.formGroup.controls[field].hasError('required')){
-      return name + ' is required';
-    }
-    return '';
-  }
+ 
 
   onUpload(event: any) {
     const file = event.target.files[0];
@@ -59,50 +67,82 @@ export class ProfileSettingComponent implements OnInit {
       return;
     }
     debugger;
-    this.masterServices.uploadProfilePicture(formData, this.authServices.user.id).subscribe(
-      (next) => {
-        debugger;
-        this.imageSuccessMessage = 'Image uploaded successfully';
-        this.authServices.updateProfilePhoto();
-      },
-      (error) => {
-        this.imageErrorMessage = 'An error occurred while uploading the image';
-        console.log(error);
-      }
-    );
+    this.masterServices
+      .uploadProfilePicture(formData, this.authServices.user.id)
+      .subscribe(
+        (next) => {
+          debugger;
+          this.imageSuccessMessage = 'Image uploaded successfully';
+          this.authServices.updateProfilePhoto();
+        },
+        (error) => {
+          this.imageErrorMessage =
+            'An error occurred while uploading the image';
+          console.log(error);
+        }
+      );
   }
 
   updateBackgroundImage(event: any) {
     //step 1 choose the file
     const file = event.target.files[0];
-    //step 2 
+    //step 2
     const formData = new FormData();
     formData.append('file', file);
-    if(!file){
+    if (!file) {
       this.imageErrorMessage = 'Please select an image';
       return;
     }
 
-    this.masterServices.uploadBackgroundPicture(formData, this.authServices.user.id).subscribe(
-      (next)=>{
-        this.authServices.updateBackgroundPhoto();
-        this.imageSuccessMessage = 'Image uploaded successfully';
-        
-        // console.log(next);
-        return;
-      },
-      error=>{
-        this.imageErrorMessage = 'An error occurred while uploading the image';
-        // console.log(error);
-        return;
-      }
-    );
-  }
+    this.masterServices
+      .uploadBackgroundPicture(formData, this.authServices.user.id)
+      .subscribe(
+        (next) => {
+          this.authServices.updateBackgroundPhoto();
+          this.imageSuccessMessage = 'Image uploaded successfully';
 
+          // console.log(next);
+          return;
+        },
+        (error) => {
+          this.imageErrorMessage =
+            'An error occurred while uploading the image';
+          // console.log(error);
+          return;
+        }
+      );
+  }
+ 
   //update user
-  updateUser(){
+  updateUser() {
     debugger;
-    const userData = this.formGroup.value;
-    console.log(userData);
+    const updateAppUserData: UpdateAppUserDTO = {
+      Id: this.authServices.user.id,
+      Username: this.formGroup.value.fullName,
+      UniqueName: this.formGroup.value.userName,
+      UserVisibility: this.formGroup.value.visibility,
+      Bio: this.formGroup.value.bio,
+      Phone: this.formGroup.value.phone,
+      FacebookLink: this.formGroup.value.facebookLink,
+      InstagramLink: this.formGroup.value.instagramLink,
+      Location: this.formGroup.value.location,
+      Country: this.formGroup.value.country,
+    };
+    this.authServices.user = {...this.authServices.user, ...updateAppUserData}
+
+    this.masterServices
+      .updateAppUser(this.authServices.user.id, updateAppUserData)
+      .subscribe(
+        (next) => {
+          debugger;
+          // this.authServices.getUser();
+          
+          sessionStorage.setItem('appUser', this.authServices.encryptUser(this.authServices.user));
+          console.log(next);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
   }
 }
