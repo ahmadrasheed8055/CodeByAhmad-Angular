@@ -7,7 +7,33 @@
 * Website: http://www.apexcodestudios.com 
 */
 
+/* Success Snackbar */
+.success-snackbar {
+  background-color: #4caf50 !important; /* Green background */
+  color: white !important;
+  font-weight: bold;
+  border-radius: 6px;
+}
 
+/* Error Snackbar */
+.error-snackbar {
+  background-color: #f44336 !important; /* Red background */
+  color: white !important;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+/* Custom Button Style */
+.mdc-snackbar__action {
+  color: white !important;
+  font-weight: bold;
+}
+
+@media (min-width: 1400px) {
+  .container,.container-lg,.container-md,.container-sm,.container-xl,.container-xxl {
+      max-width: 1500px;
+  }
+}
 /* ------------------------------------------------------------------- */
 /* Table of Contents
 ----------------------------------------------------------------------

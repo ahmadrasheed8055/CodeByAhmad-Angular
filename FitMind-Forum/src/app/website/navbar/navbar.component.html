@@ -58,11 +58,11 @@ Navbar
             data-bs-dropdown-animation="">
             <div class="d-flex">
               <img class="avatar-sm avatar-img rounded-circle"
-                [src]="authServices.user.profilePhoto ? authServices.user.profilePhoto : 'public/img/assets/default.png'"
+                [src]="user  ? user  : 'img/assets/default.png'"
                 alt="Image Description">
               <div class="profile-text d-none d-sm-block">
                 <div class="profile-head text-muted">Hello,</div>
-                <div class="text-nowrap"  > {{authServices.user.username}} </div>
+                <div class="text-nowrap"  > {{user.username}} </div>
               </div>
             </div>
           </a>

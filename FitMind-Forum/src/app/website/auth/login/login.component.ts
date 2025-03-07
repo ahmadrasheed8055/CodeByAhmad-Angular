@@ -56,6 +56,7 @@ export class LoginComponent implements OnInit {
       closeBtn.click();
       this.formData.reset();
       this.errorMessage = '';
+      this.loginBtnLoading = false;
     }
   }
 
@@ -76,11 +77,14 @@ export class LoginComponent implements OnInit {
       this.serviecs.loginUser(this.user).subscribe(
         (next) => {
           debugger;
-          const encrypUser = this.authServices.encryptUser(next);
-          console.log(next);
-          sessionStorage.setItem('appUser', encrypUser);
-     
+          // const encrypUser = this.authServices.encryptUser(next);
+          // console.log(next);
+          // this.authServices.setUser(next);
+          sessionStorage.setItem('appUserId', next.toString());
+          // this.authServices.setUser(next);
           this.route.navigate(['/home']).then(()=>{
+            this.loginBtn = 'Login';
+            this.loginBtnLoading = false;
             window.location.reload();
           });
           // console.log('User added: ' + next);
@@ -95,7 +99,10 @@ export class LoginComponent implements OnInit {
           } else {
             this.errorMessage = 'An error occurred while logging in';
           }
+
+          this.loginBtnLoading = false;
           console.log('Error to login:' + error);
+          return;
         }
       );
     }

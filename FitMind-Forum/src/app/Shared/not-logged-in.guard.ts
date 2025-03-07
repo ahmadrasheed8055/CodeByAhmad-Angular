@@ -3,7 +3,7 @@ import { routes } from '../app.routes';
 import { inject } from '@angular/core';
 
 export const notLoggedInGuard: CanActivateFn = (route, state) => {
- const user = sessionStorage.getItem('appUser');
+ const user = sessionStorage.getItem('appUserId');
  var router = inject(Router);
 
  if (user) {

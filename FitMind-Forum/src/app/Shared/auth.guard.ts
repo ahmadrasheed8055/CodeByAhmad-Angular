@@ -14,7 +14,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   // console.log(token);
   
-  if (sessionStorage.getItem('appUser')) {
+  if (sessionStorage.getItem('appUserId')) {
     
     return true;
   } else {

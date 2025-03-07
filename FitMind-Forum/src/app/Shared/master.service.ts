@@ -5,7 +5,13 @@ import { HttpClient } from '@angular/common/http';
 // it was missing this import statement in app.config.ts file , add this into the config file
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AppUser, IAppUser, UpdateAppUserDTO, UserLoginDTO } from '../Model/AppUsers';
+import {
+  AppUser,
+  IAppUser,
+  PublicAppUserDTO,
+  UpdateAppUserDTO,
+  UserLoginDTO,
+} from '../Model/AppUsers';
 
 @Injectable({
   providedIn: 'root',
@@ -69,13 +75,22 @@ export class MasterService {
   //==========User login==============
   APP_USER_LOGIN_URL = 'AppUsers/login-user';
 
-  loginUser(userlogin: UserLoginDTO): Observable<AppUser> {
-    // debugger;
+  loginUser(userlogin: UserLoginDTO): Observable<number> {
     const url = this.API_URL + this.APP_USER_LOGIN_URL;
-    return this.http.post<AppUser>(url, userlogin, {
+    return this.http.post<number>(url, userlogin, {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+  //==========User getting==============
+  GET_USER = 'AppUsers/get-user/';
+
+  getAppUser(userId: number): Observable<PublicAppUserDTO> {
+    const url = this.API_URL + this.GET_USER + userId;
+    return this.http.get<PublicAppUserDTO>(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
 
   //==========Uploading profile picture==============
   UPLOAD_PROFILE_PICTURE_URL = 'AppUsers/upload-image/';
@@ -100,17 +115,17 @@ export class MasterService {
   }
 
   GET_BACKGROUND_PICTURE_URL = 'AppUsers/get-background-image/';
-  getBackgroundPicture(userId:number){
+  getBackgroundPicture(userId: number) {
     const url = this.API_URL + this.GET_BACKGROUND_PICTURE_URL + userId;
     return this.http.get(url);
   }
 
   //=============Update user===================
   UPDATE_APP_USER = 'AppUsers/update-app-user/';
-  updateAppUser(userId: number, appUser: UpdateAppUserDTO) {
+  updateAppUser(userId: number, appUser: PublicAppUserDTO) {
     const url = this.API_URL + this.UPDATE_APP_USER + userId;
     return this.http.put(url, appUser, {
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 }
