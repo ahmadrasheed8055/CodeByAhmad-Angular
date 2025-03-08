@@ -85,7 +85,7 @@ export class UpdateAppUserDTO {
   id: number;
   username: string;
   uniqueName: string;
-  userVisibility: number;
+  // userVisibility: number;
   bio: string;
   phone: number;
   facebookLink: string;
@@ -97,7 +97,7 @@ export class UpdateAppUserDTO {
     this.id = 0;
     this.username = '';
     this.uniqueName = '';
-    this.userVisibility = 1;
+    // this.userVisibility = 1;
     this.bio = '';
     this.phone = 0;
     this.facebookLink = '';
@@ -143,5 +143,27 @@ export class PublicAppUserDTO{
     this.instagramLink = '';
     this.location = '';
     this.country = '';
+  }
+}
+
+export class AppUserPhotos{
+  profilePhoto: string;
+  backgroundPhoto: string;
+  constructor(){
+    this.profilePhoto = '';
+    this.backgroundPhoto = '';
+  }
+}
+
+export class RegisterUserDTO{
+  Id:number;
+  Username:string;
+  Email:string;
+  PasswordHash:string;
+  constructor(){
+    this.Id = 0;
+    this.Username = '';
+    this.Email = '';
+    this.PasswordHash = '';
   }
 }

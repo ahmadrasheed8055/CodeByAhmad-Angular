@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import {
   AppUser,
+  AppUserPhotos,
   PublicAppUserDTO,
   UpdateAppUserDTO,
 } from '../../../Model/AppUsers';
@@ -41,7 +42,7 @@ export class ProfileSettingComponent implements OnInit {
   masterServices = inject(MasterService);
   joinDate: string = '';
   user!: PublicAppUserDTO;
-
+  userPhotos!:AppUserPhotos;
   imageErrorMessage: string = '';
   imageSuccessMessage: string = '';
   bgImageSuccessMessage: string = '';
@@ -59,29 +60,37 @@ export class ProfileSettingComponent implements OnInit {
     this.snackbar.showError(error);
   }
   ngOnInit() {
-    this.authServices.appUserData$.subscribe((user) => {
-      debugger;
-      if (user) {
-        // Ensure user is not null/undefined
-        this.user = { ...user }; // Create a new object to avoid unintended mutations
-      }
-    });
+     // Initialize form with empty values
+  this.formGroup = new FormGroup({
+    id: new FormControl(null),
+    username: new FormControl(null, [Validators.required]),
+    phone: new FormControl(null, [Validators.required]),
+    uniqueName: new FormControl(null, [Validators.required]),
+    // visibility: new FormControl(null, [Validators.required]),
+    bio: new FormControl(null, [Validators.required]),
+    location: new FormControl(null, [Validators.required]),
+    country: new FormControl(null, [Validators.required]),
+    facebookLink: new FormControl(null),
+    instagramLink: new FormControl(null),
+  });
 
-    this.formGroup = new FormGroup({
-      id: new FormControl(this.user.id),
-      // fullName phone userName visibility  bio country facebookLink instagramLink
-      fullName: new FormControl(this.user.username, [Validators.required]),
-      phone: new FormControl(this.user.phone, [Validators.required]),
-      userName: new FormControl(this.user.uniqueName, [Validators.required]),
-      visibility: new FormControl(this.user.userVisibility, [
-        Validators.required,
-      ]),
-      bio: new FormControl(this.user.bio, [Validators.required]),
-      location: new FormControl(this.user.location, [Validators.required]),
-      country: new FormControl(this.user.country, [Validators.required]),
-      facebookLink: new FormControl(this.user.facebookLink),
-      instagramLink: new FormControl(this.user.instagramLink),
-    });
+  // Subscribe to user data and update form
+  this.authServices.appUserData$.subscribe((user) => {
+    debugger;
+    if (user) {
+
+      this.user = { ...user }; // Store user data
+      this.formGroup.patchValue(this.user); 
+    }
+  });
+
+  this.authServices.appUserPhotos$.subscribe((photos)=>{
+    if (!photos) {
+      return;
+    }
+
+    this.userPhotos = photos;
+  })
   }
 
   onUpload(event: any) {
@@ -99,7 +108,9 @@ export class ProfileSettingComponent implements OnInit {
       (next) => {
         debugger;
         this.imageSuccessMessage = 'Image uploaded successfully';
-        this.authServices.updateProfilePhoto(this.user.id);
+        this.showSuccess(this.imageSuccessMessage);
+        
+      this.authServices.updateProfilePhoto(this.user.id);
       },
       (error) => {
         this.imageErrorMessage = 'An error occurred while uploading the image';
@@ -123,7 +134,7 @@ export class ProfileSettingComponent implements OnInit {
       .uploadBackgroundPicture(formData, this.user.id)
       .subscribe(
         (next) => {
-          // this.authServices.updateBackgroundPhoto();
+          this.authServices.updateBackgroundPhoto(this.user.id);
           this.bgImageSuccessMessage = 'Image uploaded successfully';
           this.showSuccess(this.bgImageSuccessMessage);
           // console.log(next);
@@ -145,9 +156,9 @@ export class ProfileSettingComponent implements OnInit {
     debugger;
     const updateAppUserData: UpdateAppUserDTO = {
       id: this.user.id,
-      username: this.formGroup.value.fullName,
-      uniqueName: this.formGroup.value.userName,
-      userVisibility: this.formGroup.value.visibility,
+      username: this.formGroup.value.username,
+      uniqueName: this.formGroup.value.uniqueName,
+      // userVisibility: this.formGroup.value.visibility,
       bio: this.formGroup.value.bio,
       phone: this.formGroup.value.phone,
       facebookLink: this.formGroup.value.facebookLink,
@@ -160,10 +171,6 @@ export class ProfileSettingComponent implements OnInit {
     this.masterServices.updateAppUser(this.user.id, this.user).subscribe(
       (next) => {
         debugger;
-        // this.authServices.getUser();
-
-        // sessionStorage.setItem('appUser', this.authServices.encryptUser(this.authServices.user));
-        // this.authServices.user = next;
         this.authServices.updateUserData(this.user);
         this.showSuccess('User updated successfully');
         console.log(next);

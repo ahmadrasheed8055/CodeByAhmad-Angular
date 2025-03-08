@@ -9,6 +9,7 @@ import {
   AppUser,
   IAppUser,
   PublicAppUserDTO,
+  RegisterUserDTO,
   UpdateAppUserDTO,
   UserLoginDTO,
 } from '../Model/AppUsers';
@@ -67,7 +68,7 @@ export class MasterService {
   //==========User registration==============
   APP_USER_REGISTRATION_URL = 'AppUsers/add-app-user';
 
-  addAppUser(userObj: AppUser): Observable<IAppUser> {
+  addAppUser(userObj: RegisterUserDTO): Observable<IAppUser> {
     const url = this.API_URL + this.APP_USER_REGISTRATION_URL;
     return this.http.post<IAppUser>(url, userObj);
   }

@@ -32,8 +32,8 @@ export class LoginComponent implements OnInit {
   authServices = inject(AuthService);
   route = inject(Router);
   errorMessage: string = '';
-  loginBtn:string = 'Login';
-  loginBtnLoading:boolean = false;
+  loginBtn: string = 'Login';
+  loginBtnLoading: boolean = false;
 
   constructor() {
     // this.user = new UserLoginDTO();
@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
   }
 
   // viewModal:boolean=false;
-  closeModal(){
+  closeModal() {
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
     if (closeBtn) {
       closeBtn.click();
@@ -60,10 +60,8 @@ export class LoginComponent implements OnInit {
     }
   }
 
-
   login() {
 
-    // debugger;
     if (this.formData.valid) {
       this.loginBtn = 'Loading...';
       this.loginBtnLoading = true;
@@ -76,18 +74,13 @@ export class LoginComponent implements OnInit {
       debugger;
       this.serviecs.loginUser(this.user).subscribe(
         (next) => {
-          debugger;
-          // const encrypUser = this.authServices.encryptUser(next);
-          // console.log(next);
-          // this.authServices.setUser(next);
           sessionStorage.setItem('appUserId', next.toString());
-          // this.authServices.setUser(next);
-          this.route.navigate(['/home']).then(()=>{
+
+          this.route.navigate(['/home']).then(() => {
             this.loginBtn = 'Login';
             this.loginBtnLoading = false;
             window.location.reload();
           });
-          // console.log('User added: ' + next);
         },
         (error) => {
           this.loginBtn = 'Login';

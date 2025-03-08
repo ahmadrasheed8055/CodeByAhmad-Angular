@@ -1,7 +1,7 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MasterService } from '../../../Shared/master.service';
-import { AppUser, IAppUser } from '../../../Model/AppUsers';
+import { AppUser, IAppUser, RegisterUserDTO } from '../../../Model/AppUsers';
 import {
   FormControl,
   FormGroup,
@@ -12,6 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { response } from 'express';
 import { AuthService } from '../../../Shared/auth.service';
+import { SnackBarServiceService } from '../../../Shared/snack-bar-service.service';
 
 @Component({
   selector: 'app-register',
@@ -54,38 +55,35 @@ export class RegisterComponent implements OnInit {
   message: string = '';
   loginModal: string = '#loginModal';
   router = inject(Router);
+  snackMessageService = inject(SnackBarServiceService);
   //user object
+
+  showSuccess(message: string) {
+    this.snackMessageService.showSuccess(message);
+  }
+
+  showError(error: string) {
+    this.snackMessageService.showError(error);
+  }
 
   addUser() {
     const formData = this.appForm.value;
     const userEmail = localStorage.getItem('userEmail');
-    const newUser: AppUser = {
-      id: 0,
-      username: formData.userName,
-      email: userEmail || '',
-      passwordHash: formData.password,
-      emailConfirmed: true,
-      isDeleted: false,
-      joinedDate: new Date(),
-      updatedAt: new Date(),
-      status: 2,
-      uniqueName: '',
-      userVisibility: 0,
-      bio: '',
-      phone: 0,
-      facebookLink: '',
-      instagramLink: '',
-      location: '',
-      country:'',
-      profilePhoto: '',
-      backgroundPhoto:''
+    const newUser: RegisterUserDTO = {
+      Id: 0,
+      Username: formData.userName,
+      Email: userEmail || '',
+      PasswordHash: formData.password,
     };
     
     this.services.addAppUser(newUser).subscribe(
       (next: any) => {
-        const encryptedUser = this.authServices.encryptUser(newUser);
-        sessionStorage.setItem('appUser', encryptedUser);
+        debugger;
+        // const encryptedUser = this.authServices.encryptUser(newUser.id);
+        sessionStorage.setItem('appUserId', next.id);
+        this.authServices.setAppUser();
         console.log('User Added!');
+        this.showSuccess("You are successfully logged in!");
         this.router.navigateByUrl('/home');
       },
       (error: any) => {

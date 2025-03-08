@@ -1,5 +1,10 @@
 import { inject, Injectable } from '@angular/core';
-import { AppUser, IAppUser, PublicAppUserDTO } from '../Model/AppUsers';
+import {
+  AppUser,
+  AppUserPhotos,
+  IAppUser,
+  PublicAppUserDTO,
+} from '../Model/AppUsers';
 import * as CryptoJs from 'crypto-js';
 import { MasterService } from './master.service';
 import { BehaviorSubject, Subject, take } from 'rxjs';
@@ -9,94 +14,109 @@ const SECURE_KEY = 'FITMIND8055';
   providedIn: 'root',
 })
 export class AuthService {
+  //==========APP USER OBJECT =====================
   private appUser = new BehaviorSubject<PublicAppUserDTO | null>(null);
   appUserData$ = this.appUser.asObservable();
+
+  //==========APP USER PHOTOS OBJECT =====================
+  private appUserPhotos = new BehaviorSubject<AppUserPhotos | null>(null);
+  appUserPhotos$ = this.appUserPhotos.asObservable();
+
   masterServices = inject(MasterService);
 
   constructor() {
-    this.getStoredUser();
+    this.setAppUser();
   }
 
-  setUser(userId: number) {
+  //==========Setting app user =====================
+   setAppUser(): void {
+    const userId = sessionStorage.getItem('appUserId');
     if (!userId) return; // Prevent unnecessary API calls
 
-    this.masterServices
-      .getAppUser(userId)
-      .pipe(take(1))
-      .subscribe({
-        next: (user) => {
-          console.log(user);
-          this.appUser.next(user); // ✅ Store user in BehaviorSubject
-        },
+    const numericUserId = Number(userId);
 
-        error: (error) => {
-          console.error(error);
-        },
-      });
+    // Fetch user details
+    this.masterServices.getAppUser(numericUserId).subscribe({
+      next: (user) => {
+        this.appUser.next(user);
+        this.getAppUserPhotos(numericUserId);
+      },
+      error: (err) => console.error('Error fetching user:', err),
+    });
   }
 
-  private getStoredUser(): PublicAppUserDTO | null {
-    const userId = sessionStorage.getItem('appUserId');
-    if (userId) {
-      this.masterServices.getAppUser((Number(userId))).subscribe((user) => this.appUser.next(user)); // ✅ Store user in BehaviorSubjectuserId)
-
-    }
-    return null;
-    
-  }
+  //==========Updating user =====================
   updateUserData(updatedUser: PublicAppUserDTO) {
     this.appUser.next(updatedUser); // Update the BehaviorSubject
   }
-
- 
-
-  // imageUrl$:Subject<any> = new Subject();
-
-  // Encrypt the user object
-  encryptUser(user: IAppUser): string {
-    const encryptedUser = CryptoJs.AES.encrypt(
-      JSON.stringify(user),
-      SECURE_KEY
-    ).toString();
-    return encryptedUser;
+  private getStoredUser(): PublicAppUserDTO | null {
+    const userId = sessionStorage.getItem('appUserId');
+    if (userId) {
+      this.masterServices
+        .getAppUser(Number(userId))
+        .subscribe((user) => this.appUser.next(user)); // ✅ Store user in BehaviorSubjectuserId)
+    }
+    return null;
   }
 
-  // Decrypt the user object
-  decryptUser(user: string): IAppUser {
-    const decryptedUser = CryptoJs.AES.decrypt(user, SECURE_KEY).toString(
-      CryptoJs.enc.Utf8
-    );
-    return JSON.parse(decryptedUser);
+  private getAppUserPhotos(userId: number): void {
+    const photosObj = new AppUserPhotos();
+
+    this.masterServices.getProfilePicture(userId).subscribe({
+      next: (image) => {
+        photosObj.profilePhoto = `data:image/jpeg;base64,${image}`;
+        this.updateAppUserPhotos(photosObj);
+      },
+      error: (err) => console.error('Error fetching profile photo:', err),
+    });
+
+    this.masterServices.getBackgroundPicture(userId).subscribe({
+      next: (image) => {
+        photosObj.backgroundPhoto = `data:image/jpeg;base64,${image}`;
+        this.updateAppUserPhotos(photosObj);
+      },
+      error: (err) => console.error('Error fetching background photo:', err),
+    });
   }
 
-  setUser1(user: IAppUser) {
-    sessionStorage.setItem('appUser', this.encryptUser(user));
+  private updateAppUserPhotos(photos: AppUserPhotos): void {
+    this.appUserPhotos.next(photos);
   }
-
-  //get user
-  // getUser(): IAppUser {
-  //   // debugger;
-  //   const user = sessionStorage.getItem('appUser');
-  //   if (user) {
-  //     this.user = this.decryptUser(user);
-  //     // debugger;
-  //     console.log(this.user);
-
-  //     // this.updateProfilePhoto();
-  //     // this.updateBackgroundPhoto();
-  //     // this.setUser(this.user);
-  //   }
-  //   return this.user;
-  // }
 
   updateProfilePhoto(userId: number) {
     this.masterServices.getProfilePicture(userId).subscribe(
       (image) => {
-        // debugger;
-        // this.user.profilePhoto = 'data:image/jpeg;base64,' + image;
-        return 'data:image/jpeg;base64,' + image;
-        // this.setUser(this.user);
-        //  console.log(sessionStorage.getItem('appUser'));
+        if (image) {
+          // Get current state of photos
+          const currentPhotos = this.appUserPhotos.value || new AppUserPhotos();
+
+          // Update only the profile photo while keeping the background photo unchanged
+          const updatedPhotos: AppUserPhotos = {
+            ...currentPhotos,
+            profilePhoto: `data:image/jpeg;base64,${image}`,
+          };
+
+          // Push updated object to BehaviorSubject
+          this.appUserPhotos.next(updatedPhotos);
+        }
+      },
+      (error) => console.log(error)
+    );
+  }
+
+  updateBackgroundPhoto(userId: number) {
+    this.masterServices.getBackgroundPicture(userId).subscribe(
+      (image) => {
+        const currentObj = this.appUserPhotos.value || new AppUserPhotos();
+
+        const updateObj: AppUserPhotos = {
+          ...currentObj,
+          backgroundPhoto: `data:image/jpeg;base64,${image}`,
+        };
+
+        this.updateAppUserPhotos(updateObj);
+
+        return;
       },
       (error) => {
         console.log(error);
@@ -104,23 +124,22 @@ export class AuthService {
     );
   }
 
-  // updateBackgroundPhoto() {
-  //   this.masterServices.getBackgroundPicture(this.user.id).subscribe(
-  //     (image) => {
-  //       // this.user.backgroundPhoto = 'data:image/jpeg;base64,' + image;
-  //     },
-  //     (error) => {
-  //       console.log(error);
-  //     }
-  //   );
-  // }
+  //=============ENCRYPT USER ID ===========
+  encryptUser(userId: number): string {
+    const encryptedUser = CryptoJs.AES.encrypt(JSON.stringify(userId),SECURE_KEY).toString();
+    return encryptedUser;
+  }
+
+  //=============DEENCRYPT USER ID ===========
+  decryptUser(user: string): IAppUser {
+    const decryptedUser = CryptoJs.AES.decrypt(user, SECURE_KEY).toString(CryptoJs.enc.Utf8);
+    return JSON.parse(decryptedUser);
+  }
 
   //checking user is logged in or not
   isLoggedIn() {
     const user = sessionStorage.getItem('appUserId');
-    if (user) {
-      return true;
-    }
-    return false;
+    
+    return !!user;
   }
 }

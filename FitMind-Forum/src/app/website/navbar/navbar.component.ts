@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../Shared/auth.service';
-import { AppUser, PublicAppUserDTO } from '../../Model/AppUsers';
+import { AppUser, AppUserPhotos, PublicAppUserDTO } from '../../Model/AppUsers';
 import { EmailVarificationComponent } from '../auth/emailVarification/emailVarification.component';
 import { LoginComponent } from '../auth/login/login.component';
 import { MasterService } from '../../Shared/master.service';
@@ -24,23 +24,27 @@ export class NavbarComponent implements OnInit {
   registerModal: string = '#registerModal';
   emailVarificationModal: string = '#emailVarificationModal';
   user!: PublicAppUserDTO;
+  userPhotos!:AppUserPhotos;
   authServices = inject(AuthService);
   router = inject(Router);
   masterServices = inject(MasterService);
 
   ngOnInit() {
-    const userId = sessionStorage.getItem('appUserId');
-    this.authServices.setUser(Number(userId));
+    
     // debugger;
 
 
-    this.authServices.appUserData$.subscribe((newUser) => {
+    this.authServices.appUserData$.subscribe((user) => {
       debugger;
-      if (newUser) {  // Ensure user is not null/undefined
-        this.user = newUser; // Create a new object to avoid unintended mutations
+      if (user) {  // Ensure user is not null/undefined
+        this.user = { ...user }; // Create a new object to avoid unintended mutations  
       }
     });
-    
+    this.authServices.appUserPhotos$.subscribe((photos) => {
+      debugger;
+      if(!photos) return;
+      this.userPhotos = photos;
+    })
     // console.log(this.user);
   }
 

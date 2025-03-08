@@ -151,13 +151,13 @@
                     <div class="dashboard-user-box rounded-3 mb-5">
                       <div class="d-flex align-items-center">
                         <img class="rounded-2"
-                          [src]="(user ? user : 'img/avatar/default.png' ) "
+                          [src]="(userPhotos.profilePhoto ? userPhotos.profilePhoto : 'img/avatar/default.png' ) "
                           lt="User">
                         <div class="ps-4">
                           <input #profilePhoto type="file" (change)="onUpload($event)" hidden>
                           <button (click)="profilePhoto.click()" class="btn btn-mint btn-shadow btn-sm mb-2" type="button">
                             <i class="bi bi-arrow-repeat me-2"></i>
-                            {{user ? 'Change' :
+                            {{userPhotos.profilePhoto ? 'Change' :
                             'Upload'}} 
                             <span class="d-none d-sm-inline">avatar</span></button>
                           <div class="p mb-0 fs-sm text-muted">Upload JPG, GIF or PNG image. 300 x 300 required.</div>
@@ -170,10 +170,10 @@
                       <div class="row g-3">
                         <div class="col-sm-6">
                           <label class="form-label">Name<span class="text-danger "
-                              *ngIf="formGroup.controls['fullName'].invalid && formGroup.controls['fullName'].touched">
+                              *ngIf="formGroup.controls['username'].invalid && formGroup.controls['username'].touched">
                               *
                             </span></label>
-                          <input formControlName="fullName"  type="text" name="name"
+                          <input  formControlName="username"  type="text" name="name"
                             placeholder="Full Name">
 
                         </div>
@@ -183,7 +183,7 @@
                               *ngIf="formGroup.controls['phone'].invalid && formGroup.controls['phone'].touched">
                               *
                             </span></label>
-                          <input formControlName="phone" type="text"  name="Phone" placeholder="Phone">
+                          <input formControlName="phone" type="text"   name="Phone" placeholder="Phone">
 
                         </div>
                         <div class="col-sm-6">
@@ -193,16 +193,16 @@
                         </div>
                         <div class="col-sm-6">
                           <label>User Name <span class="text-danger "
-                              *ngIf="formGroup.controls['userName'].invalid && formGroup.controls['userName'].touched">
+                              *ngIf="formGroup.controls['uniqueName'].invalid && formGroup.controls['uniqueName'].touched">
                               *
                             </span></label>
                           <!-- <span class="d-block text-muted fs-sm">www.apexcodestudios.com/</span> -->
-                          <input formControlName="userName" type="text"
+                          <input formControlName="uniqueName" type="text"
                            
-                            placeholder="ahmad_rasheed">
+                            placeholder="ahmad_rasheed" >
 
                         </div>
-                        <div class="col-lg-12">
+                        <!-- <div class="col-lg-12">
                           <div class="mb-3">
                             <label class="form-label">Profile Visibility<span class="text-danger "
                                 *ngIf="formGroup.controls['visibility'].invalid && formGroup.controls['visibility'].touched">
@@ -212,14 +212,14 @@
                             <div class="mt-1">
                               <div class="form-check form-check-inline">
                                 <input id="public" type="radio" class="form-check-input" name="visibility"
-                                  [checked]="user.userVisibility == 0" formControlName="visibility"
+                                 formControlName="visibility" [checked]="user.userVisibility == 0"
                                   value="0">
                                 <label class="form-check-label" for="public">Public</label>
                               </div>
 
                               <div class="form-check form-check-inline">
                                 <input id="private" type="radio" class="form-check-input" name="visibility"
-                                  [checked]="user.userVisibility == 1" formControlName="visibility"
+                                   formControlName="visibility" [checked]="user.userVisibility == 1"
                                   value="1">
                                 <label class="form-check-label" for="private">Private</label>
                               </div>
@@ -230,7 +230,7 @@
                               Making your profile public means anyone can see your information
                             </small>
                           </div>
-                        </div>
+                        </div> -->
                         <div class="col-sm-12">
                           <label class="form-label">Bio<span class="text-danger "
                               *ngIf="formGroup.controls['bio'].invalid && formGroup.controls['bio'].touched">
@@ -553,11 +553,11 @@
                   <div class="dashboard-body">
                     <div
                       class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"
-                      [style.background-image]="'url(' +user + ')' || 'url(img/avatar/default.png)'">
+                      [style.background-image]="'url(' +userPhotos.backgroundPhoto + ')' || 'url(img/avatar/default.png)'">
                       <input #BGButton class="form-control auto-height" type="file"
                         (change)="updateBackgroundImage($event)" hidden>
                       <button (click)="BGButton.click()" class="btn btn-light"><i class="bi-upload btn-icon"></i>
-                        {{user ? 'Change' : 'Upload'}}
+                        {{userPhotos.backgroundPhoto ? 'Change' : 'Upload'}}
                       </button>
                     </div>
                   </div>
