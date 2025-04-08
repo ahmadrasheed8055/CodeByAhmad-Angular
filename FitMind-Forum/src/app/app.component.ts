@@ -13,10 +13,12 @@ import { RegisterComponent } from "./website/auth/register/register.component";
 import { EmailVarificationComponent } from "./website/auth/emailVarification/emailVarification.component";  // Import this
 import { HomeComponent } from './website/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { NgxUiLoaderHttpModule, NgxUiLoaderModule, NgxUiLoaderRouterModule } from "ngx-ui-loader";
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HttpClientModule],
+  imports: [RouterOutlet, HttpClientModule,NgxUiLoaderModule,NgxUiLoaderRouterModule],
 
 templateUrl: './app.component.html',
   styleUrl: './app.component.css'

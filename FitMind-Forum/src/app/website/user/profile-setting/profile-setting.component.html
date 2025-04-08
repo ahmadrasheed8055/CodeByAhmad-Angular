@@ -534,9 +534,14 @@
                         </div>
                       </div>
                       <div class="d-flex pt-5">
-                        <button [disabled]="formGroup.invalid" type="submit" class="btn btn-mint me-3">Save
-                          Changes</button>
-                        <button class="btn btn-secondary">Cancel</button>
+                        <button 
+                        [disabled]="formGroup.invalid || !formGroup.dirty" 
+                        type="submit" 
+                        class="btn btn-mint me-3">
+                        Save Changes
+                      </button>
+                      
+                        
 
                         </div>
                     </form>

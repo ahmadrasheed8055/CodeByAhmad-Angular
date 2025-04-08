@@ -13,7 +13,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   // const token = router.snapshot.queryParamMap.get('token');
 
   // console.log(token);
-  
+  var pageLoader = false;
   if (sessionStorage.getItem('appUserId')) {
     
     return true;

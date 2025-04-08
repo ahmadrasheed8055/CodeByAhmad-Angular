@@ -6,6 +6,7 @@ import { AppUser, AppUserPhotos, PublicAppUserDTO } from '../../Model/AppUsers';
 import { EmailVarificationComponent } from '../auth/emailVarification/emailVarification.component';
 import { LoginComponent } from '../auth/login/login.component';
 import { MasterService } from '../../Shared/master.service';
+import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
 
 @Component({
   selector: 'app-navbar',
@@ -24,27 +25,26 @@ export class NavbarComponent implements OnInit {
   registerModal: string = '#registerModal';
   emailVarificationModal: string = '#emailVarificationModal';
   user!: PublicAppUserDTO;
-  userPhotos!:AppUserPhotos;
+  userPhotos!: AppUserPhotos;
   authServices = inject(AuthService);
   router = inject(Router);
   masterServices = inject(MasterService);
-
+  snackBarService = inject(SnackBarServiceService);
   ngOnInit() {
-    
     // debugger;
-
 
     this.authServices.appUserData$.subscribe((user) => {
       debugger;
-      if (user) {  // Ensure user is not null/undefined
-        this.user = { ...user }; // Create a new object to avoid unintended mutations  
+      if (user) {
+        // Ensure user is not null/undefined
+        this.user = { ...user }; // Create a new object to avoid unintended mutations
       }
     });
     this.authServices.appUserPhotos$.subscribe((photos) => {
       debugger;
-      if(!photos) return;
+      if (!photos) return;
       this.userPhotos = photos;
-    })
+    });
     // console.log(this.user);
   }
 
@@ -54,9 +54,8 @@ export class NavbarComponent implements OnInit {
 
   logout() {
     sessionStorage.removeItem('appUserId');
-    this.router.navigate(['/']).then(() => {
-      window.location.reload();
-    });
+    this.snackBarService.showSuccess('Logout successfully!');
+    this.router.navigate(['/']);
   }
 }
 

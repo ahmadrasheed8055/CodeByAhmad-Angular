@@ -1,4 +1,12 @@
-import { Component, OnInit, NgModule, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  NgModule,
+  inject,
+  viewChild,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -11,6 +19,7 @@ import { CommonModule } from '@angular/common';
 import { MasterService } from '../../../Shared/master.service';
 import { AuthService } from '../../../Shared/auth.service';
 import { Router } from '@angular/router';
+import { NgxLoaderService } from '../../../Shared/ngx-loader.service';
 
 @Component({
   selector: 'app-login',
@@ -34,6 +43,12 @@ export class LoginComponent implements OnInit {
   errorMessage: string = '';
   loginBtn: string = 'Login';
   loginBtnLoading: boolean = false;
+  @ViewChild('closeLoginModal', { static: false }) closeButton!: ElementRef;
+  ngxLoader = inject(NgxLoaderService);
+
+  ngAfterViewInit() {
+    // console.log('Modal close button initialized:', this.closeButton);
+  }
 
   constructor() {
     // this.user = new UserLoginDTO();
@@ -60,8 +75,13 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  login() {
+  afterLogin() {
+    if (sessionStorage.getItem('appUserId')) {
+      this.authServices.setAppUser();
+    }
+  }
 
+  login() {
     if (this.formData.valid) {
       this.loginBtn = 'Loading...';
       this.loginBtnLoading = true;
@@ -75,11 +95,14 @@ export class LoginComponent implements OnInit {
       this.serviecs.loginUser(this.user).subscribe(
         (next) => {
           sessionStorage.setItem('appUserId', next.toString());
-
+          this.ngxLoader.startLoading();
           this.route.navigate(['/home']).then(() => {
             this.loginBtn = 'Login';
             this.loginBtnLoading = false;
-            window.location.reload();
+            // window.location.reload();
+            this.closeButton.nativeElement.click();
+            this.afterLogin();
+            this.closeModal();
           });
         },
         (error) => {
