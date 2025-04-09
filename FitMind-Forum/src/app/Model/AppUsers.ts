@@ -17,7 +17,7 @@ export interface IAppUser {
   uniqueName: string;
   userVisibility: number;
   bio: string;
-  phone: number;
+  phone: string;
   facebookLink: string;
   instagramLink: string;
   location: string;
@@ -41,7 +41,7 @@ export class AppUser {
   uniqueName: string;
   userVisibility: number;
   bio: string;
-  phone: number;
+  phone: string;
   facebookLink: string;
   instagramLink: string;
   location: string;
@@ -61,7 +61,7 @@ export class AppUser {
     this.uniqueName = '';
     this.userVisibility = 1;
     this.bio = '';
-    this.phone = 0;
+    this.phone = '';
     this.facebookLink = '';
     this.instagramLink = '';
     this.location = '';
@@ -87,7 +87,7 @@ export class UpdateAppUserDTO {
   uniqueName: string;
   // userVisibility: number;
   bio: string;
-  phone: number;
+  phone: string;
   facebookLink: string;
   instagramLink: string;
   location: string;
@@ -99,7 +99,7 @@ export class UpdateAppUserDTO {
     this.uniqueName = '';
     // this.userVisibility = 1;
     this.bio = '';
-    this.phone = 0;
+    this.phone = '';
     this.facebookLink = '';
     this.instagramLink = '';
     this.location = '';
@@ -120,7 +120,7 @@ export class PublicAppUserDTO{
   uniqueName?: string;
   userVisibility?: number;
   bio?: string;
-  phone?: number;
+  phone?: string;
   facebookLink?: string;
   instagramLink?: string;
   location?: string;
@@ -138,7 +138,7 @@ export class PublicAppUserDTO{
     this.uniqueName = '';
     this.userVisibility = 0;
     this.bio = '';
-    this.phone = 0;
+    this.phone = '';
     this.facebookLink = '';
     this.instagramLink = '';
     this.location = '';
