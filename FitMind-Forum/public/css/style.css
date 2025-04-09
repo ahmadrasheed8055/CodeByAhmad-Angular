@@ -3899,7 +3899,7 @@ display: block;
 /* Users Profile Page
 ---------------------------------------------------------------------- */
 .profile-banner{
-  background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(../img/bg/5.jpg);
+  /* background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(../img/bg/5.jpg); */
   background-position: 50%;
   background-repeat: no-repeat; 
   background-size: cover;
@@ -3907,14 +3907,25 @@ display: block;
   margin-top: 100px;
 }
 .user-profile-img {
-  padding: 50px 0px;
+  padding: 0px 0;
   margin-top: -170px;
+  width: 200px; /* Fixed width for the circular frame */
+  height: 200px; /* Fixed height for the circular frame */
+  display: flex;
+  justify-content: center; /* Centers the image horizontally */
+  align-items: center; /* Centers the image vertically */
+  border-radius: 50%; /* Makes the container circular */
+  overflow: hidden; /* Ensures that the image stays within the circular frame */
 }
-.user-profile-img img{
-  border: 10px solid var(--white);
-  border-radius: 50%;
-  max-width: 200px;
+
+.user-profile-img img {
+  width: 100%; /* Ensures the image fills the entire container */
+  height: 100%; /* Ensures the image fills the entire container */
+  object-fit: cover; /* Makes sure the image maintains aspect ratio and fills the circle */
+  border: 10px solid var(--white); /* Keeps the white border around the image */
+  border-radius: 50%; /* Ensures the image itself is also circular */
 }
+
 .user-profile-details {
   padding: 0px 0px 50px;
   margin-top: 0px;

@@ -1,0 +1,1049 @@
+<div class="profile-banner" [style.background-image]="'url(' +userPhotos.backgroundPhoto + ')' || 'url(img/avatar/default.png)'"></div>
+
+
+<section class="vine-main">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-3 aos-init aos-animate" data-aos="fade-right" data-aos-easing="linear">
+
+                <div class="user-profile-img">
+                    <img  [src]="(userPhotos.profilePhoto ? userPhotos.profilePhoto : 'img/avatar/default.png' ) "alt="img">
+                </div>
+
+                <div class="user-profile-details">
+                    <div class="user-profile-name">
+                        <h4>{{user.username}}</h4>
+                        <p> {{user.email}} </p>
+                        <p class="fs-7 mt-3">Joined {{user.joinedDate | date:'MMM yyyy'}}</p>
+                    </div>
+                    <div class="user-profile-stats">
+                        <ul>
+                            <li><span class="item-number">2.1k</span> <span class="item-text">Followers</span></li>
+                            <li><span class="item-number">400</span> <span class="item-text">Following</span></li>
+                            <!-- <li> <a href="javascript:void(0)" class="btn btn-sm btn-mint rounded-pill"> Follow</a> </li> -->
+                        </ul>
+                    </div>
+                    <div class="user-profile-followers">
+                        <h6 class="mb-3">Followers</h6>
+                        <ul>
+                            <li><a href="#"><img src="img/avatar/default.png" alt="User"></a></li>
+                            <li><a href="#"><img src="img/avatar/7.jpg" alt="User"></a></li>
+                            <li><a href="#"><img src="img/avatar/8.jpg" alt="User"></a></li>
+                            <li><a href="#"><img src="img/avatar/9.jpg" alt="User"></a></li>
+                            <li><a href="#"><img src="img/avatar/10.jpg" alt="User"></a></li>
+                            <li><a href="#"><img src="img/avatar/11.jpg" alt="User"></a></li>
+                        </ul>
+                        <h6 class="mt-3"><a href="">View All</a></h6>
+                    </div>
+
+                    <ul class="achivement-fact">
+                        <li>
+                            <div class="icon"><i class="bi bi-layers"></i></div>
+                            <h5 class="counter">110</h5>
+                            <p>Posts</p>
+                        </li>
+                        <li>
+                            <div class="icon"><i class="bi bi-chat-dots"></i></div>
+                            <h5 class="counter">14,319</h5>
+                            <p>Comments</p>
+                        </li>
+                        <li>
+                            <div class="icon"><i class="bi bi-heart"></i></div>
+                            <h5 class="counter">540</h5>
+                            <p>Likes</p>
+                        </li>
+                    </ul>
+
+                    <div class="user-profile-bio">
+                        <h6 class="mb-3">About</h6>
+                        <p> {{user.bio}} </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-9">
+
+                <div class="row g-4 aos-init aos-animate" data-aos="fade-down" data-aos-easing="linear">
+                    <div class="col-12">
+                        <div class="vine-tabs pb-0 px-2 px-lg-0 rounded-top">
+                            <ul class="nav nav-tabs nav-bottom-line nav-responsive border-0 nav-justified"
+                                role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link mb-0 active" data-bs-toggle="tab" href="#tab-1"
+                                        aria-selected="true" role="tab">
+                                        <i class="bi bi-gear fa-fw me-2"></i>Posts
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-2" aria-selected="false"
+                                        role="tab" tabindex="-1">
+                                        <i class="bi bi-chat-dots fa-fw me-2"></i>Comments
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-3" aria-selected="false"
+                                        role="tab" tabindex="-1">
+                                        <i class="bi bi-people me-2"></i> Following
+                                    </a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-4" aria-selected="false"
+                                        role="tab" tabindex="-1">
+                                        <i class="bi bi-people me-2"></i> Followers
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="tab-content mt-5">
+                            <div class="tab-pane active show" id="tab-1" role="tabpanel">
+
+
+                                <div class="discussions">
+
+                                    <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
+                                        data-aos-easing="linear">
+                                        <div class="vote d-none d-lg-block">
+                                            <a href="" class="up-arrow"><i class="bi bi-hand-thumbs-up"></i></a>
+                                            <p class="mb-3">70</p>
+                                            <p>24</p>
+                                            <a href="" class="down-arrow"><i class="bi bi-hand-thumbs-down"></i></a>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header card-header-action">
+                                                <div class="media align-items-center">
+                                                    <div class="media-head me-2">
+                                                        <div class="avatar">
+                                                            <a href="#"><img src="img/avatar/1.jpg" alt="user"
+                                                                    class="avatar-img rounded-circle"></a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <div><a href="#">Abram Marvyn</a> <i
+                                                                class="bi bi-patch-check-fill text-red"></i></div>
+                                                        <div class="fs-7"><span> 01 hrs ago in </span> <a href="#"
+                                                                class="cat">AI</a></div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-action-wrap">
+                                                    <p class="me-2 text-danger d-flex"><i class="bi bi-pin"></i> <span
+                                                            class="d-none d-sm-block">Pinned</span></p>
+                                                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
+                                                            class="bi bi-three-dots-vertical"></i></a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-pencil me-2"></i> Edit Post</a>
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-eye-slash me-2"></i> Hide Post</a>
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-trash3 me-2"></i> Delete Post</a>
+                                                        <div class="dropdown-divider"></div>
+                                                        <a class="dropdown-item" href="#"><i class="bi bi-pin me-2"></i>
+                                                            Pin Post</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <h3>
+                                                    <a href="">Do you think BARD will overtake ChatGPT?</a>
+                                                </h3>
+                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et facilis,
+                                                    soluta vitae porro, praesentium deserunt explicabo optio laborum.
+                                                    Quidem consequuntur modi atque, placeat repellat, perferendis
+                                                    aperiam, fugiat harum ullam aspernatur dicta doloribus qui quo
+                                                    corrupti natus reprehenderit...
+                                                </p>
+
+                                                <div class="tags">
+                                                    <a href="#" class="tag-link">Feedback</a>
+                                                    <a href="#" class="tag-link">AI</a>
+                                                    <a href="#" class="tag-link">Products</a>
+                                                    <a href="#" class="tag-link">Future</a>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-footer">
+
+                                                <div class="post-stats">
+                                                    <div class="post-item d-lg-none d-xl-none">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-hand-thumbs-up"></i>
+                                                            </div>
+                                                            <div class="post-text">70</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item d-lg-none d-xl-none">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i
+                                                                    class="bi bi-hand-thumbs-down"></i></div>
+                                                            <div class="post-text">24</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <ul>
+                                                            <li><a href="#"><img src="img/avatar/6.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/7.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/8.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/9.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/10.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/11.jpg"
+                                                                        alt="User"></a></li>
+                                                        </ul>
+                                                        <div class="post-text">+170</div>
+                                                        <div class="post-text">Views</div>
+                                                    </div>
+                                                    <div class="post-item me-lg-5">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-chat-dots"></i></div>
+                                                            <div class="post-text">1200</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-bookmark"></i></div>
+                                                            <div class="post-text">32</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-share"></i></div>
+                                                            <div class="post-text">12</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-flag"></i></div>
+                                                            <div class="post-text">Report</div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div><!--/post-box-->
+
+                                    <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
+                                        data-aos-easing="linear">
+                                        <div class="vote d-none d-lg-block">
+                                            <a href="" class="up-arrow"><i class="bi bi-hand-thumbs-up"></i></a>
+                                            <p class="mb-3">70</p>
+                                            <p>24</p>
+                                            <a href="" class="down-arrow"><i class="bi bi-hand-thumbs-down"></i></a>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header card-header-action">
+                                                <div class="media align-items-center">
+                                                    <div class="media-head me-2">
+                                                        <div class="avatar">
+                                                            <a href="#"><img src="img/avatar/1.jpg" alt="user"
+                                                                    class="avatar-img rounded-circle"></a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <div><a href="#">Abram Marvyn</a></div>
+                                                        <div class="fs-7"><span> 03 hrs ago in </span> <a href="#"
+                                                                class="cat">AI</a></div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-action-wrap">
+                                                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
+                                                            class="bi bi-three-dots-vertical"></i></a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-pencil me-2"></i> Edit Post</a>
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-eye-slash me-2"></i> Hide Post</a>
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-trash3 me-2"></i> Delete Post</a>
+                                                        <div class="dropdown-divider"></div>
+                                                        <a class="dropdown-item" href="#"><i class="bi bi-pin me-2"></i>
+                                                            Pin Post</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <h3>
+                                                    <a href="">What is your favorite AI project you found recently?</a>
+                                                </h3>
+                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et facilis,
+                                                    soluta vitae porro, praesentium deserunt explicabo optio laborum.
+                                                    Quidem consequuntur modi atque, placeat repellat, perferendis
+                                                    aperiam, fugiat harum ullam aspernatur dicta doloribus qui quo
+                                                    corrupti natus reprehenderit...
+                                                </p>
+
+                                                <div class="tags">
+                                                    <a href="#" class="tag-link">Feedback</a>
+                                                    <a href="#" class="tag-link">AI</a>
+                                                    <a href="#" class="tag-link">Products</a>
+                                                    <a href="#" class="tag-link">Future</a>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-footer">
+
+                                                <div class="post-stats">
+                                                    <div class="post-item d-lg-none d-xl-none">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-hand-thumbs-up"></i>
+                                                            </div>
+                                                            <div class="post-text">70</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item d-lg-none d-xl-none">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i
+                                                                    class="bi bi-hand-thumbs-down"></i></div>
+                                                            <div class="post-text">24</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <ul>
+                                                            <li><a href="#"><img src="img/avatar/1.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/2.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/3.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/4.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/5.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/6.jpg"
+                                                                        alt="User"></a></li>
+                                                        </ul>
+                                                        <div class="post-text">+170</div>
+                                                        <div class="post-text">Views</div>
+                                                    </div>
+                                                    <div class="post-item me-lg-5">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-chat-dots"></i></div>
+                                                            <div class="post-text">1200</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-bookmark"></i></div>
+                                                            <div class="post-text">32</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-share"></i></div>
+                                                            <div class="post-text">12</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-flag"></i></div>
+                                                            <div class="post-text">Report</div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div><!--/post-box-->
+
+                                    <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
+                                        data-aos-easing="linear">
+                                        <div class="vote d-none d-lg-block">
+                                            <a href="" class="up-arrow"><i class="bi bi-hand-thumbs-up"></i></a>
+                                            <p class="mb-3">70</p>
+                                            <p>24</p>
+                                            <a href="" class="down-arrow"><i class="bi bi-hand-thumbs-down"></i></a>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header card-header-action">
+                                                <div class="media align-items-center">
+                                                    <div class="media-head me-2">
+                                                        <div class="avatar">
+                                                            <a href="#"><img src="img/avatar/1.jpg" alt="user"
+                                                                    class="avatar-img rounded-circle"></a>
+                                                        </div>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <div><a href="#">Abram Marvyn</a></div>
+                                                        <div class="fs-7"><span> 03 hrs ago in </span> <a href="#"
+                                                                class="cat">Products</a></div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-action-wrap">
+                                                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
+                                                            class="bi bi-three-dots-vertical"></i></a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-pencil me-2"></i> Edit Post</a>
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-eye-slash me-2"></i> Hide Post</a>
+                                                        <a class="dropdown-item" href="#"><i
+                                                                class="bi bi-trash3 me-2"></i> Delete Post</a>
+                                                        <div class="dropdown-divider"></div>
+                                                        <a class="dropdown-item" href="#"><i class="bi bi-pin me-2"></i>
+                                                            Pin Post</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <h3>
+                                                    <a href="">Who all are launching their Products this week?</a>
+                                                </h3>
+                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et facilis,
+                                                    soluta vitae porro, praesentium deserunt explicabo optio laborum.
+                                                    Quidem consequuntur modi atque, placeat repellat, perferendis
+                                                    aperiam, fugiat harum ullam aspernatur dicta doloribus qui quo
+                                                    corrupti natus reprehenderit...
+                                                </p>
+
+                                                <div class="tags">
+                                                    <a href="#" class="tag-link">Feedback</a>
+                                                    <a href="#" class="tag-link">Business</a>
+                                                    <a href="#" class="tag-link">Products</a>
+                                                    <a href="#" class="tag-link">Future</a>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-footer">
+
+                                                <div class="post-stats">
+                                                    <div class="post-item d-lg-none d-xl-none">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-hand-thumbs-up"></i>
+                                                            </div>
+                                                            <div class="post-text">70</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item d-lg-none d-xl-none">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i
+                                                                    class="bi bi-hand-thumbs-down"></i></div>
+                                                            <div class="post-text">24</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <ul>
+                                                            <li><a href="#"><img src="img/avatar/6.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/7.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/8.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/9.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/10.jpg"
+                                                                        alt="User"></a></li>
+                                                            <li><a href="#"><img src="img/avatar/11.jpg"
+                                                                        alt="User"></a></li>
+                                                        </ul>
+                                                        <div class="post-text">+170</div>
+                                                        <div class="post-text">Views</div>
+                                                    </div>
+                                                    <div class="post-item me-lg-5">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-chat-dots"></i></div>
+                                                            <div class="post-text">1200</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-bookmark"></i></div>
+                                                            <div class="post-text">32</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-share"></i></div>
+                                                            <div class="post-text">12</div>
+                                                        </a>
+                                                    </div>
+                                                    <div class="post-item">
+                                                        <a href="#">
+                                                            <div class="post-icon"><i class="bi bi-flag"></i></div>
+                                                            <div class="post-text">Report</div>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div><!--/post-box-->
+
+                                    <div class="pagination aos-init aos-animate" data-aos="fade-up"
+                                        data-aos-easing="linear">
+
+                                        <a href="#" class="page-numbers btn-start">
+                                            <i class="b bi-chevron-double-left"></i>
+                                        </a>
+
+                                        <a href="#" class="page-numbers btn--prev">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                        <span class="page-numbers pagination-space"> <i class="bi bi-three-dots"></i>
+                                        </span>
+                                        <a href="#" class="page-numbers current"><span>1</span></a>
+                                        <a href="#" class="page-numbers"><span>2</span></a>
+                                        <a href="#" class="page-numbers"><span>3</span></a>
+                                        <a href="#" class="page-numbers"><span>4</span></a>
+                                        <a href="#" class="page-numbers"><span>5</span></a>
+                                        <a href="#" class="page-numbers"><span>6</span></a>
+
+                                        <span class="page-numbers pagination-space"> <i
+                                                class="bi bi-three-dots"></i></span>
+                                        <a href="#" class="page-numbers btn--next">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+
+                                        <a href="#" class="page-numbers btn-end">
+                                            <i class="bi bi-chevron-double-right"></i>
+                                        </a>
+
+                                        <span class="page-numbers all-pages">
+                                            70 Pages
+                                        </span>
+
+                                    </div><!--/pagination-->
+
+                                </div>
+
+                            </div><!-- Tab content 1 END -->
+
+                            <div class="tab-pane" id="tab-2" role="tabpanel">
+
+
+                                <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
+                                    data-aos-easing="linear">
+                                    <div class="card">
+                                        <div class="card-header card-header-action py-3">
+                                            <div class="media align-items-center">
+                                                <div class="media-head me-2">
+                                                    <div class="avatar">
+                                                        <a href="#"><img src="img/avatar/2.jpg" alt="user"
+                                                                class="avatar-img rounded-circle"></a>
+                                                    </div>
+                                                </div>
+                                                <div class="media-body">
+                                                    <div><a href="">What is your favorite AI project you found
+                                                            recently?</a></div>
+                                                    <div class="fs-7"><a href="#">Adaline Riley</a><span class="ms-3">
+                                                            03 hrs ago in </span> <a href="#" class="cat">AI</a></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+
+                                            <div class="h-100">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                                        <a href="#" class="d-flex align-items-center fs-7 me-3">
+                                                            <img src="img/avatar/1.jpg"
+                                                                class="avatar-sm rounded-circle me-3" alt="Avatar">
+                                                            Abram Marvyn
+                                                        </a>
+                                                        <span class="fs-sm text-muted">January 24, 2023</span>
+                                                    </div>
+
+                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
+                                                        volutpat sit. Dui diam,
+                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
+                                                        habitasse porta neque tempor tellus ut.
+                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
+                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
+                                                        fusce ipsum donec amet.</p>
+                                                    <div class="row">
+                                                        <div class="col-lg-3 col-md-6 mb-3"><img
+                                                                src="img/social/1.jpg"
+                                                                class="img-fluid rounded-2" alt="social"></div>
+                                                        <div class="col-lg-3 col-md-6 mb-3"><img
+                                                                src="img/social/2.jpg"
+                                                                class="img-fluid rounded-2" alt="social"></div>
+                                                        <div class="col-lg-3 col-md-6 mb-3"><img
+                                                                src="img/social/3.jpg"
+                                                                class="img-fluid rounded-2" alt="social"></div>
+                                                        <div class="col-lg-3 col-md-6 mb-3"><img
+                                                                src="img/social/4.jpg"
+                                                                class="img-fluid rounded-2" alt="social"></div>
+                                                    </div>
+                                                </div>
+                                            </div><!--/Comment-box-->
+
+                                        </div><!--/card-footer-->
+
+                                    </div><!--/card-->
+                                </div><!--/post-box-->
+
+                                <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
+                                    data-aos-easing="linear">
+                                    <div class="card">
+                                        <div class="card-header card-header-action py-3">
+                                            <div class="media align-items-center">
+                                                <div class="media-head me-2">
+                                                    <div class="avatar">
+                                                        <a href="#"><img src="img/avatar/3.jpg" alt="user"
+                                                                class="avatar-img rounded-circle"></a>
+                                                    </div>
+                                                </div>
+                                                <div class="media-body">
+                                                    <div><a href="">Who all are launching their Products this week?</a>
+                                                    </div>
+                                                    <div class="fs-7"><a href="#">Buster Jayden</a><span class="ms-3">
+                                                            03 hrs ago in </span> <a href="#" class="cat">Products</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+
+                                            <div class="h-100">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                                        <a href="#" class="d-flex align-items-center fs-7 me-3">
+                                                            <img src="img/avatar/1.jpg"
+                                                                class="avatar-sm rounded-circle me-3" alt="Avatar">
+                                                            Abram Marvyn
+                                                        </a>
+                                                        <span class="fs-sm text-muted">January 24, 2023</span>
+                                                    </div>
+
+                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
+                                                        volutpat sit. Dui diam,
+                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
+                                                        habitasse porta neque tempor tellus ut.
+                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
+                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
+                                                        fusce ipsum donec amet.</p>
+                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
+                                                        volutpat sit. Dui diam,
+                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
+                                                        habitasse porta neque tempor tellus ut.
+                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
+                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
+                                                        fusce ipsum donec amet.</p>
+                                                </div>
+                                            </div><!--/Comment-box-->
+
+                                        </div><!--/card-footer-->
+
+                                    </div><!--/card-->
+                                </div><!--/post-box-->
+
+                                <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
+                                    data-aos-easing="linear">
+                                    <div class="card">
+                                        <div class="card-header card-header-action py-3">
+                                            <div class="media align-items-center">
+                                                <div class="media-head me-2">
+                                                    <div class="avatar">
+                                                        <a href="#"><img src="img/avatar/4.jpg" alt="user"
+                                                                class="avatar-img rounded-circle"></a>
+                                                    </div>
+                                                </div>
+                                                <div class="media-body">
+                                                    <div><a href="">I'm Loisa, Manager at ApexCodeStudios, Ask me
+                                                            anything!</a></div>
+                                                    <div class="fs-7"><a href="#">Louisa Triston</a><span class="ms-3">
+                                                            03 hrs ago in </span> <a href="#" class="cat">Ideas and
+                                                            Validation</a></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+
+                                            <div class="h-100">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                                        <a href="#" class="d-flex align-items-center fs-7 me-3">
+                                                            <img src="img/avatar/1.jpg"
+                                                                class="avatar-sm rounded-circle me-3" alt="Avatar">
+                                                            Abram Marvyn
+                                                        </a>
+                                                        <span class="fs-sm text-muted">January 24, 2023</span>
+                                                    </div>
+
+                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
+                                                        volutpat sit. Dui diam,
+                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
+                                                        habitasse porta neque tempor tellus ut.
+                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
+                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
+                                                        fusce ipsum donec amet.</p>
+                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
+                                                        volutpat sit. Dui diam,
+                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
+                                                        habitasse porta neque tempor tellus ut.
+                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
+                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
+                                                        fusce ipsum donec amet.</p>
+                                                </div>
+                                            </div><!--/Comment-box-->
+
+                                        </div><!--/card-footer-->
+
+                                    </div><!--/card-->
+                                </div><!--/post-box-->
+
+                                <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
+                                    data-aos-easing="linear">
+                                    <div class="card">
+                                        <div class="card-header card-header-action py-3">
+                                            <div class="media align-items-center">
+                                                <div class="media-head me-2">
+                                                    <div class="avatar">
+                                                        <a href="#"><img src="img/avatar/5.jpg" alt="user"
+                                                                class="avatar-img rounded-circle"></a>
+                                                    </div>
+                                                </div>
+                                                <div class="media-body">
+                                                    <div><a href="">Would you like to have a 4-day workweek? And how
+                                                            would you compensate the extra day off?</a></div>
+                                                    <div class="fs-7"><a href="#">Damon Tucker</a><span class="ms-3"> 03
+                                                            hrs ago in </span> <a href="#" class="cat">Feedback</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+
+                                            <div class="h-100">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                                        <a href="#" class="d-flex align-items-center fs-7 me-3">
+                                                            <img src="img/avatar/1.jpg"
+                                                                class="avatar-sm rounded-circle me-3" alt="Avatar">
+                                                            Abram Marvyn
+                                                        </a>
+                                                        <span class="fs-sm text-muted">January 24, 2023</span>
+                                                    </div>
+
+                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
+                                                        volutpat sit. Dui diam,
+                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
+                                                        habitasse porta neque tempor tellus ut.
+                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
+                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
+                                                        fusce ipsum donec amet.</p>
+                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
+                                                        volutpat sit. Dui diam,
+                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
+                                                        habitasse porta neque tempor tellus ut.
+                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
+                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
+                                                        fusce ipsum donec amet.</p>
+                                                </div>
+                                            </div><!--/Comment-box-->
+
+                                        </div><!--/card-footer-->
+
+                                    </div><!--/card-->
+                                </div><!--/post-box-->
+
+                                <div class="pagination aos-init aos-animate" data-aos="fade-up"
+                                    data-aos-easing="linear">
+
+                                    <a href="#" class="page-numbers btn-start">
+                                        <i class="b bi-chevron-double-left"></i>
+                                    </a>
+
+                                    <a href="#" class="page-numbers btn--prev">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                    <span class="page-numbers pagination-space"> <i class="bi bi-three-dots"></i>
+                                    </span>
+                                    <a href="#" class="page-numbers current"><span>1</span></a>
+                                    <a href="#" class="page-numbers"><span>2</span></a>
+                                    <a href="#" class="page-numbers"><span>3</span></a>
+                                    <a href="#" class="page-numbers"><span>4</span></a>
+                                    <a href="#" class="page-numbers"><span>5</span></a>
+                                    <a href="#" class="page-numbers"><span>6</span></a>
+
+                                    <span class="page-numbers pagination-space"> <i class="bi bi-three-dots"></i></span>
+                                    <a href="#" class="page-numbers btn--next">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+
+                                    <a href="#" class="page-numbers btn-end">
+                                        <i class="bi bi-chevron-double-right"></i>
+                                    </a>
+
+                                    <span class="page-numbers all-pages">
+                                        70 Pages
+                                    </span>
+
+                                </div><!--/pagination-->
+
+                            </div><!-- Tab content 2 END -->
+
+                            <div class="tab-pane" id="tab-3" role="tabpanel">
+
+                                <div class="row">
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/2.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Adaline Riley</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/3.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Buster Jayden</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Maimi, USA
+                                                    </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/4.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Louisa Triston</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Beijing,
+                                                        China </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/5.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Damon Tucker</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Paris,
+                                                        France </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/6.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Charlene Cross</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Nairobi,
+                                                        Kenya </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/7.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Rafael Frank</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Cairo,
+                                                        Egypt </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div><!-- Tab content 3 END -->
+
+                            <div class="tab-pane" id="tab-4" role="tabpanel">
+
+                                <div class="row">
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/8.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Lynda Briggs</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/9.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Bernard Holt</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/10.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Krista Haynes</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/11.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Lionel
+                                                        Henderson</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/12.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Stacey Long</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/13.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Timothy Spencer</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/14.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Kathleen Murray</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-6">
+
+                                        <div class="card mb-5">
+                                            <div class="media media-xs card-body">
+                                                <img src="img/avatar/15.jpg"
+                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
+                                                <div class="media-body valign-middle">
+                                                    <a class="fw-semibold" href="javascript:void(0)">Jorge Dean</a>
+                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
+                                                        USA </p>
+                                                </div>
+                                                <div class="media-body valign-middle text-end mt-2"><button
+                                                        class="btn btn-mint" type="button">Follow</button></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div><!-- Tab content 3 END -->
+                        </div>
+                    </div>
+                </div>
+
+            </div><!--/col-lg-9-->
+
+        </div>
+    </div>
+</section>

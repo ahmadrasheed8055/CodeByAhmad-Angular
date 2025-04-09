@@ -78,7 +78,6 @@ export class ProfileSettingComponent implements OnInit {
   this.authServices.appUserData$.subscribe((user) => {
     debugger;
     if (user) {
-
       this.user = { ...user }; // Store user data
       this.formGroup.patchValue(this.user); 
     }

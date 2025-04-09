@@ -7,6 +7,7 @@ import { emailTokenGuardGuard } from './Shared/email-token-guard.guard';
 import { ErrorComponent } from './website/error/error.component';
 import { ProfileSettingComponent } from './website/user/profile-setting/profile-setting.component';
 import { NavbarComponent } from './website/navbar/navbar.component';
+import { ProfileViewComponent } from './website/user/profile-view/profile-view.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,11 @@ export const routes: Routes = [
       {
         path: 'profile-setting',
         component: ProfileSettingComponent,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'profile-view',
+        component: ProfileViewComponent,
         canActivate: [authGuard],
       }
     ]
