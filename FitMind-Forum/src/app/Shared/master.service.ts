@@ -108,18 +108,37 @@ export class MasterService {
     return this.http.get(url);
   }
 
+  //=============Delete Profile===================
+  DELETE_PROFILE_PICTURE_URL = 'AppUsers/delete-profile/';
+
+  deleteProfilePicture(userId: number){
+    const url = this.API_URL + this.DELETE_PROFILE_PICTURE_URL + userId;
+    return this.http.put(url, userId);
+  }
+
+
+
   //================upload background picture==================
   UPLOAD_BACKGROUND_PICTURE_URL = 'AppUsers/upload-background-image/';
   uploadBackgroundPicture(formData: FormData, userId: number) {
     const url = this.API_URL + this.UPLOAD_BACKGROUND_PICTURE_URL + userId;
     return this.http.put(url, formData);
   }
-
+  
+  //================Get background picture==================
   GET_BACKGROUND_PICTURE_URL = 'AppUsers/get-background-image/';
   getBackgroundPicture(userId: number) {
     const url = this.API_URL + this.GET_BACKGROUND_PICTURE_URL + userId;
     return this.http.get(url);
   }
+
+    //=============Delete Background Picture===================
+    DELETE_BACKGROUND_PICTURE_URL = 'AppUsers/delete-background/';
+
+    deleteBackgroundPicture(userId: number){
+      const url = this.API_URL + this.DELETE_BACKGROUND_PICTURE_URL + userId;
+      return this.http.put(url, userId);
+    }
 
   //=============Update user===================
   UPDATE_APP_USER = 'AppUsers/update-app-user/';
@@ -129,6 +148,17 @@ export class MasterService {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+
+  //=============Update user===================
+  CHECK_UNIQUE_NAME = 'AppUsers/check-unique-name?uniqueName=';
+  checkUniqueName(uniqueName:string) {
+    const url = this.API_URL + this.CHECK_UNIQUE_NAME + uniqueName;
+    return this.http.get(url);
+  }
+
+  //
+
+
 }
 
 /*

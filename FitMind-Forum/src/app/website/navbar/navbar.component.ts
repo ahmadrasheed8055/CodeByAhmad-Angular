@@ -22,6 +22,7 @@ import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
 })
 export class NavbarComponent implements OnInit {
   loginModal: string = '#loginModal';
+  deleteProfileModal = '#deleteProfileModal';
   registerModal: string = '#registerModal';
   emailVarificationModal: string = '#emailVarificationModal';
   user!: PublicAppUserDTO;

@@ -59,6 +59,8 @@ export class AuthService {
     return null;
   }
 
+
+
   private getAppUserPhotos(userId: number): void {
     const photosObj = new AppUserPhotos();
 

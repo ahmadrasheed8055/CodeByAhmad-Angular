@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
 
-     
+
       <div class="col-12 col-lg-12">
 
         <h4 class="mb-4 aos-init aos-animate" data-aos="fade-down" data-aos-easing="linear"><i
@@ -50,27 +50,35 @@
                           [src]="(userPhotos.profilePhoto ? userPhotos.profilePhoto : 'img/avatar/default.png' ) "
                           lt="User">
                         <div class="ps-4">
+
                           <input #profilePhoto type="file" (change)="onUpload($event)" hidden>
-                          <button (click)="profilePhoto.click()" class="btn btn-mint btn-shadow btn-sm mb-2" type="button">
-                            <i class="bi bi-arrow-repeat me-2"></i>
-                            {{userPhotos.profilePhoto ? 'Change' :
-                            'Upload'}} 
-                            <span class="d-none d-sm-inline">avatar</span></button>
+                          <div class="btn-group" role="group" aria-label="Basic example">
+                            <button (click)="profilePhoto.click()" class="btn btn-mint btn-shadow btn-sm mb-2"
+                              type="button">
+                              <i class="bi bi-arrow-repeat me-2"></i>
+                              {{userPhotos.profilePhoto ? 'Change' :'Upload'}}
+                              <span class="d-none d-sm-inline">avatar</span>
+                            </button>
+                            <button *ngIf="userPhotos.profilePhoto" data-bs-toggle="modal" data-bs-target="#profileConfirmation"
+                              class="btn btn-danger btn-shadow btn-sm mb-2" type="button">
+                              <i class="bi bi-trash-fill"></i>
+                            </button>
+                          </div>
+
                           <div class="p mb-0 fs-sm text-muted">Upload JPG, GIF or PNG image. 300 x 300 required.</div>
                         </div>
                       </div>
                     </div><!--/dashboard-user-box-->
 
 
-                    <form [formGroup]="formGroup" (ngSubmit)="updateUser()">
+                    <form class="row g-3 needs-validation" novalidate [formGroup]="formGroup" (ngSubmit)="updateUser()">
                       <div class="row g-3">
                         <div class="col-sm-6">
                           <label class="form-label">Name<span class="text-danger "
                               *ngIf="formGroup.controls['username'].invalid && formGroup.controls['username'].touched">
                               *
                             </span></label>
-                          <input  formControlName="username"  type="text" name="name"
-                            placeholder="Full Name">
+                          <input formControlName="username" type="text" name="name" placeholder="Full Name">
 
                         </div>
 
@@ -79,7 +87,8 @@
                               *ngIf="formGroup.controls['phone'].invalid && formGroup.controls['phone'].touched">
                               *
                             </span></label>
-                          <input formControlName="phone" type="text"   name="Phone" placeholder="Phone">
+
+                          <input formControlName="phone" type="text" name="Phone" placeholder="Phone">
 
                         </div>
                         <div class="col-sm-6">
@@ -87,53 +96,34 @@
                           <input type="text" name="email" [value]="user.email" readonly>
 
                         </div>
-                        <div class="col-sm-6">
-                          <label>User Name <span class="text-danger "
-                              *ngIf="formGroup.controls['uniqueName'].invalid && formGroup.controls['uniqueName'].touched">
-                              *
-                            </span></label>
-                          <!-- <span class="d-block text-muted fs-sm">www.apexcodestudios.com/</span> -->
-                          <input formControlName="uniqueName" type="text"
-                           
-                            placeholder="ahmad_rasheed" >
-
-                        </div>
-                        <!-- <div class="col-lg-12">
-                          <div class="mb-3">
-                            <label class="form-label">Profile Visibility<span class="text-danger "
-                                *ngIf="formGroup.controls['visibility'].invalid && formGroup.controls['visibility'].touched">
-                                *
-                              </span></label>
-
-                            <div class="mt-1">
-                              <div class="form-check form-check-inline">
-                                <input id="public" type="radio" class="form-check-input" name="visibility"
-                                 formControlName="visibility" [checked]="user.userVisibility == 0"
-                                  value="0">
-                                <label class="form-check-label" for="public">Public</label>
-                              </div>
-
-                              <div class="form-check form-check-inline">
-                                <input id="private" type="radio" class="form-check-input" name="visibility"
-                                   formControlName="visibility" [checked]="user.userVisibility == 1"
-                                  value="1">
-                                <label class="form-check-label" for="private">Private</label>
-                              </div>
-                            </div>
-
-
-                            <small class="form-text text-muted mt-2">
-                              Making your profile public means anyone can see your information
-                            </small>
+                        <div class="col-sm-6 position-relative">
+                          <label for="uniqueName" class="form-label">User Name</label>
+                          <input id="uniqueName" type="text" class="form-control" [ngClass]="{
+                              'is-invalid': (formGroup.controls['uniqueName'].invalid || isTaken) && formGroup.controls['uniqueName'].touched,
+                              'is-valid': formGroup.controls['uniqueName'].valid && !isTaken && formGroup.controls['uniqueName'].touched
+                            }" formControlName="uniqueName" placeholder="Username" required />
+                          <!-- ✅ Bootstrap Tooltip Feedback -->
+                          <div class="invalid-tooltip" *ngIf="formGroup.controls['uniqueName'].touched">
+                            <span *ngIf="formGroup.controls['uniqueName'].errors?.['required']">This field is
+                              required.</span>
+                            <span *ngIf="formGroup.controls['uniqueName'].errors?.['minlength']">Minimum 3 characters
+                              required.</span>
+                            <span *ngIf="formGroup.controls['uniqueName'].errors?.['maxlength']">Maximum 20 characters
+                              allowed.</span>
+                            <span *ngIf="formGroup.controls['uniqueName'].errors?.['pattern']">Only letters, numbers,
+                              and underscores are allowed.</span>
+                            <span *ngIf="isTaken">User name already exists.</span>
                           </div>
-                        </div> -->
+                          <!-- <div class="valid-tooltip">Looks good!</div> -->
+                        </div>
+
+
                         <div class="col-sm-12">
                           <label class="form-label">Bio<span class="text-danger "
                               *ngIf="formGroup.controls['bio'].invalid && formGroup.controls['bio'].touched">
                               *
                             </span></label>
-                          <textarea rows="5"
-                            formControlName="bio" placeholder="Bio"></textarea>
+                          <textarea rows="5" formControlName="bio" placeholder="Bio"></textarea>
 
                         </div>
                         <div class="col-sm-6">
@@ -149,7 +139,7 @@
                               *ngIf="formGroup.controls['country'].invalid && formGroup.controls['country'].touched">
                               *
                             </span></label>
-                          <select  name="country" id="country" formControlName="country">
+                          <select name="country" id="country" formControlName="country">
                             <option disabled value="country" selected>Country</option>
                             <option value="AFG">Afghanistan</option>
                             <option value="ALA">Ƭand Islands</option>
@@ -411,9 +401,8 @@
                           <div class="d-flex justify-content-center">
                             <span class="input-group-text border-0 bg-input" id="basic-addon1_01"><i
                                 class="bi-facebook"></i></span>
-                            <input formControlName="facebookLink"
-                             type="text"
-                              name="facebook" placeholder="Facebook profile link">
+                            <input formControlName="facebookLink" type="text" name="facebook"
+                              placeholder="Facebook profile link">
                             <span class="text-danger ">
 
                             </span>
@@ -423,27 +412,24 @@
                           <div class="d-flex justify-content-center">
                             <span class="input-group-text border-0 bg-input" id="basic-addon1_02"><i
                                 class="bi-instagram"></i></span>
-                            <input formControlName="instagramLink"
-                             
-                              type="text" name="Instagram" placeholder="Instagram profile link">
+                            <input formControlName="instagramLink" type="text" name="Instagram"
+                              placeholder="Instagram profile link">
                           </div>
                         </div>
                       </div>
                       <div class="d-flex pt-5">
-                        <button 
-                        [disabled]="formGroup.invalid || !formGroup.dirty" 
-                        type="submit" 
-                        class="btn btn-mint me-3">
-                        Save Changes
-                      </button>
-                      
-                        
+                        <button [disabled]="formGroup.invalid || !formGroup.dirty || isTaken || !isCheckingUniqueName"
+                          type="submit" class="btn btn-mint me-3">
+                          Save Changes
+                        </button>
 
-                        </div>
+
+
+                      </div>
                     </form>
-                   
-                    
-                   
+
+
+
                   </div>
                 </div><!--/dashboard-card-->
 
@@ -457,14 +443,21 @@
                       [style.background-image]="'url(' +userPhotos.backgroundPhoto + ')' || 'url(img/bg/1.jpg)'">
                       <input #BGButton class="form-control auto-height" type="file"
                         (change)="updateBackgroundImage($event)" hidden>
-                      <button (click)="BGButton.click()" class="btn btn-light"><i class="bi-upload btn-icon"></i>
-                        {{userPhotos.backgroundPhoto ? 'Change' : 'Upload'}}
-                      </button>
+
+                      <div class="btn-group" role="group" aria-label="Background Image Button Group">
+                        <!-- Upload Button -->
+                        <button (click)="BGButton.click()" class="btn btn-light"><i class="bi-upload btn-icon"></i>
+                          {{userPhotos.backgroundPhoto ? 'Change' : 'Upload'}}
+                        </button>
+                        <!-- Delete button -->
+                        <button *ngIf="userPhotos.backgroundPhoto !== ''" 
+                          class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#backgroundConfirmation" >
+                          <i class="bi bi-trash-fill"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div><!--/dashboard-card-->
-
-
 
               </div><!-- Tab content 1 END -->
 
@@ -592,3 +585,55 @@
     </div>
   </div>
 </section>
+
+<div class="modal fade" id="profileConfirmation" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Profile Picture?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you sure you want to delete your profile picture?
+      </div>
+
+      <div class="modal-footer">
+        <button #closeModal type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger" (click)="onDeleteConfirmed('profileConfirmation')">
+          Delete
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="backgroundConfirmation" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title">Delete background Picture?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you sure you want to delete your background picture?
+      </div>
+
+      <div class="modal-footer">
+        <button #closeModal type="button" class="btn btn-secondary" (click)="onDeleteConfirmed('backgroundConfirmation')" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger" (click)="onDeleteConfirmed('backgroundConfirmation')">
+          Delete
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+

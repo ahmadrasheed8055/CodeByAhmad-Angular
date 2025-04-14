@@ -3886,6 +3886,19 @@ display: block;
 /* ------------------------------------------------------------------- */
 /* Users Profile Page
 ---------------------------------------------------------------------- */
+.form-control{
+  font-family: var(--gen-font-family);
+  line-height: 48px;
+  padding: 0 16px;
+  background-color: var(--form-control);
+  color: var(--text-color);
+  border: 0;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  width: 100%;
+}
+
 .profile-banner{
   /* background-image: linear-gradient( rgba(35, 37, 38, 0.50), rgba(35, 37, 38, 0.50) ), url(/img/bg/1.jpg); */
   background-position: 50%;
