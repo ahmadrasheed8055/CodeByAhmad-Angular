@@ -215,7 +215,7 @@ export class ProfileSettingComponent implements OnInit {
           next: (res) => {
             this.userPhotos.profilePhoto = '';
             this.closeModalButton.nativeElement.click();
-            this.showSuccess('Deleted: ' + res);
+            this.showSuccess('Profile photo deleted!');
           },
           error: (err) => {
             this.showError('Error: ' + err);
@@ -225,19 +225,19 @@ export class ProfileSettingComponent implements OnInit {
       }  
     } else if (type === 'backgroundConfirmation') {
       if (this.userPhotos.backgroundPhoto) {
-        // this.masterServices.deleteBackgroundPicture(this.user.id).subscribe({
-        //   next: (res) => {
-        //     this.userPhotos.backgroundPhoto = '';
-        //     this.showSuccess('Deleted: ' + res);
-        //   },
-        //   error: (err) => {
-        //     this.showError('Error: ' + err);
-        //   }
-        // });
-    this.closeModalButton.nativeElement.click();
+        this.masterServices.deleteBackgroundPicture(this.user.id).subscribe({
+          next: (res) => {
+            this.userPhotos.backgroundPhoto = '';
+            this.closeModalButton.nativeElement.click();
+            this.showSuccess('Background photo deleted!');
+          },
+          error: (err) => {
+            this.showError('Error: ' + err);
+          }
+        });
 
     
-            this.userPhotos.backgroundPhoto = '';
+            // this.userPhotos.backgroundPhoto = '';
 
       }
   
