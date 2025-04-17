@@ -2,6 +2,7 @@ import { Component, ElementRef, inject, OnInit, ViewChild, viewChild } from '@an
 import {
   AppUser,
   AppUserPhotos,
+  changePasswordDTO,
   PublicAppUserDTO,
   UpdateAppUserDTO,
 } from '../../../Model/AppUsers';
@@ -50,10 +51,12 @@ export class ProfileSettingComponent implements OnInit {
   imageSuccessMessage: string = '';
   bgImageSuccessMessage: string = '';
   bgImageErrorMessage: string = '';
-  formGroup!: FormGroup;
+  profileForm!: FormGroup;
+  passwordChangeForm!: FormGroup;
   isTaken: any = false;
   isCheckingUniqueName: boolean = false;
   deleteProfileModal = '#deleteProfileModal';
+  
 
   constructor() {this.user = new AppUser();}
   showSuccess(message: string) { this.snackbar.showSuccess(message);}
@@ -64,7 +67,7 @@ export class ProfileSettingComponent implements OnInit {
  
   ngOnInit() {
     // Initialize form with empty values
-    this.formGroup = new FormGroup({
+    this.profileForm = new FormGroup({
       id: new FormControl(null),
       username: new FormControl(null, [Validators.required]),
       phone: new FormControl(null, [Validators.required]),
@@ -81,12 +84,12 @@ export class ProfileSettingComponent implements OnInit {
       instagramLink: new FormControl(null),
     });
 
-    this.formGroup.controls['uniqueName'].valueChanges.pipe(
+    this.profileForm.controls['uniqueName'].valueChanges.pipe(
       skip(1),// skip the first load
       filter((value): value is string => value !== null && value !== undefined),
       debounceTime(1000),
       distinctUntilChanged(),
-      switchMap((value) => this.masterServices.checkUniqueName(value))
+      switchMap((value) => this.masterServices.checkUniqueName(value, this.user.id))
     ).subscribe((isTaken) => {
       this.isTaken = isTaken;
       this.isCheckingUniqueName = true;
@@ -95,10 +98,10 @@ export class ProfileSettingComponent implements OnInit {
 
     // Subscribe to user data and update form
     this.authServices.appUserData$.subscribe((user) => {
-      debugger;
+      // debugger;
       if (user) {
         this.user = { ...user }; // Store user data
-        this.formGroup.patchValue(this.user);
+        this.profileForm.patchValue(this.user);
       }
     });
 
@@ -108,6 +111,16 @@ export class ProfileSettingComponent implements OnInit {
       }
 
       this.userPhotos = photos;
+    });
+
+    this.passwordChangeForm = new FormGroup({
+      currentPassword: new FormControl(null, [Validators.required]),
+      newPassword: new FormControl(null, [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern('^(?=.*[A-Z])(?=.*\\d).+$')
+      ]),     
+      confirmPassword: new FormControl(null, [Validators.required]),
     });
   }
 
@@ -121,10 +134,10 @@ export class ProfileSettingComponent implements OnInit {
       this.imageErrorMessage = 'Please select an image';
       return;
     }
-    debugger;
+    // debugger;
     this.masterServices.uploadProfilePicture(formData, this.user.id).subscribe(
       (next) => {
-        debugger;
+        // debugger;
         this.imageSuccessMessage = 'Image uploaded successfully';
         this.showSuccess(this.imageSuccessMessage);
 
@@ -167,14 +180,14 @@ export class ProfileSettingComponent implements OnInit {
     if(this.isTaken){ this.showError('Username is already taken'); return; }
 
     const updateAppUserData: UpdateAppUserDTO = {
-      id: this.user.id,username: this.formGroup.value.username,
-      uniqueName: this.formGroup.value.uniqueName , //string | null issue
+      id: this.user.id,username: this.profileForm.value.username,
+      uniqueName: this.profileForm.value.uniqueName , //string | null issue
       // userVisibility: this.formGroup.value.visibility,
-      bio: this.formGroup.value.bio,phone: this.formGroup.value.phone,
-      facebookLink: this.formGroup.value.facebookLink,
-      instagramLink: this.formGroup.value.instagramLink,
-      location: this.formGroup.value.location,
-      country: this.formGroup.value.country,
+      bio: this.profileForm.value.bio,phone: this.profileForm.value.phone,
+      facebookLink: this.profileForm.value.facebookLink,
+      instagramLink: this.profileForm.value.instagramLink,
+      location: this.profileForm.value.location,
+      country: this.profileForm.value.country,
     };
 
     this.user = { ...this.user, ...updateAppUserData };
@@ -199,7 +212,7 @@ export class ProfileSettingComponent implements OnInit {
 
   @ViewChild('closeModal') closeModalButton!:ElementRef<HTMLButtonElement>;
   closeModal() {
-    debugger;
+    // debugger;
     const closeBtn = document.querySelector('.btn-close') as HTMLElement;
     if (closeBtn) {
       closeBtn.click();
@@ -244,6 +257,38 @@ export class ProfileSettingComponent implements OnInit {
     } else {
       this.showError('Error while deleting this image');
     }
+  }
+
+
+  //update password
+  onChangePassword(){
+    debugger;
+    if (this.passwordChangeForm.value.newPassword !== this.passwordChangeForm.value.confirmPassword) {
+      this.showError('Passwords do not match!');
+      return;
+    }
+
+    const  newPasswordObj: changePasswordDTO =  {
+      newPassword:this.passwordChangeForm.value.newPassword,
+      currentPassword:this.passwordChangeForm.value.currentPassword
+    }
+
+    this.masterServices.updateUserPassword(this.user.id, this.passwordChangeForm.value.newPassword).subscribe({
+      next: (res) => {
+        this.passwordChangeForm.reset();
+        this.showSuccess('Password updated successfully!');
+      },
+      error: (err) => {
+        if (err.status === 400 && err.error?.message === 'Passwords do not match.') {
+          this.showError('Passwords do not match!');
+        } else if (err.status === 404) {
+          this.showError('User not found!');
+        } else {
+          this.showError('Error while updating password!');
+        }
+      }
+    });
+    
   }
   
 

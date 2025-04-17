@@ -32,17 +32,17 @@ export class NavbarComponent implements OnInit {
   masterServices = inject(MasterService);
   snackBarService = inject(SnackBarServiceService);
   ngOnInit() {
-    // debugger;
+    // //debugger;
 
     this.authServices.appUserData$.subscribe((user) => {
-      debugger;
+      //debugger;
       if (user) {
         // Ensure user is not null/undefined
         this.user = { ...user }; // Create a new object to avoid unintended mutations
       }
     });
     this.authServices.appUserPhotos$.subscribe((photos) => {
-      debugger;
+      //debugger;
       if (!photos) return;
       this.userPhotos = photos;
     });

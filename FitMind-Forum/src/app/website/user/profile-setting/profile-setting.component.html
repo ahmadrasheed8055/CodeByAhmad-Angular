@@ -71,11 +71,11 @@
                     </div><!--/dashboard-user-box-->
 
 
-                    <form class="row g-3 needs-validation" novalidate [formGroup]="formGroup" (ngSubmit)="updateUser()">
+                    <form class="row g-3 needs-validation" novalidate [formGroup]="profileForm" (ngSubmit)="updateUser()">
                       <div class="row g-3">
                         <div class="col-sm-6">
                           <label class="form-label">Name<span class="text-danger "
-                              *ngIf="formGroup.controls['username'].invalid && formGroup.controls['username'].touched">
+                              *ngIf="profileForm.controls['username'].invalid && profileForm.controls['username'].touched">
                               *
                             </span></label>
                           <input formControlName="username" type="text" name="name" placeholder="Full Name">
@@ -84,7 +84,7 @@
 
                         <div class="col-sm-6">
                           <label class="form-label">Phone<span class="text-danger "
-                              *ngIf="formGroup.controls['phone'].invalid && formGroup.controls['phone'].touched">
+                              *ngIf="profileForm.controls['phone'].invalid && profileForm.controls['phone'].touched">
                               *
                             </span></label>
 
@@ -99,18 +99,18 @@
                         <div class="col-sm-6 position-relative">
                           <label for="uniqueName" class="form-label">User Name</label>
                           <input id="uniqueName" type="text" class="form-control" [ngClass]="{
-                              'is-invalid': (formGroup.controls['uniqueName'].invalid || isTaken) && formGroup.controls['uniqueName'].touched,
-                              'is-valid': formGroup.controls['uniqueName'].valid && !isTaken && formGroup.controls['uniqueName'].touched
+                              'is-invalid': (profileForm.controls['uniqueName'].invalid || isTaken) && profileForm.controls['uniqueName'].touched,
+                              'is-valid': profileForm.controls['uniqueName'].valid && !isTaken && profileForm.controls['uniqueName'].touched
                             }" formControlName="uniqueName" placeholder="Username" required />
                           <!-- ✅ Bootstrap Tooltip Feedback -->
-                          <div class="invalid-tooltip" *ngIf="formGroup.controls['uniqueName'].touched">
-                            <span *ngIf="formGroup.controls['uniqueName'].errors?.['required']">This field is
+                          <div class="invalid-tooltip" *ngIf="profileForm.controls['uniqueName'].touched">
+                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['required']">This field is
                               required.</span>
-                            <span *ngIf="formGroup.controls['uniqueName'].errors?.['minlength']">Minimum 3 characters
+                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['minlength']">Minimum 3 characters
                               required.</span>
-                            <span *ngIf="formGroup.controls['uniqueName'].errors?.['maxlength']">Maximum 20 characters
+                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['maxlength']">Maximum 20 characters
                               allowed.</span>
-                            <span *ngIf="formGroup.controls['uniqueName'].errors?.['pattern']">Only letters, numbers,
+                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['pattern']">Only letters, numbers,
                               and underscores are allowed.</span>
                             <span *ngIf="isTaken">User name already exists.</span>
                           </div>
@@ -120,7 +120,7 @@
 
                         <div class="col-sm-12">
                           <label class="form-label">Bio<span class="text-danger "
-                              *ngIf="formGroup.controls['bio'].invalid && formGroup.controls['bio'].touched">
+                              *ngIf="profileForm.controls['bio'].invalid && profileForm.controls['bio'].touched">
                               *
                             </span></label>
                           <textarea rows="5" formControlName="bio" placeholder="Bio"></textarea>
@@ -128,7 +128,7 @@
                         </div>
                         <div class="col-sm-6">
                           <label>Location<span class="text-danger "
-                              *ngIf="formGroup.controls['location'].invalid && formGroup.controls['location'].touched">
+                              *ngIf="profileForm.controls['location'].invalid && profileForm.controls['location'].touched">
                               *
                             </span></label>
                           <input formControlName="location" type="text" placeholder="Ex.San Francisco, CA">
@@ -136,7 +136,7 @@
                         </div>
                         <div class="col-sm-6">
                           <label for="country">Country<span class="text-danger "
-                              *ngIf="formGroup.controls['country'].invalid && formGroup.controls['country'].touched">
+                              *ngIf="profileForm.controls['country'].invalid && profileForm.controls['country'].touched">
                               *
                             </span></label>
                           <select name="country" id="country" formControlName="country">
@@ -418,7 +418,7 @@
                         </div>
                       </div>
                       <div class="d-flex pt-5">
-                        <button [disabled]="formGroup.invalid || !formGroup.dirty || isTaken || !isCheckingUniqueName"
+                        <button [disabled]="profileForm.invalid || !profileForm.dirty || isTaken || !isCheckingUniqueName"
                           type="submit" class="btn btn-mint me-3">
                           Save Changes
                         </button>
@@ -523,42 +523,58 @@
                   </div>
                 </div>
               </div><!-- Tab content 2 END -->
-
+              
               <div class="tab-pane" id="tab-3" role="tabpanel">
-
                 <div class="dashboard-card">
+                  
                   <div class="dashboard-header">
                     <h4>Change Password</h4>
                   </div>
                   <div class="dashboard-body">
 
                     <!-- Password -->
-                    <form>
+                    <form [formGroup]="passwordChangeForm" (ngSubmit)="onChangePassword()">
                       <div class="row">
                         <div class="col-sm-12 mb-4">
                           <label class="form-label fs-base">Current password</label>
                           <div class="password-toggle">
-                            <input type="password" placeholder="Current Password">
+                            <input formControlName="currentPassword" type="password" placeholder="Current Password">
                             <label class="password-toggle-btn" aria-label="Show/hide password">
                               <input class="password-toggle-check" type="checkbox">
                               <span class="password-toggle-indicator"></span>
                             </label>
+                            
                           </div>
                         </div>
                         <div class="col-sm-12 mb-4">
                           <label class="form-label fs-base">New password</label>
                           <div class="password-toggle">
-                            <input type="password" placeholder="Password">
+                            <input formControlName="newPassword" type="password" placeholder="Password">
                             <label class="password-toggle-btn" aria-label="Show/hide password">
                               <input class="password-toggle-check" type="checkbox">
                               <span class="password-toggle-indicator"></span>
                             </label>
+                            <span class="text-danger small"
+                              *ngIf="passwordChangeForm.controls['newPassword'].errors?.['required'] && passwordChangeForm.controls['newPassword'].touched">
+                              Password is required.
+                            </span>
+
+                            <span class="text-danger small"
+                              *ngIf="passwordChangeForm.controls['newPassword'].errors?.['minlength'] && passwordChangeForm.controls['newPassword'].touched">
+                              Password must be at least 6 characters long.
+                            </span>
+
+                            <span class="text-danger small"
+                              *ngIf="passwordChangeForm.controls['newPassword'].errors?.['pattern'] && passwordChangeForm.controls['newPassword'].touched">
+                              Password must contain at least one uppercase letter and one number.
+                            </span>
+                            <!-- Error Messages -->
                           </div>
                         </div>
                         <div class="col-sm-12 mb-4">
                           <label class="form-label fs-base">Confirm new password</label>
                           <div class="password-toggle">
-                            <input type="password" placeholder="Confirm New Password">
+                            <input formControlName="confirmPassword" type="password" placeholder="Confirm New Password">
                             <label class="password-toggle-btn" aria-label="Show/hide password">
                               <input class="password-toggle-check" type="checkbox">
                               <span class="password-toggle-indicator"></span>
@@ -575,7 +591,8 @@
 
                   </div>
                 </div><!--/dashboard-card-->
-              </div><!-- Tab content 3 END -->
+              </div>
+              <!-- Tab content 3 END -->
             </div>
           </div>
         </div>

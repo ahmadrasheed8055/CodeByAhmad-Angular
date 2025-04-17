@@ -167,3 +167,13 @@ export class RegisterUserDTO{
     this.PasswordHash = '';
   }
 }
+
+export class changePasswordDTO{
+ 
+  newPassword:string;  
+  currentPassword:string;
+    constructor(){
+    this.newPassword = '';
+    this.currentPassword = '';
+    }
+}

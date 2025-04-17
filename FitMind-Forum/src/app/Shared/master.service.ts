@@ -7,6 +7,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import {
   AppUser,
+  changePasswordDTO,
   IAppUser,
   PublicAppUserDTO,
   RegisterUserDTO,
@@ -151,13 +152,25 @@ export class MasterService {
 
   //=============Update user===================
   CHECK_UNIQUE_NAME = 'AppUsers/check-unique-name?uniqueName=';
-  checkUniqueName(uniqueName:string) {
-    const url = this.API_URL + this.CHECK_UNIQUE_NAME + uniqueName;
+  checkUniqueName(uniqueName:string, userId:number) {
+    const url = this.API_URL + this.CHECK_UNIQUE_NAME + uniqueName + '&userId=' + userId;
     return this.http.get(url);
   }
 
-  //
-
+  //=============Update user password===================
+  UPDATE_USER_PASSWORD = 'AppUsers/update-password/';
+  updateUserPassword(userId:number,  newPasswordObj:changePasswordDTO){
+    const url = this.API_URL + this.UPDATE_USER_PASSWORD + userId;
+   
+    // const userNewPassword: changePasswordDTO = {
+    //   newPassword: newPassword,
+    // };
+    
+   
+    return this.http.put(url, newPasswordObj, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
 }
 
