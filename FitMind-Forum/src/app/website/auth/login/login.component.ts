@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
   formData!: FormGroup;
   registerModal: string = '#registerModal';
   emailVarificationModal: string = '#emailVarificationModal';
-  serviecs = inject(MasterService);
+  services = inject(MasterService);
   authServices = inject(AuthService);
   route = inject(Router);
   errorMessage: string = '';
@@ -91,23 +91,27 @@ export class LoginComponent implements OnInit {
         HashedPassword: formValues.password,
       };
 
-      debugger;
-      this.serviecs.loginUser(this.user).subscribe(
-        (next) => {
-          sessionStorage.setItem('appUserId', next.toString());
+      // debugger;
+      this.services.loginUser(this.user).subscribe({
+        next: (result) => {
+
+          sessionStorage.setItem('token', result.token);
+          sessionStorage.setItem('appUserId', result.userId.toString());
+          console.log("Token: " + result.token);
           this.ngxLoader.startLoading();
+      
           this.route.navigate(['/home']).then(() => {
             this.loginBtn = 'Login';
             this.loginBtnLoading = false;
-            // window.location.reload();
             this.closeButton.nativeElement.click();
             this.afterLogin();
             this.closeModal();
           });
         },
-        (error) => {
+        error: (error) => {
           this.loginBtn = 'Login';
           this.loginBtnLoading = false;
+      
           if (error.status === 404) {
             this.errorMessage = 'User not found';
           } else if (error.status === 400) {
@@ -115,12 +119,11 @@ export class LoginComponent implements OnInit {
           } else {
             this.errorMessage = 'An error occurred while logging in';
           }
-
-          this.loginBtnLoading = false;
-          console.log('Error to login:' + error);
-          return;
+      
+          console.log('Error during login:', error);
         }
-      );
+      });
+      
     }
   }
 }

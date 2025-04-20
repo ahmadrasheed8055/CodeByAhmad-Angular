@@ -77,9 +77,9 @@ export class MasterService {
   //==========User login==============
   APP_USER_LOGIN_URL = 'AppUsers/login-user';
 
-  loginUser(userlogin: UserLoginDTO): Observable<number> {
+  loginUser(userlogin: UserLoginDTO): Observable<{token:string, userId:number}> {
     const url = this.API_URL + this.APP_USER_LOGIN_URL;
-    return this.http.post<number>(url, userlogin, {
+    return this.http.post<{token:string, userId:number}>(url, userlogin, {
       headers: { 'Content-Type': 'application/json' },
     });
   }
