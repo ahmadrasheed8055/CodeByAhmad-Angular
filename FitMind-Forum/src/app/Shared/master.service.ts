@@ -83,6 +83,7 @@ export class MasterService {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+  
   //==========User getting==============
   GET_USER = 'AppUsers/get-user/';
 

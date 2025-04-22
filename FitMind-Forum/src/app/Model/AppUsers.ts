@@ -160,6 +160,7 @@ export class RegisterUserDTO{
   Username:string;
   Email:string;
   PasswordHash:string;
+  
   constructor(){
     this.Id = 0;
     this.Username = '';

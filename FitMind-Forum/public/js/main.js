@@ -49,7 +49,7 @@ $(document).ready(function () {
 			let dataTheme = rootElem.getAttribute('data-theme'),
 			newTheme
 
-			newTheme = (dataTheme === 'light') ? 'dark' : 'light'
+			newTheme = (dataTheme === 'light') ? 'light' : 'light'
 
 			//Set the new HTML attribute
 			rootElem.setAttribute('data-theme', newTheme)
@@ -60,11 +60,11 @@ $(document).ready(function () {
 			if(dataTheme === 'light'){
 				$('#switcher-icon').removeClass('bi bi-moon');
 				$('#switcher-icon').addClass('bi bi-sun');
-				
-			} else if(dataTheme === 'dark'){
-				$('#switcher-icon').removeClass('bi bi-sun');
-				$('#switcher-icon').addClass('bi bi-moon');
-			}
+            }
+			// } else if(dataTheme === 'dark'){
+			// 	$('#switcher-icon').removeClass('bi bi-sun');
+			// 	$('#switcher-icon').addClass('bi bi-moon');
+			// }
 		}
 
 		// //Add event listener for the theme switcher

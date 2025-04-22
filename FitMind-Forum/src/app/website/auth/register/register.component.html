@@ -63,7 +63,7 @@
               <div class="mb-3">
                 <button type="submit" class="w-100 btn btn-mint" [disabled]="appForm.invalid">Create Account</button>
               </div>
-
+              <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
               <!-- Login Redirect -->
               <div class="text-center">
                 <small>Already have an account?</small>

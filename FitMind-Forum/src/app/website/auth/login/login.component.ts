@@ -97,7 +97,7 @@ export class LoginComponent implements OnInit {
 
           sessionStorage.setItem('token', result.token);
           sessionStorage.setItem('appUserId', result.userId.toString());
-          console.log("Token: " + result.token);
+          // console.log("Token: " + result.token);
           this.ngxLoader.startLoading();
       
           this.route.navigate(['/home']).then(() => {

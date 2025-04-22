@@ -57,7 +57,7 @@ export class RegisterComponent implements OnInit {
   router = inject(Router);
   snackMessageService = inject(SnackBarServiceService);
   //user object
-
+  successMessage: string = '';
   showSuccess(message: string) {
     this.snackMessageService.showSuccess(message);
   }
@@ -80,14 +80,16 @@ export class RegisterComponent implements OnInit {
       (next: any) => {
         debugger;
         // const encryptedUser = this.authServices.encryptUser(newUser.id);
-        sessionStorage.setItem('appUserId', next.id);
-        this.authServices.setAppUser();
-        console.log('User Added!');
+        // sessionStorage.setItem('appUserId', next.id);
+       
+        // console.log('User Added!');
+        // this.successMessage = 'User Added!';
         this.showSuccess("You are successfully logged in!");
-        this.router.navigateByUrl('/home');
+        
       },
       (error: any) => {
-        console.log(error + 'Error adding this user');
+        this.showError("Error adding this user!");
+       
       }
     );
   }
