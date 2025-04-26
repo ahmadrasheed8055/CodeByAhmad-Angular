@@ -1,0 +1,76 @@
+<section class="dashboard">
+  <div class="container">
+    <div class="row">
+
+
+
+      <div class="col-12 col-lg-12">
+
+        <h4 class="mb-0 aos-init aos-animate" data-aos="fade-down" data-aos-easing="linear"><i
+            class="bi bi-plus-circle-dotted me-2"></i> Add Post</h4>
+
+        <div class="row g-0">
+          <div class="col-12">
+            <div class="dashboard-card">
+              <div class="dashboard-body">
+
+
+                <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+                  <div class="row g-3">
+                    <div class="col-sm-12">
+                      <label class="form-label">Title</label>
+                      <input type="text" formControlName="title" placeholder="Add a title">
+                    </div>
+
+
+                    <div class="col-sm-12">
+                      <label class="form-label">Categories</label>
+                      <select formControlName="category" placeholder="Select a category" class="form-select"> 
+                        <option value="" disabled selected>Select a category</option>
+                        <option *ngIf="!categoriesObj" value="" disabled selected>Wait...</option>
+                    
+                        <ng-container *ngFor="let category of categoriesObj">
+                          <option value="{{category.name}}">{{category.name}}</option>
+                        </ng-container>
+                       
+                      </select>
+                    </div>
+
+                    <div class="col-sm-12">
+                      <label class="form-label">Description</label>
+                      <textarea class="w-10" formControlName="description" placeholder="Add post" rows="3"
+                        spellcheck="false"></textarea>
+                    </div>
+
+                    <div class="col-sm-12">
+                      <div class="comment-form-2 d-flex flex-column my-2">
+                        <div class="form-toolbar form-toolbar-bottom row justify-content-between g-2 p-2">
+                          <div class="col">
+                            <button class="btn btn-sm btn-base btn-icon" type="button" title="Link"><i
+                                class="bi bi-link-45deg"></i></button>
+                            <button class="btn btn-sm btn-base btn-icon" type="button" title="Image"><i
+                                class="bi bi-image"></i></button>
+                            <button class="btn btn-sm btn-base btn-icon" type="button" title="Video"><i
+                                class="bi bi-camera-video"></i></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                      <button class="btn btn-mint me-2" type="submit">Add Post</button>
+                      <button class="btn btn-secondary" type="button">Save Draft</button>
+                    </div>
+                  </div>
+                </form>
+
+              </div>
+            </div><!--/dashboard-card-->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>

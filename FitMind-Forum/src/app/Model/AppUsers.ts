@@ -171,10 +171,10 @@ export class RegisterUserDTO{
 
 export class changePasswordDTO{
  
-  newPassword:string;  
   currentPassword:string;
+  newPassword:string;  
     constructor(){
-    this.newPassword = '';
     this.currentPassword = '';
+    this.newPassword = '';
     }
 }

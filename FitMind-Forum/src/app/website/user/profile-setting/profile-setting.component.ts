@@ -269,23 +269,24 @@ export class ProfileSettingComponent implements OnInit {
     }
 
     const  newPasswordObj: changePasswordDTO =  {
-      newPassword:this.passwordChangeForm.value.newPassword,
-      currentPassword:this.passwordChangeForm.value.currentPassword
+      currentPassword:this.passwordChangeForm.value.currentPassword,
+      newPassword:this.passwordChangeForm.value.newPassword
     }
 
-    this.masterServices.updateUserPassword(this.user.id, this.passwordChangeForm.value.newPassword).subscribe({
+    this.masterServices.updateUserPassword(this.user.id, newPasswordObj).subscribe({
       next: (res) => {
         this.passwordChangeForm.reset();
         this.showSuccess('Password updated successfully!');
       },
       error: (err) => {
-        if (err.status === 400 && err.error?.message === 'Passwords do not match.') {
+        if (err.status === 400 ) {
           this.showError('Passwords do not match!');
+          console.log(err.error);
         } else if (err.status === 404) {
           this.showError('User not found!');
         } else {
           this.showError('Error while updating password!');
-        }
+        } 
       }
     });
     

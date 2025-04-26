@@ -84,7 +84,7 @@ export class RegisterComponent implements OnInit {
        
         // console.log('User Added!');
         // this.successMessage = 'User Added!';
-        this.showSuccess("You are successfully logged in!");
+        this.showSuccess("Your account has been created successfully!");
         
       },
       (error: any) => {

@@ -23,6 +23,7 @@
     "@angular/router": "^19.1.0",
     "@angular/ssr": "^19.2.7",
     "@auth0/angular-jwt": "^5.2.0",
+    "@ng-select/ng-select": "^14.7.0",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
     "crypto-js": "^4.2.0",

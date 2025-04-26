@@ -9,12 +9,13 @@ import { ProfileSettingComponent } from "../user/profile-setting/profile-setting
 import { RouterModule } from '@angular/router';
 import { NgxUiLoaderModule, NgxUiLoaderHttpModule, NgxUiLoaderService } from 'ngx-ui-loader';
 import { NgxLoaderService } from '../../Shared/ngx-loader.service';
+import { PostsComponent } from "../posts/posts.component";
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  imports: [HeroComponent, CategoriesComponent, FooterComponent, RouterModule,NgxUiLoaderModule,NgxUiLoaderHttpModule]
+  imports: [HeroComponent, CategoriesComponent, FooterComponent, RouterModule, NgxUiLoaderModule, NgxUiLoaderHttpModule]
 })
 export class HomeComponent implements OnInit {
 

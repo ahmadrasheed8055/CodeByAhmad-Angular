@@ -8,6 +8,7 @@ import { ErrorComponent } from './website/error/error.component';
 import { ProfileSettingComponent } from './website/user/profile-setting/profile-setting.component';
 import { NavbarComponent } from './website/navbar/navbar.component';
 import { ProfileViewComponent } from './website/user/profile-view/profile-view.component';
+import { AddPostComponent } from './website/user/add-post/add-post.component';
 
 export const routes: Routes = [
   {
@@ -32,10 +33,15 @@ export const routes: Routes = [
         path: 'profile-view',
         component: ProfileViewComponent,
         canActivate: [authGuard],
+      },
+      {
+        path: 'add-post',
+        component: AddPostComponent,
+        canActivate: [authGuard]
       }
     ]
   },
-
+ 
   {
     path: 'register',
     canActivate: [emailTokenGuardGuard],
