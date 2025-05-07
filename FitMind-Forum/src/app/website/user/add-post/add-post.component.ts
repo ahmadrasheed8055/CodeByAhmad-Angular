@@ -1,5 +1,5 @@
 import { Component, inject, NgModule } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MasterService } from '../../../Shared/master.service';
 import { ICategories } from '../../../Model/categories';
@@ -20,10 +20,11 @@ export class AddPostComponent {
   
  snackBar = inject(SnackBarServiceService);
     constructor(private fb: FormBuilder) {
-    this.postForm = this.fb.group({
-      title: [''],
-      category: [''],
-      description: ['']
+    this.postForm = new FormGroup({
+      title:new FormControl(''),
+      description: new FormControl(''), 
+      category:new FormControl(''),
+      image: new FormControl(''),
     });
   }
 
@@ -46,5 +47,16 @@ export class AddPostComponent {
         this.snackBar.showError(error.message);
       }
     );
+  }
+  previewUrl: string | ArrayBuffer | null = null;
+  openFileInput(event:any){
+    const file = event.target as HTMLInputElement;
+    if (file.files && file.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewUrl = e.target?.result as string;
+      };
+      reader.readAsDataURL(file.files[0]);
+    }
   }
 }

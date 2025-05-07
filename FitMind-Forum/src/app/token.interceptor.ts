@@ -1,9 +1,12 @@
 // src/app/token.interceptor.ts
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 
 export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
   const token = sessionStorage.getItem('token');
-  
+  const router = inject(Router);
 
   if (token) {
     req = req.clone({
@@ -13,5 +16,14 @@ export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
     });
   }
 
-  return next(req);
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401) {
+        // Token expired or unauthorized
+        sessionStorage.removeItem('token');
+        router.navigate(['']);
+      }
+      return throwError(() => error);
+    })
+  );
 };

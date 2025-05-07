@@ -55,6 +55,7 @@ export class NavbarComponent implements OnInit {
 
   logout() {
     sessionStorage.removeItem('appUserId');
+    sessionStorage.clear();
     this.snackBarService.showSuccess('Logout successfully!');
     this.router.navigate(['/']);
   }

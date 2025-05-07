@@ -30,7 +30,7 @@
                         <option *ngIf="!categoriesObj" value="" disabled selected>Wait...</option>
                     
                         <ng-container *ngFor="let category of categoriesObj">
-                          <option value="{{category.name}}">{{category.name}}</option>
+                          <option value="{{category.id}}">{{category.name}}</option>
                         </ng-container>
                        
                       </select>
@@ -42,20 +42,30 @@
                         spellcheck="false"></textarea>
                     </div>
 
+                    <!-- Upload Media -->
+                    <div *ngIf="previewUrl" class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"   [ngStyle]="{'background-image': 'url(' + previewUrl + ')'}">
+                      <button   class="btn btn-light"><i class="bi-upload btn-icon"></i> Upload Cover</button>
+                    </div> 
+
                     <div class="col-sm-12">
                       <div class="comment-form-2 d-flex flex-column my-2">
                         <div class="form-toolbar form-toolbar-bottom row justify-content-between g-2 p-2">
                           <div class="col">
-                            <button class="btn btn-sm btn-base btn-icon" type="button" title="Link"><i
-                                class="bi bi-link-45deg"></i></button>
-                            <button class="btn btn-sm btn-base btn-icon" type="button" title="Image"><i
+                            <!-- <button class="btn btn-sm btn-base btn-icon" type="button" title="Link"><i
+                                class="bi bi-link-45deg"></i></button> -->
+
+                            <input formControlName="image" #postPhoto type="file" (change)="openFileInput($event)" hidden>
+
+                            <button (click)="postPhoto.click()" class="btn btn-sm btn-base btn-icon" type="button" title="Image"><i
                                 class="bi bi-image"></i></button>
-                            <button class="btn btn-sm btn-base btn-icon" type="button" title="Video"><i
-                                class="bi bi-camera-video"></i></button>
+                            <!-- <button class="btn btn-sm btn-base btn-icon" type="button" title="Video"><i
+                                class="bi bi-camera-video"></i></button> -->
                           </div>
                         </div>
                       </div>
                     </div>
+            
+                  
 
                     <div class="col-sm-12">
                       <button class="btn btn-mint me-2" type="submit">Add Post</button>
@@ -63,7 +73,6 @@
                     </div>
                   </div>
                 </form>
-
               </div>
             </div><!--/dashboard-card-->
           </div>

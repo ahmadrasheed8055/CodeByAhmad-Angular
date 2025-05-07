@@ -8,6 +8,7 @@ import {
 import * as CryptoJs from 'crypto-js';
 import { MasterService } from './master.service';
 import { BehaviorSubject, Subject, take } from 'rxjs';
+import { Router } from '@angular/router';
 const SECURE_KEY = 'FITMIND8055';
 
 @Injectable({
@@ -28,6 +29,8 @@ export class AuthService {
     this.setAppUser();
   }
 
+   router = inject(Router);
+
   //==========Setting app user =====================
    setAppUser(): void {
     const userId = sessionStorage.getItem('appUserId');
@@ -41,7 +44,18 @@ export class AuthService {
         this.appUser.next(user);
         this.getAppUserPhotos(numericUserId);
       },
-      error: (err) => console.error('Error fetching user:', err),
+      error: (err) => {
+        console.error('Error fetching user:', err);
+    
+        // Check for Unauthorized error
+        if (err.status === 401) {
+          console.warn('Token expired or user not authenticated.');
+    
+          // Remove token and logout
+          sessionStorage.clear();
+          this.router.navigate(['']);
+        }
+      },
     });
   }
 
