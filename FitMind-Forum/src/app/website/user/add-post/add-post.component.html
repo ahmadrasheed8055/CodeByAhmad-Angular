@@ -15,25 +15,34 @@
               <div class="dashboard-body">
 
 
-                <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+                <form [formGroup]="postForm" (ngSubmit)="onSubmit('publish')">
                   <div class="row g-3">
                     <div class="col-sm-12">
-                      <label class="form-label">Title</label>
+                      <label class="form-label">Title <span class="text-danger "
+                          *ngIf="postForm.controls['title'].invalid && postForm.controls['title'].touched">
+                          *
+                        </span> </label>
                       <input type="text" formControlName="title" placeholder="Add a title">
+                     
                     </div>
 
 
                     <div class="col-sm-12">
-                      <label class="form-label">Categories</label>
-                      <select formControlName="category" placeholder="Select a category" class="form-select"> 
+                      <label class="form-label">Categories <span class="text-danger "
+                        *ngIf="postForm.controls['category'].invalid && postForm.controls['category'].touched">
+                        *
+                      </span></label>
+                      <select formControlName="category" placeholder="Select a category" class="form-select">
                         <option value="" disabled selected>Select a category</option>
                         <option *ngIf="!categoriesObj" value="" disabled selected>Wait...</option>
-                    
+
                         <ng-container *ngFor="let category of categoriesObj">
                           <option value="{{category.id}}">{{category.name}}</option>
                         </ng-container>
-                       
+
                       </select>
+                     
+
                     </div>
 
                     <div class="col-sm-12">
@@ -43,10 +52,21 @@
                     </div>
 
                     <!-- Upload Media -->
-                    <div *ngIf="previewUrl" class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"   [ngStyle]="{'background-image': 'url(' + previewUrl + ')'}">
-                      <button   class="btn btn-light"><i class="bi-upload btn-icon"></i> Upload Cover</button>
-                    </div> 
-
+                    <div *ngIf="previewUrl"
+                      class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"
+                      [ngStyle]="{'background-image': 'url(' + previewUrl + ')'}">
+                      <!-- <button   class="btn btn-light"><i class="bi-upload btn-icon"></i> Upload Cover</button> -->
+                      <div class="btn-group" role="group" aria-label="Background Image Button Group">
+                        <!-- Upload Button -->
+                        <button (click)="postPhoto.click()" class="btn btn-light"><i class="bi-upload btn-icon"></i>
+                          Change
+                        </button>
+                        <!-- Delete button -->
+                        <button (click)="removeImage()" class="btn btn-danger">
+                          <i class="bi bi-trash-fill"></i>
+                        </button>
+                      </div>
+                    </div>
                     <div class="col-sm-12">
                       <div class="comment-form-2 d-flex flex-column my-2">
                         <div class="form-toolbar form-toolbar-bottom row justify-content-between g-2 p-2">
@@ -54,22 +74,25 @@
                             <!-- <button class="btn btn-sm btn-base btn-icon" type="button" title="Link"><i
                                 class="bi bi-link-45deg"></i></button> -->
 
-                            <input formControlName="image" #postPhoto type="file" (change)="openFileInput($event)" hidden>
+                            <input  #postPhoto type="file" (change)="openFileInput($event)"
+                              hidden>
 
-                            <button (click)="postPhoto.click()" class="btn btn-sm btn-base btn-icon" type="button" title="Image"><i
-                                class="bi bi-image"></i></button>
+                            <button *ngIf="!previewUrl" (click)="postPhoto.click()" class="btn btn-sm btn-base btn-icon"
+                              type="button" title="Image"><i class="bi bi-image"></i></button>
+
+
                             <!-- <button class="btn btn-sm btn-base btn-icon" type="button" title="Video"><i
                                 class="bi bi-camera-video"></i></button> -->
                           </div>
                         </div>
                       </div>
                     </div>
-            
-                  
+
+
 
                     <div class="col-sm-12">
-                      <button class="btn btn-mint me-2" type="submit">Add Post</button>
-                      <button class="btn btn-secondary" type="button">Save Draft</button>
+                      <button [disabled]="postForm.invalid" class="btn btn-mint me-2" (click)="onSubmit('publish')" type="submit">Add Post</button>
+                      <button [disabled]="postForm.invalid" class="btn btn-secondary" (click)="onSubmit('draft')" type="submit">Save Draft</button>
                     </div>
                   </div>
                 </form>

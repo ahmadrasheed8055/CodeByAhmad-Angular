@@ -14,6 +14,7 @@ import {
   UpdateAppUserDTO,
   UserLoginDTO,
 } from '../Model/AppUsers';
+import { AddPostDTO } from '../Model/AddPost';
 
 @Injectable({
   providedIn: 'root',
@@ -77,13 +78,15 @@ export class MasterService {
   //==========User login==============
   APP_USER_LOGIN_URL = 'AppUsers/login-user';
 
-  loginUser(userlogin: UserLoginDTO): Observable<{token:string, userId:number}> {
+  loginUser(
+    userlogin: UserLoginDTO
+  ): Observable<{ token: string; userId: number }> {
     const url = this.API_URL + this.APP_USER_LOGIN_URL;
-    return this.http.post<{token:string, userId:number}>(url, userlogin, {
+    return this.http.post<{ token: string; userId: number }>(url, userlogin, {
       headers: { 'Content-Type': 'application/json' },
     });
   }
-  
+
   //==========User getting==============
   GET_USER = 'AppUsers/get-user/';
 
@@ -93,7 +96,6 @@ export class MasterService {
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
 
   //==========Uploading profile picture==============
   UPLOAD_PROFILE_PICTURE_URL = 'AppUsers/upload-image/';
@@ -113,12 +115,10 @@ export class MasterService {
   //=============Delete Profile===================
   DELETE_PROFILE_PICTURE_URL = 'AppUsers/delete-profile/';
 
-  deleteProfilePicture(userId: number){
+  deleteProfilePicture(userId: number) {
     const url = this.API_URL + this.DELETE_PROFILE_PICTURE_URL + userId;
     return this.http.put(url, userId);
   }
-
-
 
   //================upload background picture==================
   UPLOAD_BACKGROUND_PICTURE_URL = 'AppUsers/upload-background-image/';
@@ -126,7 +126,7 @@ export class MasterService {
     const url = this.API_URL + this.UPLOAD_BACKGROUND_PICTURE_URL + userId;
     return this.http.put(url, formData);
   }
-  
+
   //================Get background picture==================
   GET_BACKGROUND_PICTURE_URL = 'AppUsers/get-background-image/';
   getBackgroundPicture(userId: number) {
@@ -134,13 +134,13 @@ export class MasterService {
     return this.http.get(url);
   }
 
-    //=============Delete Background Picture===================
-    DELETE_BACKGROUND_PICTURE_URL = 'AppUsers/delete-background/';
+  //=============Delete Background Picture===================
+  DELETE_BACKGROUND_PICTURE_URL = 'AppUsers/delete-background/';
 
-    deleteBackgroundPicture(userId: number){
-      const url = this.API_URL + this.DELETE_BACKGROUND_PICTURE_URL + userId;
-      return this.http.put(url, userId);
-    }
+  deleteBackgroundPicture(userId: number) {
+    const url = this.API_URL + this.DELETE_BACKGROUND_PICTURE_URL + userId;
+    return this.http.put(url, userId);
+  }
 
   //=============Update user===================
   UPDATE_APP_USER = 'AppUsers/update-app-user/';
@@ -153,25 +153,28 @@ export class MasterService {
 
   //=============Update user===================
   CHECK_UNIQUE_NAME = 'AppUsers/check-unique-name?uniqueName=';
-  checkUniqueName(uniqueName:string, userId:number) {
-    const url = this.API_URL + this.CHECK_UNIQUE_NAME + uniqueName + '&userId=' + userId;
+  checkUniqueName(uniqueName: string, userId: number) {
+    const url =
+      this.API_URL + this.CHECK_UNIQUE_NAME + uniqueName + '&userId=' + userId;
     return this.http.get(url);
   }
 
   //=============Update user password===================
   UPDATE_USER_PASSWORD = 'AppUsers/update-password/';
-  updateUserPassword(userId:number,  newPasswordObj:changePasswordDTO){
+  updateUserPassword(userId: number, newPasswordObj: changePasswordDTO) {
     const url = this.API_URL + this.UPDATE_USER_PASSWORD + userId;
-   
-    // const userNewPassword: changePasswordDTO = {
-    //   newPassword: newPassword,
-    // };
-    
-   
     return this.http.put(url, newPasswordObj, {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+
+  //=============Add post===================
+  ADD_POST = 'Post/add-post';
+  addPost(formData: FormData) {
+    const url = this.API_URL + this.ADD_POST;
+    return this.http.post(url, formData, {responseType: 'text'});
+  }
+
 
 }
 
