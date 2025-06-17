@@ -6,8 +6,21 @@
 
       <div class="col-12 col-lg-12">
 
-        <h4 class="mb-0 aos-init aos-animate" data-aos="fade-down" data-aos-easing="linear"><i
-            class="bi bi-plus-circle-dotted me-2"></i> Add Post</h4>
+        <div class="ap-top-container d-flex align-items-center justify-content-between">
+          <h4 class="mb-0 d-flex align-items-center aos-init aos-animate" data-aos="fade-down" data-aos-easing="linear">
+            <i class="bi bi-plus-circle-dotted me-2"></i> Add Post
+
+          </h4>
+
+          <button class="btn btn-sm btn-outline-secondary ms-3" (click)="getDraftedPost()" data-bs-toggle="modal"
+            data-bs-target="#addingDraftModal">
+            <i class="bi bi-file-earmark-text me-1"></i> Drafts 
+            <span *ngIf="IsdraftedPostAvailable" class="badge rounded-pill text-bg-success">New</span>
+          </button>
+
+        </div>
+
+
 
         <div class="row g-0">
           <div class="col-12">
@@ -15,7 +28,7 @@
               <div class="dashboard-body">
 
 
-                <form [formGroup]="postForm" (ngSubmit)="onSubmit('publish')">
+                <form [formGroup]="postForm">
                   <div class="row g-3">
                     <div class="col-sm-12">
                       <label class="form-label">Title <span class="text-danger "
@@ -23,30 +36,36 @@
                           *
                         </span> </label>
                       <input type="text" formControlName="title" placeholder="Add a title">
-                     
+
                     </div>
 
 
                     <div class="col-sm-12">
                       <label class="form-label">Categories <span class="text-danger "
-                        *ngIf="postForm.controls['category'].invalid && postForm.controls['category'].touched">
-                        *
-                      </span></label>
-                      <select formControlName="category" placeholder="Select a category" class="form-select">
+                          *ngIf="postForm.controls['category'].invalid && postForm.controls['category'].touched">
+                          *
+                        </span></label>
+                      <select formControlName="category" placeholder="Select a category"  class="form-select text-muted">
                         <option value="" disabled selected>Select a category</option>
                         <option *ngIf="!categoriesObj" value="" disabled selected>Wait...</option>
 
                         <ng-container *ngFor="let category of categoriesObj">
-                          <option value="{{category.id}}">{{category.name}}</option>
+                          <option  class="text-dark" value="{{category.id}}">{{category.name}}</option>
                         </ng-container>
 
                       </select>
-                     
+
 
                     </div>
+                    
 
                     <div class="col-sm-12">
-                      <label class="form-label">Description</label>
+                      <label class="form-label">Description
+                        <span class="text-danger "
+                          *ngIf="postForm.controls['description'].invalid && postForm.controls['description'].touched">
+                          *
+                        </span>
+                      </label>
                       <textarea class="w-10" formControlName="description" placeholder="Add post" rows="3"
                         spellcheck="false"></textarea>
                     </div>
@@ -74,8 +93,7 @@
                             <!-- <button class="btn btn-sm btn-base btn-icon" type="button" title="Link"><i
                                 class="bi bi-link-45deg"></i></button> -->
 
-                            <input  #postPhoto type="file" (change)="openFileInput($event)"
-                              hidden>
+                            <input #postPhoto type="file" (change)="openFileInput($event)" hidden>
 
                             <button *ngIf="!previewUrl" (click)="postPhoto.click()" class="btn btn-sm btn-base btn-icon"
                               type="button" title="Image"><i class="bi bi-image"></i></button>
@@ -91,8 +109,31 @@
 
 
                     <div class="col-sm-12">
-                      <button [disabled]="postForm.invalid" class="btn btn-mint me-2" (click)="onSubmit('publish')" type="submit">Add Post</button>
-                      <button [disabled]="postForm.invalid" class="btn btn-secondary" (click)="onSubmit('draft')" type="submit">Save Draft</button>
+
+                      <ng-container *ngIf="buttonLoading !== 'publish'; else addingPublish">
+                        <button type="button" class="btn btn-mint me-2"
+                          [disabled]="postForm.invalid || buttonLoading !== null" (click)="onSubmit('publish')">
+                          Add Post
+                        </button>
+                      </ng-container>
+                      <ng-template #addingPublish>
+                        <button type="button" class="btn btn-mint me-2" disabled>
+                          Adding...
+                        </button>
+                      </ng-template>
+
+                      <ng-container *ngIf="buttonLoading !== 'draft'; else  addingDraft">
+                        <button type="button" class="btn btn-secondary"
+                          [disabled]="postForm.invalid || buttonLoading !== null" (click)="onSubmit('draft')">
+                          {{(updateDraftButton) ? 'Update Draft' : 'Save as Draft'}} 
+                        </button>
+                      </ng-container>
+                      <ng-template #addingDraft>
+                        <button type="button" class="btn btn-secondary" disabled>
+                          {{(updateDraftButton) ? 'Updating Draft' : 'Saving Draft'}}
+                        </button>
+                      </ng-template>
+
                     </div>
                   </div>
                 </form>
@@ -106,3 +147,91 @@
     </div>
   </div>
 </section>
+
+<!-- Modal for showing drafts -->
+<div class="modal fade" id="addingDraftModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-file-earmark-text me-2"></i>Saved Drafts</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Example draft list -->
+        <div class="list-group">
+           @if (IsdraftedPostAvailable) {
+          @for (dPost of draftedPost; track $index) {
+          
+          <div class="list-group-item d-flex justify-content-between align-items-start py-3 px-3">
+            <div class="me-3">
+               
+              <h6 class="mb-1 fw-semibold text-truncate">{{ dPost.title }}</h6>
+              <small class="text-muted">
+                Last edited: {{ dPost.createdAt | date: 'medium' }}
+              </small>
+             
+            </div>
+
+            <div class="btn-group btn-group-sm" role="group" aria-label="Draft Actions">
+              <!-- Update Icon Button -->
+              <button type="button" class="btn btn-outline-primary" title="Edit">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+
+              <!-- Delete Icon Button -->
+              <button type="button" class="btn btn-outline-danger" title="Delete" data-bs-toggle="modal"
+                data-bs-target="#draftDeleteModal" (click)="selectedPostId = dPost.postId">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </div>
+          }
+        }@else {
+         <div class="text-center py-3">
+          <i class="bi bi-file-earmark-x fs-1 text-muted d-block mb-2"></i>
+          <p class="text-muted">No drafts available.</p>
+        </div>
+
+        }
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation modal -->
+<div class="modal fade" id="draftDeleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Draft?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you sure you want to delete this draft? This action cannot be undone.
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button id="deleteBtnId" type="button" class="btn btn-danger" (click)="confirmDraftDelete(selectedPostId)" data-bs-dismiss="modal">
+          Delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

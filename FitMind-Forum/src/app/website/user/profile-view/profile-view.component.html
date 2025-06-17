@@ -1,4 +1,4 @@
-<div class="profile-banner" [style]="'background-image: url(' + (userPhotos.backgroundPhoto ? userPhotos.backgroundPhoto : 'img/bg/1.jpg') + ')'"
+<div class="profile-banner" [style]="'background-image: url(' + (!userPhotos.backgroundPhoto ? 'img/bg/1.jpg' : userPhotos.backgroundPhoto) + ')'"
 ></div>
 
 

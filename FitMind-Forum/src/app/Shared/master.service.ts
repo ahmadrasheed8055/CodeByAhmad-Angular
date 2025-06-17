@@ -15,6 +15,7 @@ import {
   UserLoginDTO,
 } from '../Model/AppUsers';
 import { AddPostDTO } from '../Model/AddPost';
+import { GetDraftedPostDTO } from '../Model/GetDraftedPostDTO';
 
 @Injectable({
   providedIn: 'root',
@@ -172,12 +173,34 @@ export class MasterService {
   ADD_POST = 'Post/add-post';
   addPost(formData: FormData) {
     const url = this.API_URL + this.ADD_POST;
-    return this.http.post(url, formData, {responseType: 'text'});
+    return this.http.post(url, formData, { responseType: 'text' });
   }
 
+  //=============Getting draft posts===================
+  GET_DRAFT_POSTS = 'Post/getDrafts/';
+  getDraftPosts(userId: number): Observable<GetDraftedPostDTO[]> {
+    const url = this.API_URL + this.GET_DRAFT_POSTS + userId;
+    return this.http.get<GetDraftedPostDTO[]>(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
+  //=============Availabe draft post===================
+  IS_DRAFT_POST_AVAILABLE = 'Post/IsDraftAvailable/';
+
+  isDraftAvailable(userId: number): Observable<boolean> {
+    const url = this.API_URL + this.IS_DRAFT_POST_AVAILABLE + userId;
+    return this.http.get<boolean>(url, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  //=============Delete draft post===================
+  DELETE_DRAFT_POST = 'Post/deleteDraftedPost/';
+  deleteDraftedPost(postId: number) {
+    const url = this.API_URL + this.DELETE_DRAFT_POST + postId;
+    return this.http.put(url,{}, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }
-
-/*
-create guard then implement or add in route like array, then add conditions
-*/

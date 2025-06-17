@@ -30,7 +30,7 @@ export class AuthService {
   }
 
    router = inject(Router);
-
+  
   //==========Setting app user =====================
    setAppUser(): void {
     const userId = sessionStorage.getItem('appUserId');
@@ -54,6 +54,11 @@ export class AuthService {
           // Remove token and logout
           sessionStorage.clear();
           this.router.navigate(['']);
+        }else{
+           // Remove token and logout
+           sessionStorage.clear();
+           this.router.navigate(['']);
+           
         }
       },
     });
