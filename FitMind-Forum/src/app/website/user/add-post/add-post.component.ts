@@ -1,4 +1,11 @@
-import { Component, inject, NgModule, ViewChild, viewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  NgModule,
+  ViewChild,
+  viewChild,
+  ElementRef,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -13,6 +20,7 @@ import { SnackBarServiceService } from '../../../Shared/snack-bar-service.servic
 import { CommonModule } from '@angular/common';
 import { AddPostDTO } from '../../../Model/AddPost';
 import { GetDraftedPostDTO } from '../../../Model/GetDraftedPostDTO';
+import { UpdatePostDTO } from '../../../Model/UpdatePostDTO';
 // import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -30,11 +38,12 @@ export class AddPostComponent {
   snackBar = inject(SnackBarServiceService);
   saveButtonDisabled: boolean = false;
   draftButtonDisabled: boolean = false;
-  buttonLoading: "publish" | "draft" | null = null;
+  buttonLoading: 'publish' | 'draft' | null = null;
   draftedPost: GetDraftedPostDTO[] | null = null;
   IsdraftedPostAvailable: boolean = false;
   updateDraftButton: boolean = false;
   selectedPostId: number | null = null;
+
   constructor(private fb: FormBuilder) {
     this.postForm = new FormGroup({
       title: new FormControl('', [Validators.required]),
@@ -46,23 +55,20 @@ export class AddPostComponent {
 
   ngOnInit() {
     const userId = sessionStorage.getItem('appUserId');
+
     this.getAllCategories();
-    this.masterService.isDraftAvailable(Number(userId)).subscribe(
-      next => {
-        this.IsdraftedPostAvailable = next;
-      }
-    )
+    this.masterService.isDraftAvailable(Number(userId)).subscribe((next) => {
+      this.IsdraftedPostAvailable = next;
+    });
   }
 
   //close modal function
   @ViewChild('closeModal') closeModalButton: any;
-  closeModal(){
+  closeModal() {
     if (this.closeModalButton) {
       this.closeModalButton.nativeElement.click();
     }
-   
   }
-  
 
   getAllCategories() {
     this.masterService.getAllCategories().subscribe(
@@ -95,11 +101,9 @@ export class AddPostComponent {
   }
 
   //add post
-  onSubmit(type:  "publish" | "draft") {
-
+  onSubmit(type: 'publish' | 'draft') {
     // debugger;
-   this.buttonLoading = type;
-    
+    this.buttonLoading = type;
 
     if (this.postForm.valid) {
       debugger;
@@ -126,28 +130,26 @@ export class AddPostComponent {
         (next) => {
           // this.snackBar.showSuccess('Post added successfully');
           if (type === 'draft') {
-           
             this.snackBar.showSuccess('Post saved as draft');
             this.IsdraftedPostAvailable = true;
-            this.getDraftedPost(); 
+            this.getDraftedPost();
           } else {
-           
             this.snackBar.showSuccess('Post published successfully');
           }
-           this.buttonLoading = null;
-           this.updateDraftButton = true;
+          this.buttonLoading = null;
+          this.updateDraftButton = true;
           // this.previewUrl = null;
           // this.postForm.reset();
         },
         (error) => {
           if (error.status === 400) {
-            this.snackBar.showError(error.error);   
+            this.snackBar.showError(error.error);
           } else if (error.status === 404) {
-            this.snackBar.showError("Categorie not found"); //  
+            this.snackBar.showError('Categorie not found'); //
           } else if (error.status === 422) {
-            this.snackBar.showError("Inappropriate content."); 
+            this.snackBar.showError('Inappropriate content.');
           } else if (error.status === 500) {
-            this.snackBar.showError('Server error: ' + error.error);  
+            this.snackBar.showError('Server error: ' + error.error);
           } else {
             this.snackBar.showError('An unexpected error occurred.');
           }
@@ -157,7 +159,7 @@ export class AddPostComponent {
     }
   }
 
-  getDraftedPost(){
+  getDraftedPost() {
     const userId = sessionStorage.getItem('appUserId');
     if (!userId) {
       this.snackBar.showError('User not found');
@@ -166,12 +168,11 @@ export class AddPostComponent {
 
     this.masterService.getDraftPosts(Number(userId)).subscribe(
       (next) => {
-        this.draftedPost = next;       
+        this.draftedPost = next;
       },
       (error) => {
         if (error.status === 404) {
           // this.snackBar.showError('No drafted post found for this user');
-          
         } else {
           // this.snackBar.showError('An error occurred while fetching drafted post');
         }
@@ -199,8 +200,38 @@ export class AddPostComponent {
         if (error.status === 404) {
           this.snackBar.showError('Drafted post not found');
         } else {
-          this.snackBar.showError('An error occurred while deleting drafted post');
+          this.snackBar.showError(
+            'An error occurred while deleting drafted post'
+          );
         }
-      })
+      }
+    );
   }
+   @ViewChild('closeDraftModalButton') closeDraftModalButton!: ElementRef<HTMLButtonElement>;
+
+  updateDraftPostButton(postId: number) {
+   
+    let obj = this.draftedPost?.find((x) => x.postId == postId);
+    if (obj) {
+      this.postForm.patchValue({
+        title: obj.title,
+        description: obj.description,
+        category: obj.categoryId,
+      });
+    }
+    this.updateDraftButton = true;
+   this.closeDraftModalButton.nativeElement.click();
+
+  }
+
+clearForm(){
+  this.postForm.reset();
+  this.previewUrl = null;
+  this.updateDraftButton = false;
+  this.selectedPostId = null;
+  this.buttonLoading = null;
+  // this.draftedPost = null;
+  // this.IsdraftedPostAvailable = false;
+}
+
 }

@@ -16,6 +16,7 @@ import {
 } from '../Model/AppUsers';
 import { AddPostDTO } from '../Model/AddPost';
 import { GetDraftedPostDTO } from '../Model/GetDraftedPostDTO';
+import { UpdatePostDTO } from '../Model/UpdatePostDTO';
 
 @Injectable({
   providedIn: 'root',
@@ -203,4 +204,15 @@ export class MasterService {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+
+  //=============Update  post===================
+  UPDATE_POST = 'Post/updatePost/';
+
+  updatePost(userId:number, postObj:UpdatePostDTO):Observable<UpdatePostDTO> {
+    const url = this.API_URL + this.UPDATE_POST + userId;
+    return this.http.put<UpdatePostDTO>(url, postObj, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
 }

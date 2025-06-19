@@ -133,7 +133,15 @@
                           {{(updateDraftButton) ? 'Updating Draft' : 'Saving Draft'}}
                         </button>
                       </ng-template>
-
+                      <ng-template #updatingDraft>
+                        <button type="button" class="btn btn-secondary" disabled>
+                         Update Draft
+                        </button>
+                      </ng-template>
+                        <button *ngIf="updateDraftButton" type="button" class="btn btn-outline-secondary ms-2"
+                          (click)="clearForm()">
+                          Clear
+                        </button>
                     </div>
                   </div>
                 </form>
@@ -176,7 +184,7 @@
 
             <div class="btn-group btn-group-sm" role="group" aria-label="Draft Actions">
               <!-- Update Icon Button -->
-              <button type="button" class="btn btn-outline-primary" title="Edit">
+              <button (click)="updateDraftPostButton(dPost.postId)"  type="button" class="btn btn-outline-primary" title="Edit">
                 <i class="bi bi-pencil-square"></i>
               </button>
 
@@ -200,7 +208,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button #closeDraftModalButton  type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Close
         </button>
       </div>
