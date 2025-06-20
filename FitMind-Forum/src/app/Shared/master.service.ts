@@ -208,11 +208,11 @@ export class MasterService {
   //=============Update  post===================
   UPDATE_POST = 'Post/updatePost/';
 
-  updatePost(userId:number, postObj:UpdatePostDTO):Observable<UpdatePostDTO> {
+  updatePost(userId:number, postObj:FormData) {
     const url = this.API_URL + this.UPDATE_POST + userId;
-    return this.http.put<UpdatePostDTO>(url, postObj, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    
+    debugger;
+    return this.http.put(url, postObj);
   }
 
 }

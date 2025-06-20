@@ -39,10 +39,15 @@ export class AddPostComponent {
   saveButtonDisabled: boolean = false;
   draftButtonDisabled: boolean = false;
   buttonLoading: 'publish' | 'draft' | null = null;
-  draftedPost: GetDraftedPostDTO[] | null = null;
+  draftedPosts: GetDraftedPostDTO[] | null = null;
+  draftedPost: any ;
   IsdraftedPostAvailable: boolean = false;
   updateDraftButton: boolean = false;
-  selectedPostId: number | null = null;
+  selectedPostId: number = 0;
+
+  // postId: number | null = null;
+  userId: number = 0;
+  updatePostObj:UpdatePostDTO | null = null;
 
   constructor(private fb: FormBuilder) {
     this.postForm = new FormGroup({
@@ -51,6 +56,7 @@ export class AddPostComponent {
       category: new FormControl('', [Validators.required]),
       image: new FormControl(''),
     });
+     
   }
 
   ngOnInit() {
@@ -168,7 +174,7 @@ export class AddPostComponent {
 
     this.masterService.getDraftPosts(Number(userId)).subscribe(
       (next) => {
-        this.draftedPost = next;
+        this.draftedPosts = next;
       },
       (error) => {
         if (error.status === 404) {
@@ -176,7 +182,7 @@ export class AddPostComponent {
         } else {
           // this.snackBar.showError('An error occurred while fetching drafted post');
         }
-        this.draftedPost = null;
+        this.draftedPosts = null;
         this.IsdraftedPostAvailable = false;
       }
     );
@@ -193,7 +199,7 @@ export class AddPostComponent {
       (next) => {
         this.snackBar.showSuccess('Drafted post deleted successfully');
         this.getDraftedPost();
-        this.selectedPostId = null;
+        this.selectedPostId = 0;
         this.postForm.reset();
       },
       (error) => {
@@ -207,31 +213,74 @@ export class AddPostComponent {
       }
     );
   }
-   @ViewChild('closeDraftModalButton') closeDraftModalButton!: ElementRef<HTMLButtonElement>;
+  @ViewChild('closeDraftModalButton')
+  closeDraftModalButton!: ElementRef<HTMLButtonElement>;
 
   updateDraftPostButton(postId: number) {
-   
-    let obj = this.draftedPost?.find((x) => x.postId == postId);
-    if (obj) {
+
+    this.draftedPost = this.draftedPosts?.find((x) => x.postId == postId);
+    // console.log(this.draftedPosts);
+    if (this.draftedPost) {
       this.postForm.patchValue({
-        title: obj.title,
-        description: obj.description,
-        category: obj.categoryId,
+        title: this.draftedPost.title,
+        description: this.draftedPost.description,
+        category: this.draftedPost.categoryId,
       });
+      // this.selectedPostId = obj.postId;
+      // this.userId = obj.userId;
     }
     this.updateDraftButton = true;
-   this.closeDraftModalButton.nativeElement.click();
-
+    this.closeDraftModalButton.nativeElement.click();
   }
 
-clearForm(){
-  this.postForm.reset();
-  this.previewUrl = null;
-  this.updateDraftButton = false;
-  this.selectedPostId = null;
-  this.buttonLoading = null;
-  // this.draftedPost = null;
-  // this.IsdraftedPostAvailable = false;
-}
+  clearForm() {
+    this.postForm.reset();
+    this.previewUrl = null;
+    this.updateDraftButton = false;
+    this.selectedPostId = 0;
+    this.buttonLoading = null;
+    // this.draftedPost = null;
+    // this.IsdraftedPostAvailable = false;
+  }
 
+  onDraftUpdate() {
+    this.buttonLoading = 'draft';
+   const formData = new FormData();
+  formData.append('PostId', this.draftedPost.postId.toString());
+  formData.append('Title', this.postForm.value.title);
+  formData.append('Description', this.postForm.value.description);
+  formData.append('IsPublished', 'false');
+  formData.append('CategoryId', this.postForm.value.category.toString());
+
+  const imageFile = this.postForm.get('image')?.value;
+  if (imageFile) {
+    formData.append('PostImage', imageFile);
+  }
+
+      
+    this.masterService.updatePost(this.draftedPost.userId , formData).subscribe(
+      (next)=>{
+        
+        this.snackBar.showSuccess("added");
+        console.log(next);
+        this.buttonLoading = null;
+        return;
+      },
+      (error)=>{
+       
+
+        console.log(error);
+        this.buttonLoading = null;
+        return;
+
+      }
+    );
+
+    if(this.draftedPost.userId !== 0){
+
+    }
+
+   
+    
+  }
 }

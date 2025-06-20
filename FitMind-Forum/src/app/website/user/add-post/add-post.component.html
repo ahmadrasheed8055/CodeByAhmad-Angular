@@ -14,7 +14,7 @@
 
           <button class="btn btn-sm btn-outline-secondary ms-3" (click)="getDraftedPost()" data-bs-toggle="modal"
             data-bs-target="#addingDraftModal">
-            <i class="bi bi-file-earmark-text me-1"></i> Drafts 
+            <i class="bi bi-file-earmark-text me-1"></i> Drafts
             <span *ngIf="IsdraftedPostAvailable" class="badge rounded-pill text-bg-success">New</span>
           </button>
 
@@ -45,19 +45,19 @@
                           *ngIf="postForm.controls['category'].invalid && postForm.controls['category'].touched">
                           *
                         </span></label>
-                      <select formControlName="category" placeholder="Select a category"  class="form-select text-muted">
+                      <select formControlName="category" placeholder="Select a category" class="form-select text-muted">
                         <option value="" disabled selected>Select a category</option>
                         <option *ngIf="!categoriesObj" value="" disabled selected>Wait...</option>
 
                         <ng-container *ngFor="let category of categoriesObj">
-                          <option  class="text-dark" value="{{category.id}}">{{category.name}}</option>
+                          <option class="text-dark" value="{{category.id}}">{{category.name}}</option>
                         </ng-container>
 
                       </select>
 
 
                     </div>
-                    
+
 
                     <div class="col-sm-12">
                       <label class="form-label">Description
@@ -123,9 +123,10 @@
                       </ng-template>
 
                       <ng-container *ngIf="buttonLoading !== 'draft'; else  addingDraft">
+                        
                         <button type="button" class="btn btn-secondary"
-                          [disabled]="postForm.invalid || buttonLoading !== null" (click)="onSubmit('draft')">
-                          {{(updateDraftButton) ? 'Update Draft' : 'Save as Draft'}} 
+                          [disabled]="postForm.invalid || buttonLoading !== null" (click)="updateDraftButton ? onDraftUpdate() : onSubmit('draft') ">
+                          {{(updateDraftButton) ? 'Update Draft' : 'Save as Draft'}}
                         </button>
                       </ng-container>
                       <ng-template #addingDraft>
@@ -135,14 +136,15 @@
                       </ng-template>
                       <ng-template #updatingDraft>
                         <button type="button" class="btn btn-secondary" disabled>
-                         Update Draft
+                          Update Draft
                         </button>
                       </ng-template>
-                        <button *ngIf="updateDraftButton" type="button" class="btn btn-outline-secondary ms-2"
-                          (click)="clearForm()">
-                          Clear
-                        </button>
+                      <button *ngIf="updateDraftButton || postForm.valid" type="button" class="btn btn-outline-secondary ms-2"
+                        (click)="clearForm()">
+                        Clear
+                      </button>
                     </div>
+
                   </div>
                 </form>
               </div>
@@ -169,22 +171,30 @@
       <div class="modal-body">
         <!-- Example draft list -->
         <div class="list-group">
-           @if (IsdraftedPostAvailable) {
-          @for (dPost of draftedPost; track $index) {
-          
+          @if (IsdraftedPostAvailable) {
+            <div *ngIf="draftedPosts == null" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading drafts...</p>
+          </div>
+          @for (dPost of draftedPosts; track $index) {
+
           <div class="list-group-item d-flex justify-content-between align-items-start py-3 px-3">
             <div class="me-3">
-               
+
               <h6 class="mb-1 fw-semibold text-truncate">{{ dPost.title }}</h6>
               <small class="text-muted">
-                Last edited: {{ dPost.createdAt | date: 'medium' }}
+                Last edited: {{ (dPost.updatedAt == null ? dPost.createdAt : dPost.updatedAt) | date: 'short' }}
+
               </small>
-             
+
             </div>
 
             <div class="btn-group btn-group-sm" role="group" aria-label="Draft Actions">
               <!-- Update Icon Button -->
-              <button (click)="updateDraftPostButton(dPost.postId)"  type="button" class="btn btn-outline-primary" title="Edit">
+              <button (click)="updateDraftPostButton(dPost.postId)" type="button" class="btn btn-outline-primary"
+                title="Edit">
                 <i class="bi bi-pencil-square"></i>
               </button>
 
@@ -196,19 +206,19 @@
             </div>
           </div>
           }
-        }@else {
-         <div class="text-center py-3">
-          <i class="bi bi-file-earmark-x fs-1 text-muted d-block mb-2"></i>
-          <p class="text-muted">No drafts available.</p>
-        </div>
+          }@else {
+          <div class="text-center py-3">
+            <i class="bi bi-file-earmark-x fs-1 text-muted d-block mb-2"></i>
+            <p class="text-muted">No drafts available.</p>
+          </div>
 
-        }
+          }
         </div>
 
       </div>
 
       <div class="modal-footer">
-        <button #closeDraftModalButton  type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button #closeDraftModalButton type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Close
         </button>
       </div>
@@ -230,12 +240,13 @@
       <div class="modal-body">
         Are you sure you want to delete this draft? This action cannot be undone.
       </div>
-      
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
-        <button id="deleteBtnId" type="button" class="btn btn-danger" (click)="confirmDraftDelete(selectedPostId)" data-bs-dismiss="modal">
+        <button id="deleteBtnId" type="button" class="btn btn-danger" (click)="confirmDraftDelete(selectedPostId)"
+          data-bs-dismiss="modal">
           Delete
         </button>
       </div>
