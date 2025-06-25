@@ -40,23 +40,30 @@ export class AddPostComponent {
   draftButtonDisabled: boolean = false;
   buttonLoading: 'publish' | 'draft' | null = null;
   draftedPosts: GetDraftedPostDTO[] | null = null;
-  draftedPost: any ;
+  draftedPost: any;
   IsdraftedPostAvailable: boolean = false;
   updateDraftButton: boolean = false;
   selectedPostId: number = 0;
 
   // postId: number | null = null;
   userId: number = 0;
-  updatePostObj:UpdatePostDTO | null = null;
+  updatePostObj: UpdatePostDTO | null = null;
 
   constructor(private fb: FormBuilder) {
-    this.postForm = new FormGroup({
-      title: new FormControl('', [Validators.required]),
-      description: new FormControl('', [Validators.required]),
-      category: new FormControl('', [Validators.required]),
-      image: new FormControl(''),
-    });
-     
+   this.postForm = new FormGroup({
+  title: new FormControl('', [
+    Validators.required,
+    Validators.minLength(5),
+    Validators.maxLength(100)
+  ]),
+  description: new FormControl('', [
+    Validators.required,
+    Validators.minLength(10),
+    Validators.maxLength(1000)
+  ]),
+  category: new FormControl('', [Validators.required]),
+  image: new FormControl('')
+});
   }
 
   ngOnInit() {
@@ -95,7 +102,7 @@ export class AddPostComponent {
         this.previewUrl = e.target?.result as string;
       };
       reader.readAsDataURL(file.files[0]);
-      console.log(file.files[0]);
+      // console.log(file.files[0]);
       this.postForm.patchValue({
         image: file.files[0],
       });
@@ -103,6 +110,23 @@ export class AddPostComponent {
   }
 
   removeImage() {
+    if (this.updateDraftButton) {
+      this.masterService
+        .deletePostImage(this.draftedPost.userId, this.draftedPost.postId)
+        .subscribe(
+          (next) => {
+            this.postForm.patchValue({
+              image: null,
+            });
+            this.snackBar.showSuccess(
+              'Drafted post image deleted successfully'
+            );
+          },
+          (error) => {
+            this.snackBar.showError('Error deleting drafted post image');
+          }
+        );
+    }
     this.previewUrl = null;
   }
 
@@ -197,6 +221,8 @@ export class AddPostComponent {
     this.selectedPostId = postId;
     this.masterService.deleteDraftedPost(postId).subscribe(
       (next) => {
+        this.updateDraftButton = false;
+        this.previewUrl = null;
         this.snackBar.showSuccess('Drafted post deleted successfully');
         this.getDraftedPost();
         this.selectedPostId = 0;
@@ -217,15 +243,25 @@ export class AddPostComponent {
   closeDraftModalButton!: ElementRef<HTMLButtonElement>;
 
   updateDraftPostButton(postId: number) {
-
     this.draftedPost = this.draftedPosts?.find((x) => x.postId == postId);
-    // console.log(this.draftedPosts);
+    console.log(this.draftedPost);
     if (this.draftedPost) {
       this.postForm.patchValue({
         title: this.draftedPost.title,
         description: this.draftedPost.description,
         category: this.draftedPost.categoryId,
       });
+
+      this.masterService
+        .getPostImage(this.draftedPost.userId, this.draftedPost.postId)
+        .subscribe(
+          (image) => {
+            this.previewUrl = `data:image/jpeg;base64,${image}`;
+          },
+          (error) => {
+            this.previewUrl = null;
+          }
+        );
       // this.selectedPostId = obj.postId;
       // this.userId = obj.userId;
     }
@@ -245,42 +281,33 @@ export class AddPostComponent {
 
   onDraftUpdate() {
     this.buttonLoading = 'draft';
-   const formData = new FormData();
-  formData.append('PostId', this.draftedPost.postId.toString());
-  formData.append('Title', this.postForm.value.title);
-  formData.append('Description', this.postForm.value.description);
-  formData.append('IsPublished', 'false');
-  formData.append('CategoryId', this.postForm.value.category.toString());
+    const formData = new FormData();
+    formData.append('PostId', this.draftedPost.postId.toString());
+    formData.append('Title', this.postForm.value.title);
+    formData.append('Description', this.postForm.value.description);
+    formData.append('IsPublished', 'false');
+    formData.append('CategoryId', this.postForm.value.category.toString());
 
-  const imageFile = this.postForm.get('image')?.value;
-  if (imageFile) {
-    formData.append('PostImage', imageFile);
-  }
+    const imageFile = this.postForm.get('image')?.value;
+    if (imageFile) {
+      formData.append('PostImage', imageFile);
+    }
 
-      
-    this.masterService.updatePost(this.draftedPost.userId , formData).subscribe(
-      (next)=>{
-        
-        this.snackBar.showSuccess("added");
-        console.log(next);
+    this.masterService.updatePost(this.draftedPost.userId, formData).subscribe(
+      (next) => {
+        this.snackBar.showSuccess('Draft post updated successfully');
+        // console.log(next);
         this.buttonLoading = null;
         return;
       },
-      (error)=>{
-       
-
+      (error) => {
         console.log(error);
         this.buttonLoading = null;
         return;
-
       }
     );
 
-    if(this.draftedPost.userId !== 0){
-
+    if (this.draftedPost.userId !== 0) {
     }
-
-   
-    
   }
 }

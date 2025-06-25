@@ -37,6 +37,15 @@
                         </span> </label>
                       <input type="text" formControlName="title" placeholder="Add a title">
 
+                      <small class="text-danger"
+                        *ngIf="postForm.controls['title'].errors?.['minlength'] && postForm.controls['title'].touched">
+                        Minimum 5 characters required.
+                      </small>
+                      <small class="text-danger"
+                        *ngIf="postForm.controls['title'].errors?.['maxlength'] && postForm.controls['title'].touched">
+                        Maximum 255 characters allowed.
+                      </small>
+
                     </div>
 
 
@@ -68,6 +77,16 @@
                       </label>
                       <textarea class="w-10" formControlName="description" placeholder="Add post" rows="3"
                         spellcheck="false"></textarea>
+
+                      <small class="text-danger"
+                        *ngIf="postForm.controls['description'].errors?.['minlength'] && postForm.controls['description'].touched">
+                        Minimum 10 characters required.
+                      </small>
+
+                      <small class="text-danger"
+                        *ngIf="postForm.controls['description'].errors?.['maxlength'] && postForm.controls['description'].touched">
+                        Maximum 1000 characters allowed.
+                      </small>
                     </div>
 
                     <!-- Upload Media -->
@@ -123,9 +142,10 @@
                       </ng-template>
 
                       <ng-container *ngIf="buttonLoading !== 'draft'; else  addingDraft">
-                        
+
                         <button type="button" class="btn btn-secondary"
-                          [disabled]="postForm.invalid || buttonLoading !== null" (click)="updateDraftButton ? onDraftUpdate() : onSubmit('draft') ">
+                          [disabled]="postForm.invalid || buttonLoading !== null"
+                          (click)="updateDraftButton ? onDraftUpdate() : onSubmit('draft') ">
                           {{(updateDraftButton) ? 'Update Draft' : 'Save as Draft'}}
                         </button>
                       </ng-container>
@@ -139,8 +159,8 @@
                           Update Draft
                         </button>
                       </ng-template>
-                      <button *ngIf="updateDraftButton || postForm.valid" type="button" class="btn btn-outline-secondary ms-2"
-                        (click)="clearForm()">
+                      <button *ngIf="updateDraftButton || postForm.valid" type="button"
+                        class="btn btn-outline-secondary ms-2" (click)="clearForm()">
                         Clear
                       </button>
                     </div>
@@ -172,7 +192,7 @@
         <!-- Example draft list -->
         <div class="list-group">
           @if (IsdraftedPostAvailable) {
-            <div *ngIf="draftedPosts == null" class="text-center py-5">
+          <div *ngIf="draftedPosts == null" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>

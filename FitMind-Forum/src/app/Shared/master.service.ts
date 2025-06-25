@@ -210,9 +210,23 @@ export class MasterService {
 
   updatePost(userId:number, postObj:FormData) {
     const url = this.API_URL + this.UPDATE_POST + userId;
-    
-    debugger;
     return this.http.put(url, postObj);
+  }
+
+  //=============get  post image===================
+  GET_POST_IMAGE = 'Post/getPostImage/';
+
+  getPostImage(userId:number, postId:number) {
+    
+    const url = this.API_URL + this.GET_POST_IMAGE + userId + '/' + postId;  
+    return this.http.get(url);  
+  }
+
+  //================delete post image=============
+  DELETE_POST_IMAGE = 'Post/deletePostPhoto/{userId}/{postId}';
+  deletePostImage(userId: number, postId: number) {
+    const url = this.API_URL + this.DELETE_POST_IMAGE.replace('{userId}', userId.toString()).replace('{postId}', postId.toString());
+    return this.http.put(url, {});
   }
 
 }
