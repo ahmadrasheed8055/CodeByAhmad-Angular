@@ -23,6 +23,12 @@ export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
         sessionStorage.removeItem('token');
         router.navigate(['']);
       }
+
+       // Server down or unreachable
+      if (error.status === 0 || error.status >= 500) {
+        sessionStorage.removeItem('token');
+        router.navigate(['']);
+      }
       return throwError(() => error);
     })
   );

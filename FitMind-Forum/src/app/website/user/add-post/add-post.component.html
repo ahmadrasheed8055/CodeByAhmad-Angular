@@ -131,7 +131,9 @@
 
                       <ng-container *ngIf="buttonLoading !== 'publish'; else addingPublish">
                         <button type="button" class="btn btn-mint me-2"
-                          [disabled]="postForm.invalid || buttonLoading !== null" (click)="onSubmit('publish')">
+                          [disabled]="postForm.invalid || buttonLoading !== null" 
+                          (click)="updateDraftButton ? updatePost('publish') : onSubmit('publish')
+                          ">
                           Add Post
                         </button>
                       </ng-container>
@@ -145,7 +147,7 @@
 
                         <button type="button" class="btn btn-secondary"
                           [disabled]="postForm.invalid || buttonLoading !== null"
-                          (click)="updateDraftButton ? onDraftUpdate() : onSubmit('draft') ">
+                          (click)="updateDraftButton ? updatePost('draft') : onSubmit('draft') ">
                           {{(updateDraftButton) ? 'Update Draft' : 'Save as Draft'}}
                         </button>
                       </ng-container>
@@ -190,7 +192,7 @@
 
       <div class="modal-body">
         <!-- Example draft list -->
-        <div class="list-group">
+         <div class="list-group" style="max-height: 400px; overflow-y: auto;">
           @if (IsdraftedPostAvailable) {
           <div *ngIf="draftedPosts == null" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">

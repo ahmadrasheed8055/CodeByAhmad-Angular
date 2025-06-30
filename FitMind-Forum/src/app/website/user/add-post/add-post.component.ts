@@ -279,13 +279,21 @@ export class AddPostComponent {
     // this.IsdraftedPostAvailable = false;
   }
 
-  onDraftUpdate() {
-    this.buttonLoading = 'draft';
+  //udpate drafted post and publish it function
+  updatePost(type: 'publish' | 'draft') {
     const formData = new FormData();
     formData.append('PostId', this.draftedPost.postId.toString());
     formData.append('Title', this.postForm.value.title);
     formData.append('Description', this.postForm.value.description);
-    formData.append('IsPublished', 'false');
+    if (type === 'draft') {
+      formData.append('IsPublished', 'false');
+    this.buttonLoading = 'draft';
+      
+    }else{
+      formData.append('IsPublished', 'true');
+       this.buttonLoading = 'publish';
+    }
+    
     formData.append('CategoryId', this.postForm.value.category.toString());
 
     const imageFile = this.postForm.get('image')?.value;
@@ -295,8 +303,11 @@ export class AddPostComponent {
 
     this.masterService.updatePost(this.draftedPost.userId, formData).subscribe(
       (next) => {
+        if (type === 'draft') {
         this.snackBar.showSuccess('Draft post updated successfully');
-        // console.log(next);
+        }else{
+        this.snackBar.showSuccess('Post published successfully');
+        }
         this.buttonLoading = null;
         return;
       },
