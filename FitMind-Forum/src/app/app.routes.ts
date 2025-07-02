@@ -9,6 +9,7 @@ import { ProfileSettingComponent } from './website/user/profile-setting/profile-
 import { NavbarComponent } from './website/navbar/navbar.component';
 import { ProfileViewComponent } from './website/user/profile-view/profile-view.component';
 import { AddPostComponent } from './website/user/add-post/add-post.component';
+import { UserPostsComponent } from './website/user/user-posts/user-posts.component';
 
 export const routes: Routes = [
   {
@@ -37,6 +38,11 @@ export const routes: Routes = [
       {
         path: 'add-post',
         component: AddPostComponent,
+        canActivate: [authGuard]
+      },
+      {
+        path:'user-posts',
+        component:UserPostsComponent,
         canActivate: [authGuard]
       }
     ]

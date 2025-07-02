@@ -244,7 +244,7 @@ export class AddPostComponent {
 
   updateDraftPostButton(postId: number) {
     this.draftedPost = this.draftedPosts?.find((x) => x.postId == postId);
-    console.log(this.draftedPost);
+    // console.log(this.draftedPost);
     if (this.draftedPost) {
       this.postForm.patchValue({
         title: this.draftedPost.title,
@@ -306,7 +306,7 @@ export class AddPostComponent {
         if (type === 'draft') {
         this.snackBar.showSuccess('Draft post updated successfully');
         }else{
-        this.snackBar.showSuccess('Post published successfully');
+        this.snackBar.showSuccess('Drafted Post published successfully');
         }
         this.buttonLoading = null;
         return;
@@ -321,4 +321,6 @@ export class AddPostComponent {
     if (this.draftedPost.userId !== 0) {
     }
   }
+
+  
 }

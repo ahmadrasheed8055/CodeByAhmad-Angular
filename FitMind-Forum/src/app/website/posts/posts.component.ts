@@ -4,7 +4,7 @@ import { AddPostComponent } from "../user/add-post/add-post.component";
 
 @Component({
   selector: 'app-posts',
-  imports: [CommonModule, AddPostComponent],
+  imports: [CommonModule],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css']
 })

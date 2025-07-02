@@ -3,6 +3,7 @@ import { PublicAppUserDTO, AppUserPhotos } from '../../../Model/AppUsers';
 import { AuthService } from '../../../Shared/auth.service';
 import { Subscription } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { MasterService } from '../../../Shared/master.service';
 
 @Component({
   selector: 'app-profile-view',
@@ -13,6 +14,7 @@ import { DatePipe } from '@angular/common';
 export class ProfileViewComponent {
   user!: PublicAppUserDTO;
   userPhotos!: AppUserPhotos;
+  masterService = Inject(MasterService);
 
   private subscriptions: Subscription = new Subscription();
 
@@ -30,6 +32,10 @@ export class ProfileViewComponent {
         this.userPhotos = photos;
       })
     );
+
+    //getting all posts
+    
+
   }
 
   ngOnDestroy(): void {
