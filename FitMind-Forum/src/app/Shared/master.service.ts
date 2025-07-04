@@ -17,6 +17,7 @@ import {
 import { AddPostDTO } from '../Model/AddPost';
 import { GetDraftedPostDTO } from '../Model/GetDraftedPostDTO';
 import { UpdatePostDTO } from '../Model/UpdatePostDTO';
+import { GetUserPostsDTO } from '../Model/GetUserPosts';
 
 @Injectable({
   providedIn: 'root',
@@ -200,15 +201,19 @@ export class MasterService {
   DELETE_DRAFT_POST = 'Post/deleteDraftedPost/';
   deleteDraftedPost(postId: number) {
     const url = this.API_URL + this.DELETE_DRAFT_POST + postId;
-    return this.http.put(url,{}, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return this.http.put(
+      url,
+      {},
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 
   //=============Update  post===================
   UPDATE_POST = 'Post/updatePost/';
 
-  updatePost(userId:number, postObj:FormData) {
+  updatePost(userId: number, postObj: FormData) {
     const url = this.API_URL + this.UPDATE_POST + userId;
     return this.http.put(url, postObj);
   }
@@ -216,17 +221,32 @@ export class MasterService {
   //=============get  post image===================
   GET_POST_IMAGE = 'Post/getPostImage/';
 
-  getPostImage(userId:number, postId:number) {
-    
-    const url = this.API_URL + this.GET_POST_IMAGE + userId + '/' + postId;  
-    return this.http.get(url);  
+  getPostImage(userId: number, postId: number) {
+    const url = this.API_URL + this.GET_POST_IMAGE + userId + '/' + postId;
+    return this.http.get(url);
   }
 
   //================delete post image=============
   DELETE_POST_IMAGE = 'Post/deletePostPhoto/{userId}/{postId}';
   deletePostImage(userId: number, postId: number) {
-    const url = this.API_URL + this.DELETE_POST_IMAGE.replace('{userId}', userId.toString()).replace('{postId}', postId.toString());
+    const url =
+      this.API_URL +
+      this.DELETE_POST_IMAGE.replace('{userId}', userId.toString()).replace(
+        '{postId}',
+        postId.toString()
+      );
     return this.http.put(url, {});
   }
 
+  //=================Calling user posts==================
+  GET_USER_POSTS = 'Post/getUserPosts/{userId}';
+
+  getUserAllPosts(userId: number) {
+    const url = `${this.API_URL}${this.GET_USER_POSTS.replace(
+      '{userId}',
+      userId.toString()
+    )}`;
+    return this.http.get<GetUserPostsDTO[]>(url); // <-- add the expected return type
+  }
+  
 }

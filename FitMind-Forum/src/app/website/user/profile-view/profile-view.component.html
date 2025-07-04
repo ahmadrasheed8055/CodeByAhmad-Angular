@@ -101,8 +101,13 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row g-4">
+                <div *ngIf="userPosts.length === 0" class="d-flex justify-content-center align-items-center"
+                    style="height: 200px;">
+                    <div class="spinner-border custom-spinner" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div *ngIf="userPosts.length !== 0" class="row g-4">
                     <div class="col-12">
                         <div class="tab-content mt-5">
                             <div class="tab-pane active show" id="tab-1" role="tabpanel">
@@ -110,6 +115,8 @@
 
                                 <div class="discussions">
 
+
+                                    @for (postsData of userPosts; track $index) {
                                     <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
                                         data-aos-easing="linear">
 
@@ -118,20 +125,22 @@
                                                 <div class="media align-items-center">
                                                     <div class="media-head me-2">
                                                         <div class="avatar">
-                                                            <a href="#"><img src=" img/avatar/1.jpg" alt="user"
+                                                            <a href="#"><img [src]="userPhotos.profilePhoto" alt="user"
                                                                     class="avatar-img rounded-circle"></a>
                                                         </div>
                                                     </div>
                                                     <div class="media-body">
-                                                        <div><a href="#">Abram Marvyn</a> <i
-                                                                class="bi bi-patch-check-fill text-red"></i></div>
-                                                        <div class="fs-7"><span> 01 hrs ago in </span> <a href="#"
-                                                                class="cat">AI</a></div>
+                                                        <div><a href="#"> {{ user.username }} </a></div>
+                                                        <div class="fs-7"><span> {{ timeAgo(postsData.createdAt)  }} </span> 
+                                                                <!-- <a href="#" class="cat">
+                                                                {{postsData.categoryName}} </a> -->
+                                                                 <a href="#" class="tag-link"> {{postsData.categoryName}}</a>
+                                                            </div>
                                                     </div>
                                                 </div>
                                                 <div class="card-action-wrap">
-                                                    <p class="me-2 text-danger d-flex"><i class="bi bi-pin"></i> <span
-                                                            class="d-none d-sm-block">Pinned</span></p>
+                                                    <!-- <p class="me-2 text-danger d-flex"><i class="bi bi-pin"></i> <span
+                                                            class="d-none d-sm-block">Pinned</span></p> -->
                                                     <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
                                                             class="bi bi-three-dots-vertical"></i></a>
                                                     <div class="dropdown-menu dropdown-menu-end">
@@ -149,19 +158,15 @@
                                             </div>
                                             <div class="card-body">
                                                 <h3>
-                                                    <a href="">Do you think BARD will overtake ChatGPT?</a>
+                                                    <a href=""> {{postsData.title}} </a>
                                                 </h3>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et facilis,
-                                                    soluta vitae porro, praesentium deserunt explicabo optio laborum.
-                                                    Quidem consequuntur modi atque, placeat repellat, perferendis
-                                                    aperiam, fugiat harum ullam aspernatur dicta doloribus qui quo
-                                                    corrupti natus reprehenderit...
+                                                <p>{{postsData.description}}
                                                 </p>
 
                                                 <!-- ✅ Add Photo Here -->
-                                                <div class="my-3">
-                                                    <img src="img/avatar/1.jpg" alt="Post Image"
-                                                        class="img-fluid rounded-3 shadow-sm w-100"
+                                                <div *ngIf="postsData.postImageUrl !== null" class="my-3">
+                                                    <img [src]="'data:image/jpeg;base64,' + postsData.postImageUrl"
+                                                        alt="Post Image" class="img-fluid rounded-3 shadow-sm w-100"
                                                         style="max-height: 300px; object-fit: cover;">
                                                 </div>
 
@@ -179,11 +184,11 @@
                                                     <div class="post-item d-flex align-items-center me-4">
                                                         <a id="upvote" href="#" class=" up-arrow me-2"><i
                                                                 class="bi bi-hand-thumbs-up fs-5"></i></a>
-                                                        <span class="me-2"> 70</span>
-                                                        
+                                                        <span class="me-2"> {{postsData.likeCount}} </span>
+
                                                         <a href="#" class="down-arrow me-2"><i
                                                                 class="bi bi-hand-thumbs-down fs-5"></i></a>
-                                                        <span>24</span>
+                                                        <span> {{postsData.dislikeCount}} </span>
                                                     </div>
                                                     <div class="post-item">
                                                         <ul>
@@ -200,7 +205,7 @@
                                                             <li><a href="#"><img src=" img/avatar/11.jpg"
                                                                         alt="User"></a></li>
                                                         </ul>
-                                                        <div class="post-text">+170</div>
+                                                        <div class="post-text">{{postsData.viewCount}}</div>
                                                         <div class="post-text">Views</div>
                                                     </div>
                                                     <div class="post-item me-lg-5">
@@ -233,7 +238,7 @@
 
                                         </div>
                                     </div><!--/post-box-->
-
+                                    }
 
                                     <div class="pagination aos-init" data-aos="fade-up" data-aos-easing="linear">
 
