@@ -93,7 +93,7 @@ export class ProfileSettingComponent implements OnInit {
     ).subscribe((isTaken) => {
       this.isTaken = isTaken;
       this.isCheckingUniqueName = true;
-      console.log(isTaken);
+      // console.log(isTaken);
     });
 
     // Subscribe to user data and update form
@@ -129,11 +129,20 @@ export class ProfileSettingComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file);
 
+    
+
     if (!file) {
       this.imageErrorMessage = '';
       this.imageErrorMessage = 'Please select an image';
       return;
     }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        this.imageErrorMessage = 'Only JPEG, PNG, or JPG files are allowed';
+        this.showError(this.imageErrorMessage);
+        return;
+      }
     // debugger;
     this.masterServices.uploadProfilePicture(formData, this.user.id).subscribe(
       (next) => {
@@ -145,7 +154,7 @@ export class ProfileSettingComponent implements OnInit {
       },
       (error) => {
         this.imageErrorMessage = 'An error occurred while uploading the image';
-        console.log(error);
+        this.showError(this.imageErrorMessage);
       }
     );
   }
@@ -156,7 +165,14 @@ export class ProfileSettingComponent implements OnInit {
     //step 2
     const formData = new FormData();
     formData.append('file', file);
-    if (!file) {this.imageErrorMessage = 'Please select an image';return; }
+    if (!file) {this.bgImageErrorMessage = 'Please select an image'; this.showError(this.bgImageErrorMessage); return; }
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+      if (!allowedTypes.includes(file.type)) {
+        this.bgImageErrorMessage = 'Only JPEG, PNG, or JPG files are allowed';
+        this.showError(this.bgImageErrorMessage);
+        return;
+      }
 
     this.masterServices
       .uploadBackgroundPicture(formData, this.user.id)
@@ -169,7 +185,7 @@ export class ProfileSettingComponent implements OnInit {
         },
         (error) => {
           this.bgImageErrorMessage ='An error occurred while uploading the image';
-          this.showSuccess(this.bgImageErrorMessage);
+           this.showError(this.bgImageErrorMessage);
           return;
         }
       );

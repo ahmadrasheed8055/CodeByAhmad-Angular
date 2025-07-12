@@ -21,6 +21,7 @@ import { CommonModule } from '@angular/common';
 import { AddPostDTO } from '../../../Model/AddPost';
 import { GetDraftedPostDTO } from '../../../Model/GetDraftedPostDTO';
 import { UpdatePostDTO } from '../../../Model/UpdatePostDTO';
+import { Router } from '@angular/router';
 // import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -46,10 +47,11 @@ export class AddPostComponent {
   selectedPostId: number = 0;
 
   // postId: number | null = null;
-  userId: number = 0;
+  userId: number = Number(sessionStorage.getItem('appUserId')) || 0;
+  // userId: number =
   updatePostObj: UpdatePostDTO | null = null;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router:Router) {
    this.postForm = new FormGroup({
   title: new FormControl('', [
     Validators.required,
@@ -163,8 +165,10 @@ export class AddPostComponent {
             this.snackBar.showSuccess('Post saved as draft');
             this.IsdraftedPostAvailable = true;
             this.getDraftedPost();
-          } else {
+          } else if (type === 'publish') {
+            this.redirectingToProfile();
             this.snackBar.showSuccess('Post published successfully');
+            // this.redirectingToProfile(this.draftedPost.postId);
           }
           this.buttonLoading = null;
           this.updateDraftButton = true;
@@ -219,7 +223,8 @@ export class AddPostComponent {
     }
     debugger;
     this.selectedPostId = postId;
-    this.masterService.deleteDraftedPost(postId).subscribe(
+    
+    this.masterService.deleteDraftedPost(this.userId, postId).subscribe(
       (next) => {
         this.updateDraftButton = false;
         this.previewUrl = null;
@@ -279,6 +284,15 @@ export class AddPostComponent {
     // this.IsdraftedPostAvailable = false;
   }
 
+
+  redirectingToProfile() {
+   
+    this.router.navigate(['/profile-view']);
+    this.clearForm();
+    
+    
+  }
+
   //udpate drafted post and publish it function
   updatePost(type: 'publish' | 'draft') {
     const formData = new FormData();
@@ -307,6 +321,7 @@ export class AddPostComponent {
         this.snackBar.showSuccess('Draft post updated successfully');
         }else{
         this.snackBar.showSuccess('Drafted Post published successfully');
+        this.redirectingToProfile();
         }
         this.buttonLoading = null;
         return;

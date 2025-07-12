@@ -6,6 +6,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { MasterService } from '../../../Shared/master.service';
 import { GetUserPostsDTO } from '../../../Model/GetUserPosts';
 import { Pipe, PipeTransform } from '@angular/core';
+import { SnackBarServiceService } from '../../../Shared/snack-bar-service.service';
 
 @Component({
   selector: 'app-profile-view',
@@ -18,12 +19,16 @@ export class ProfileViewComponent {
   userPhotos!: AppUserPhotos;
   // masterService = Inject(MasterService);
   userPosts: GetUserPostsDTO[] = [];
+  postsLoader: boolean = false;
+
+  userId: number = Number(sessionStorage.getItem('appUserId')) || 0;
 
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private authService: AuthService,
-    private masterService: MasterService
+    private masterService: MasterService,
+    private snackBar: SnackBarServiceService
   ) {}
 
   ngOnInit(): void {
@@ -44,13 +49,17 @@ export class ProfileViewComponent {
   }
 
   getUserPosts(): void {
+    this.postsLoader = true;
     this.masterService.getUserAllPosts(this.user.id).subscribe({
       next: (posts: GetUserPostsDTO[]) => {
         this.userPosts = posts;
+        this.postsLoader = false;
         // console.log(this.userPosts);
       },
       error: (err: any) => {
         console.error('Error fetching user posts:', err);
+        this.postsLoader = false;
+
       },
     });
   }
@@ -87,5 +96,40 @@ export class ProfileViewComponent {
     if (interval >= 1)
       return `${interval} minute${interval > 1 ? 's' : ''} ago`;
     return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+  }
+
+
+  selectedPostId: number = 0;
+  confirmDraftDelete(postId: number | null) {
+    if (postId === null) {
+      this.snackBar.showError('Post ID is null');
+      return;
+    }
+    debugger;
+    this.selectedPostId = postId;
+
+    this.masterService.deletePost(this.userId, postId).subscribe(
+      (next) => {
+        
+        this.snackBar.showSuccess('Post deleted successfully');
+        //create prototype for this 
+        const index = this.userPosts.findIndex(x => x.postId === postId);
+        if (index > -1) {
+          this.userPosts.splice(index, 1); // Remove the deleted post from the list
+        }
+        // this.getUserPosts(); // Refresh the posts list after deletion
+        this.selectedPostId = 0;
+       
+      },
+      (error) => {
+        if (error.status === 404) {
+          this.snackBar.showError('Post not found');
+        } else {
+          this.snackBar.showError(
+            'An error occurred while deleting post'
+          );
+        }
+      }
+    );
   }
 }

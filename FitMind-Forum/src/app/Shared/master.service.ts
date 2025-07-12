@@ -198,9 +198,22 @@ export class MasterService {
   }
 
   //=============Delete draft post===================
-  DELETE_DRAFT_POST = 'Post/deleteDraftedPost/';
-  deleteDraftedPost(postId: number) {
-    const url = this.API_URL + this.DELETE_DRAFT_POST + postId;
+  DELETE_DRAFT_POST = 'Post/deleteDraftedPost/{userId}/{postId}';
+  deleteDraftedPost(userId: number, postId: number) {
+    const url = this.API_URL + this.DELETE_DRAFT_POST.replace('{userId}', userId.toString()).replace('{postId}', postId.toString());
+    return this.http.put(
+      url,
+      {},
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
+  //=============Delete post===================
+  DELETE_POST = 'Post/deletePost/{userId}/{postId}';
+  deletePost(userId: number, postId: number) {
+    const url = this.API_URL + this.DELETE_POST.replace('{userId}', userId.toString()).replace('{postId}', postId.toString());
     return this.http.put(
       url,
       {},

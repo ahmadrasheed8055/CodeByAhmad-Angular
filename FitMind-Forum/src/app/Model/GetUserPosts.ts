@@ -3,6 +3,7 @@ export interface GetUserPostsDTO {
   title: string;
   description?: string;
   updatedAt?: Date;
+  publishAt: Date;
   isPublished: boolean;
   userId: number;
   userName?: string;

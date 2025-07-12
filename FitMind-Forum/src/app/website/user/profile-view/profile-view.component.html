@@ -1,5 +1,6 @@
 <div class="profile-banner"
-    [style]="'background-image: url(' + (!userPhotos.backgroundPhoto ? 'img/bg/1.jpg' : userPhotos.backgroundPhoto) + ')'">
+    [style.backgroundImage]="'url(' + (userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null' ? 'img/bg/1.jpg' : userPhotos.backgroundPhoto) + ')'"
+>
 </div>
 
 
@@ -101,11 +102,14 @@
                         </div>
                     </div>
                 </div>
-                <div *ngIf="userPosts.length === 0" class="d-flex justify-content-center align-items-center"
+                <div *ngIf="postsLoader" class="d-flex justify-content-center align-items-center"
                     style="height: 200px;">
                     <div class="spinner-border custom-spinner" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
+                </div>
+                <div *ngIf="postsLoader === false && userPosts.length === 0" class="text-center">
+                    <p>No posts available.</p>
                 </div>
                 <div *ngIf="userPosts.length !== 0" class="row g-4">
                     <div class="col-12">
@@ -125,13 +129,13 @@
                                                 <div class="media align-items-center">
                                                     <div class="media-head me-2">
                                                         <div class="avatar">
-                                                            <a href="#"><img [src]="userPhotos.profilePhoto" alt="user"
+                                                            <a href="#"><img [src]="userPhotos.profilePhoto || '/img/avatar/default.png'" alt="user"
                                                                     class="avatar-img rounded-circle"></a>
                                                         </div>
                                                     </div>
                                                     <div class="media-body">
                                                         <div><a href="#"> {{ user.username }} </a></div>
-                                                        <div class="fs-7"><span> {{ timeAgo(postsData.createdAt)  }} </span> 
+                                                        <div class="fs-7"><span> {{ timeAgo(postsData.publishAt)  }} </span> 
                                                                 <!-- <a href="#" class="cat">
                                                                 {{postsData.categoryName}} </a> -->
                                                                  <a href="#" class="tag-link"> {{postsData.categoryName}}</a>
@@ -148,8 +152,11 @@
                                                                 class="bi bi-pencil me-2"></i> Edit Post</a>
                                                         <a class="dropdown-item" href="#"><i
                                                                 class="bi bi-eye-slash me-2"></i> Hide Post</a>
-                                                        <a class="dropdown-item" href="#"><i
+
+                                                        <a class="dropdown-item" data-bs-toggle="modal"
+                                                          data-bs-target="#draftDeleteModal" (click)="selectedPostId = postsData.postId" href=""><i 
                                                                 class="bi bi-trash3 me-2"></i> Delete Post</a>
+
                                                         <div class="dropdown-divider"></div>
                                                         <a class="dropdown-item" href="#"><i class="bi bi-pin me-2"></i>
                                                             Pin Post</a>
@@ -238,7 +245,7 @@
 
                                         </div>
                                     </div><!--/post-box-->
-                                    }
+                                    } 
 
                                     <div class="pagination aos-init" data-aos="fade-up" data-aos-easing="linear">
 
@@ -801,3 +808,34 @@
         </div>
     </div>
 </section>
+
+
+
+
+<!-- Confirmation modal -->
+<div class="modal fade" id="draftDeleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Post?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you sure you want to delete this Post? This action cannot be undone.
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button id="deleteBtnId" type="button" class="btn btn-danger" (click)="confirmDraftDelete(selectedPostId)"
+          data-bs-dismiss="modal">
+          Delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

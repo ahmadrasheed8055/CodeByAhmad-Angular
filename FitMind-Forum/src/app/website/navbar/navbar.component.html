@@ -55,12 +55,12 @@ Navbar
 
 
         <!-- Account -->
-        <div class="nav-item ms-3 dropdown h-col">
+        <div *ngIf="userPhotos.profilePhoto !== 'data:image/jpeg;base64,null' || userPhotos.profilePhoto" class="nav-item ms-3 dropdown h-col">
           <a href="#" id="navbarShoppingCartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
             data-bs-dropdown-animation="">
             <div class="d-flex">
               <img class="avatar-sm avatar-img rounded-circle"
-                [src]="userPhotos.profilePhoto  ? userPhotos.profilePhoto  : 'img/avatar/default.png'"
+                [src]="userPhotos.profilePhoto !== 'data:image/jpeg;base64,null' && userPhotos.profilePhoto  ? userPhotos.profilePhoto : 'img/avatar/default.png'"
                 alt="Image Description">
               <div class="profile-text d-none d-sm-block">
                 <div class="profile-head text-muted">Hello,</div>
