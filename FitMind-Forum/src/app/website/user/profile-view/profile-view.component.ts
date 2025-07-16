@@ -7,10 +7,18 @@ import { MasterService } from '../../../Shared/master.service';
 import { GetUserPostsDTO } from '../../../Model/GetUserPosts';
 import { Pipe, PipeTransform } from '@angular/core';
 import { SnackBarServiceService } from '../../../Shared/snack-bar-service.service';
+import {
+  FormGroup,
+  FormControl,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ICategories } from '../../../Model/categories';
 
 @Component({
   selector: 'app-profile-view',
-  imports: [DatePipe, CommonModule],
+  standalone: true,
+  imports: [DatePipe, CommonModule, ReactiveFormsModule],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.css',
 })
@@ -20,8 +28,14 @@ export class ProfileViewComponent {
   // masterService = Inject(MasterService);
   userPosts: GetUserPostsDTO[] = [];
   postsLoader: boolean = false;
+  selectedPostId: number = 0;
+  editingPostId: number | null = null;
+  categoriesObj: ICategories[] = [];
 
   userId: number = Number(sessionStorage.getItem('appUserId')) || 0;
+
+  //update form
+  updatePostForm!: FormGroup;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -59,7 +73,6 @@ export class ProfileViewComponent {
       error: (err: any) => {
         console.error('Error fetching user posts:', err);
         this.postsLoader = false;
-
       },
     });
   }
@@ -69,7 +82,9 @@ export class ProfileViewComponent {
   }
 
   timeAgo(date: Date | string): string {
-    const inputDate = new Date(date); const now = new Date(); const seconds = Math.floor((+now - +inputDate) / 1000);
+    const inputDate = new Date(date);
+    const now = new Date();
+    const seconds = Math.floor((+now - +inputDate) / 1000);
     if (seconds < 10) return 'Just now';
     let interval = Math.floor(seconds / 31536000);
     if (interval >= 1) {
@@ -98,36 +113,86 @@ export class ProfileViewComponent {
     return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
   }
 
+  clearUpdatePostForm(): void {
+    this.editingPostId = null;
+    this.updatePostForm.reset();
+  }
+previewUrl: string | ArrayBuffer | null = null;
+ openFileInput(event: any) {
+    const file = event.target as HTMLInputElement;
+    if (file.files && file.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewUrl = e.target?.result as string;
+      };
+      reader.readAsDataURL(file.files[0]);
+      // console.log(file.files[0]);
+      this.updatePostForm.patchValue({
+        image: file.files[0],
+      });
+    }
+  }
 
-  selectedPostId: number = 0;
+  removeImage(){
+    this.previewUrl = null;
+    this.updatePostForm.patchValue({
+      image: null,
+    });
+  }
+
+
+  enableUpdatePost(post: GetUserPostsDTO): void {
+    this.editingPostId = post.postId;
+    this.masterService.getAllCategories().subscribe(
+      (next: any) => {
+        this.categoriesObj = next;
+      },
+      (error) => {
+        this.snackBar.showError(error.message);
+      }
+    );
+    // debugger;
+    this.updatePostForm = new FormGroup({
+      title: new FormControl(post.title, [
+        Validators.required,
+        Validators.minLength(5),
+        Validators.maxLength(100),
+      ]),
+      description: new FormControl(post.description, [
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(1000),
+      ]),
+      category: new FormControl(post.categoryId, [Validators.required]),
+      // image: new FormControl(post.postImageUrl, [Validators.required]),
+    });
+    this.previewUrl = `data:image/jpeg;base64,${post.postImageUrl}` ; // Set preview URL if image exists
+  }
+
   confirmDraftDelete(postId: number | null) {
     if (postId === null) {
       this.snackBar.showError('Post ID is null');
       return;
     }
-    debugger;
+    // debugger;
     this.selectedPostId = postId;
 
     this.masterService.deletePost(this.userId, postId).subscribe(
       (next) => {
-        
         this.snackBar.showSuccess('Post deleted successfully');
-        //create prototype for this 
-        const index = this.userPosts.findIndex(x => x.postId === postId);
+        //create prototype for this
+        const index = this.userPosts.findIndex((x) => x.postId === postId);
         if (index > -1) {
           this.userPosts.splice(index, 1); // Remove the deleted post from the list
         }
         // this.getUserPosts(); // Refresh the posts list after deletion
         this.selectedPostId = 0;
-       
       },
       (error) => {
         if (error.status === 404) {
           this.snackBar.showError('Post not found');
         } else {
-          this.snackBar.showError(
-            'An error occurred while deleting post'
-          );
+          this.snackBar.showError('An error occurred while deleting post');
         }
       }
     );

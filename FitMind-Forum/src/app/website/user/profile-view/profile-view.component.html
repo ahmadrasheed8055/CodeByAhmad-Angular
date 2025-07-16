@@ -1,6 +1,5 @@
 <div class="profile-banner"
-    [style.backgroundImage]="'url(' + (userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null' ? 'img/bg/1.jpg' : userPhotos.backgroundPhoto) + ')'"
->
+    [style.backgroundImage]="'url(' + (userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null' ? 'img/bg/1.jpg' : userPhotos.backgroundPhoto) + ')'">
 </div>
 
 
@@ -129,17 +128,19 @@
                                                 <div class="media align-items-center">
                                                     <div class="media-head me-2">
                                                         <div class="avatar">
-                                                            <a href="#"><img [src]="userPhotos.profilePhoto || '/img/avatar/default.png'" alt="user"
-                                                                    class="avatar-img rounded-circle"></a>
+                                                            <a href="#"><img
+                                                                    [src]="userPhotos.profilePhoto || '/img/avatar/default.png'"
+                                                                    alt="user" class="avatar-img rounded-circle"></a>
                                                         </div>
                                                     </div>
                                                     <div class="media-body">
                                                         <div><a href="#"> {{ user.username }} </a></div>
-                                                        <div class="fs-7"><span> {{ timeAgo(postsData.publishAt)  }} </span> 
-                                                                <!-- <a href="#" class="cat">
+                                                        <div class="fs-7"><span> {{ timeAgo(postsData.publishAt) }}
+                                                            </span>
+                                                            <!-- <a href="#" class="cat">
                                                                 {{postsData.categoryName}} </a> -->
-                                                                 <a href="#" class="tag-link"> {{postsData.categoryName}}</a>
-                                                            </div>
+                                                            <a href="#" class="tag-link"> {{postsData.categoryName}}</a>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="card-action-wrap">
@@ -148,13 +149,17 @@
                                                     <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
                                                             class="bi bi-three-dots-vertical"></i></a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item" href="#"><i
-                                                                class="bi bi-pencil me-2"></i> Edit Post</a>
-                                                        <a class="dropdown-item" href="#"><i
-                                                                class="bi bi-eye-slash me-2"></i> Hide Post</a>
+                                                        <a class="dropdown-item" (click)="enableUpdatePost(postsData)"
+                                                            style="cursor: pointer;"><i class="bi bi-pencil me-2"></i>
+                                                            Edit Post</a>
+
+                                                        <a href="#" class="dropdown-item"><i
+                                                                class="bi bi-eye-slash me-2"></i>
+                                                            Hide Post</a>
 
                                                         <a class="dropdown-item" data-bs-toggle="modal"
-                                                          data-bs-target="#draftDeleteModal" (click)="selectedPostId = postsData.postId" href=""><i 
+                                                            data-bs-target="#draftDeleteModal"
+                                                            (click)="selectedPostId = postsData.postId" href=""><i
                                                                 class="bi bi-trash3 me-2"></i> Delete Post</a>
 
                                                         <div class="dropdown-divider"></div>
@@ -164,28 +169,150 @@
                                                 </div>
                                             </div>
                                             <div class="card-body">
-                                                <h3>
-                                                    <a href=""> {{postsData.title}} </a>
-                                                </h3>
-                                                <p>{{postsData.description}}
-                                                </p>
+                                                <!-- Update Form -->
+                                                <div *ngIf="editingPostId === postsData.postId else showContent"
+                                                    class="update-form">
+                                                    <form [formGroup]="updatePostForm">
+                                                        <div class="row g-3">
 
-                                                <!-- ✅ Add Photo Here -->
-                                                <div *ngIf="postsData.postImageUrl !== null" class="my-3">
-                                                    <img [src]="'data:image/jpeg;base64,' + postsData.postImageUrl"
-                                                        alt="Post Image" class="img-fluid rounded-3 shadow-sm w-100"
-                                                        style="max-height: 300px; object-fit: cover;">
+                                                            <!-- Title -->
+                                                            <div class="col-sm-12">
+                                                                <label class="form-label">Title <span *ngIf="updatePostForm.controls['title'].hasError('required') && 
+                                                                updatePostForm.controls['title'].touched"
+                                                                        class="text-danger">*</span></label>
+                                                                <input type="text" placeholder="Add a title"
+                                                                    class="form-control" formControlName="title">
+
+
+                                                                <small class="text-danger"
+                                                                    *ngIf="updatePostForm.controls['title'].hasError('minlength') && updatePostForm.controls['title'].touched">
+                                                                    Minimum 5 characters required.
+                                                                </small>
+                                                                <small class="text-danger"
+                                                                    *ngIf="updatePostForm.controls['title'].hasError('maxlength') && updatePostForm.controls['title'].touched">
+                                                                    Maximum 255 characters allowed.
+                                                                </small>
+                                                            </div>
+
+                                                            <!-- Category -->
+                                                            <div class="col-sm-12">
+                                                                <label class="form-label">Categories <span *ngIf="updatePostForm.controls['category'].hasError('required')
+                                                                      && updatePostForm.controls['category'].touched"
+                                                                        class="text-danger">*</span></label>
+                                                                <select class="form-select text-muted"
+                                                                    formControlName="category">
+                                                                    <option value="" disabled selected>Select Category
+                                                                    </option>
+                                                                    <option *ngIf="!categoriesObj" value="" disabled
+                                                                        selected>Wait...</option>
+
+                                                                    <ng-container
+                                                                        *ngFor="let category of categoriesObj">
+                                                                        <option class="text-dark" [value]="category.id">
+                                                                            {{ category.name }}</option>
+                                                                    </ng-container>
+                                                                </select>
+
+
+                                                            </div>
+
+                                                            <!-- Description -->
+                                                            <div class="col-sm-12">
+                                                                <label class="form-label">Description <span
+                                                                        *ngIf="updatePostForm.controls['description'].hasError('required') && updatePostForm.controls['description'].touched"
+                                                                        class="text-danger">*</span></label>
+                                                                <textarea formControlName="description"
+                                                                    class="form-control" placeholder="Add post" rows="3"
+                                                                    spellcheck="false"></textarea>
+
+
+                                                                <small class="text-danger"
+                                                                    *ngIf="updatePostForm.controls['description'].hasError('minlength') && updatePostForm.controls['description'].touched">
+                                                                    Minimum 10 characters required.
+                                                                </small>
+                                                                <small class="text-danger"
+                                                                    *ngIf="updatePostForm.controls['description'].hasError('maxlength') && updatePostForm.controls['description'].touched">
+                                                                    Maximum 1000 characters allowed.
+                                                                </small>
+                                                            </div>
+
+                                                            <!-- Image Preview -->
+                                                            <div *ngIf="previewUrl"
+                                                                class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"
+                                                                [ngStyle]="{'background-image': 'url(' + previewUrl + ')'}">
+
+                                                                <div class="btn-group" role="group"
+                                                                    aria-label="Background Image Button Group">
+                                                                    <!-- Upload Button -->
+                                                                    <button (click)="postPhoto.click()"
+                                                                        class="btn btn-light"><i
+                                                                            class="bi-upload btn-icon"></i>
+                                                                        Change
+                                                                    </button>
+                                                                    <!-- Delete button -->
+                                                                    <button data-bs-toggle="modal"
+                                                                        data-bs-target="#userPostImageDeleteModal"
+                                                                        class="btn btn-danger">
+                                                                        <i class="bi bi-trash-fill"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <!-- File Upload -->
+                                                            <div class="col-sm-10">
+                                                                <div class="comment-form-2 d-flex flex-column my-2">
+                                                                    <div
+                                                                        class="form-toolbar form-toolbar-bottom row justify-content-between g-2 p-2">
+                                                                        <div class="col">
+
+                                                                            <input #postPhoto type="file"
+                                                                                (change)="openFileInput($event)" hidden>
+
+                                                                            <button *ngIf="!previewUrl"
+                                                                                (click)="postPhoto.click()"
+                                                                                class="btn btn-sm btn-base btn-icon"
+                                                                                type="button" title="Image"><i
+                                                                                    class="bi bi-image"></i></button>
+
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Action Buttons -->
+                                                            <div class="col-sm-12">
+                                                                <button type="button" class="btn btn-mint me-2">Update
+                                                                    Post</button>
+                                                                <!-- <button type="button" class="btn btn-secondary">Save as
+                                                                    Draft</button> -->
+                                                                <button type="button" (click)="clearUpdatePostForm()"
+                                                                    class="btn btn-outline-secondary ms-2">Clear</button>
+                                                            </div>
+
+                                                        </div>
+                                                    </form>
+
                                                 </div>
+                                                <!-- End Update Form -->
 
-                                                <!-- <div class="tags">
-                                                    <a href="#" class="tag-link">Feedback</a>
-                                                    <a href="#" class="tag-link">AI</a>
-                                                    <a href="#" class="tag-link">Products</a>
-                                                    <a href="#" class="tag-link">Future</a>
-                                                </div> -->
+
+                                                <ng-template #showContent>
+                                                    <h3>
+                                                        <a href=""> {{postsData.title}} </a>
+                                                    </h3>
+                                                    <p>{{postsData.description}}
+                                                    </p>
+
+                                                    <!--  Add Photo Here -->
+                                                    <div *ngIf="postsData.postImageUrl !== null" class="my-3">
+                                                        <img [src]="'data:image/jpeg;base64,' + postsData.postImageUrl"
+                                                            alt="Post Image" class="img-fluid rounded-3 shadow-sm w-100"
+                                                            style="max-height: 300px; object-fit: cover;">
+                                                    </div>
+                                                </ng-template>
                                             </div>
 
-                                            <div class="card-footer">
+                                            <div *ngIf="editingPostId !== postsData.postId" class="card-footer">
 
                                                 <div class="post-stats">
                                                     <div class="post-item d-flex align-items-center me-4">
@@ -245,559 +372,15 @@
 
                                         </div>
                                     </div><!--/post-box-->
-                                    } 
+                                    }
 
-                                    <div class="pagination aos-init" data-aos="fade-up" data-aos-easing="linear">
 
-                                        <a href="#" class="page-numbers btn-start">
-                                            <i class="b bi-chevron-double-left"></i>
-                                        </a>
-
-                                        <a href="#" class="page-numbers btn--prev">
-                                            <i class="bi bi-chevron-left"></i>
-                                        </a>
-                                        <span class="page-numbers pagination-space"> <i class="bi bi-three-dots"></i>
-                                        </span>
-                                        <a href="#" class="page-numbers current"><span>1</span></a>
-                                        <a href="#" class="page-numbers"><span>2</span></a>
-                                        <a href="#" class="page-numbers"><span>3</span></a>
-                                        <a href="#" class="page-numbers"><span>4</span></a>
-                                        <a href="#" class="page-numbers"><span>5</span></a>
-                                        <a href="#" class="page-numbers"><span>6</span></a>
-
-                                        <span class="page-numbers pagination-space"> <i
-                                                class="bi bi-three-dots"></i></span>
-                                        <a href="#" class="page-numbers btn--next">
-                                            <i class="bi bi-chevron-right"></i>
-                                        </a>
-
-                                        <a href="#" class="page-numbers btn-end">
-                                            <i class="bi bi-chevron-double-right"></i>
-                                        </a>
-
-                                        <span class="page-numbers all-pages">
-                                            70 Pages
-                                        </span>
-
-                                    </div><!--/pagination-->
 
                                 </div>
 
                             </div><!-- Tab content 1 END -->
 
-                            <div class="tab-pane" id="tab-2" role="tabpanel">
 
-
-                                <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
-                                    data-aos-easing="linear">
-                                    <div class="card">
-                                        <div class="card-header card-header-action py-3">
-                                            <div class="media align-items-center">
-                                                <div class="media-head me-2">
-                                                    <div class="avatar">
-                                                        <a href="#"><img src=" img/avatar/2.jpg" alt="user"
-                                                                class="avatar-img rounded-circle"></a>
-                                                    </div>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div><a href="">What is your favorite AI project you found
-                                                            recently?</a></div>
-                                                    <div class="fs-7"><a href="#">Adaline Riley</a><span class="ms-3">
-                                                            03 hrs ago in </span> <a href="#" class="cat">AI</a></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer">
-
-                                            <div class="h-100">
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                                        <a href="#" class="d-flex align-items-center fs-7 me-3">
-                                                            <img src=" img/avatar/1.jpg"
-                                                                class="avatar-sm rounded-circle me-3" alt="Avatar">
-                                                            Abram Marvyn
-                                                        </a>
-                                                        <span class="fs-sm text-muted">January 24, 2023</span>
-                                                    </div>
-
-                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
-                                                        volutpat sit. Dui diam,
-                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
-                                                        habitasse porta neque tempor tellus ut.
-                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
-                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
-                                                        fusce ipsum donec amet.</p>
-                                                    <div class="row">
-                                                        <div class="col-lg-3 col-md-6 mb-3"><img src=" img/social/1.jpg"
-                                                                class="img-fluid rounded-2" alt="social"></div>
-                                                        <div class="col-lg-3 col-md-6 mb-3"><img src=" img/social/2.jpg"
-                                                                class="img-fluid rounded-2" alt="social"></div>
-                                                        <div class="col-lg-3 col-md-6 mb-3"><img src=" img/social/3.jpg"
-                                                                class="img-fluid rounded-2" alt="social"></div>
-                                                        <div class="col-lg-3 col-md-6 mb-3"><img src=" img/social/4.jpg"
-                                                                class="img-fluid rounded-2" alt="social"></div>
-                                                    </div>
-                                                </div>
-                                            </div><!--/Comment-box-->
-
-                                        </div><!--/card-footer-->
-
-                                    </div><!--/card-->
-                                </div><!--/post-box-->
-
-                                <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
-                                    data-aos-easing="linear">
-                                    <div class="card">
-                                        <div class="card-header card-header-action py-3">
-                                            <div class="media align-items-center">
-                                                <div class="media-head me-2">
-                                                    <div class="avatar">
-                                                        <a href="#"><img src=" img/avatar/3.jpg" alt="user"
-                                                                class="avatar-img rounded-circle"></a>
-                                                    </div>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div><a href="">Who all are launching their Products this week?</a>
-                                                    </div>
-                                                    <div class="fs-7"><a href="#">Buster Jayden</a><span class="ms-3">
-                                                            03 hrs ago in </span> <a href="#" class="cat">Products</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer">
-
-                                            <div class="h-100">
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                                        <a href="#" class="d-flex align-items-center fs-7 me-3">
-                                                            <img src=" img/avatar/1.jpg"
-                                                                class="avatar-sm rounded-circle me-3" alt="Avatar">
-                                                            Abram Marvyn
-                                                        </a>
-                                                        <span class="fs-sm text-muted">January 24, 2023</span>
-                                                    </div>
-
-                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
-                                                        volutpat sit. Dui diam,
-                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
-                                                        habitasse porta neque tempor tellus ut.
-                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
-                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
-                                                        fusce ipsum donec amet.</p>
-                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
-                                                        volutpat sit. Dui diam,
-                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
-                                                        habitasse porta neque tempor tellus ut.
-                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
-                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
-                                                        fusce ipsum donec amet.</p>
-                                                </div>
-                                            </div><!--/Comment-box-->
-
-                                        </div><!--/card-footer-->
-
-                                    </div><!--/card-->
-                                </div><!--/post-box-->
-
-                                <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
-                                    data-aos-easing="linear">
-                                    <div class="card">
-                                        <div class="card-header card-header-action py-3">
-                                            <div class="media align-items-center">
-                                                <div class="media-head me-2">
-                                                    <div class="avatar">
-                                                        <a href="#"><img src=" img/avatar/4.jpg" alt="user"
-                                                                class="avatar-img rounded-circle"></a>
-                                                    </div>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div><a href="">I'm Loisa, Manager at ApexCodeStudios, Ask me
-                                                            anything!</a></div>
-                                                    <div class="fs-7"><a href="#">Louisa Triston</a><span class="ms-3">
-                                                            03 hrs ago in </span> <a href="#" class="cat">Ideas and
-                                                            Validation</a></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer">
-
-                                            <div class="h-100">
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                                        <a href="#" class="d-flex align-items-center fs-7 me-3">
-                                                            <img src=" img/avatar/1.jpg"
-                                                                class="avatar-sm rounded-circle me-3" alt="Avatar">
-                                                            Abram Marvyn
-                                                        </a>
-                                                        <span class="fs-sm text-muted">January 24, 2023</span>
-                                                    </div>
-
-                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
-                                                        volutpat sit. Dui diam,
-                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
-                                                        habitasse porta neque tempor tellus ut.
-                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
-                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
-                                                        fusce ipsum donec amet.</p>
-                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
-                                                        volutpat sit. Dui diam,
-                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
-                                                        habitasse porta neque tempor tellus ut.
-                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
-                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
-                                                        fusce ipsum donec amet.</p>
-                                                </div>
-                                            </div><!--/Comment-box-->
-
-                                        </div><!--/card-footer-->
-
-                                    </div><!--/card-->
-                                </div><!--/post-box-->
-
-                                <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
-                                    data-aos-easing="linear">
-                                    <div class="card">
-                                        <div class="card-header card-header-action py-3">
-                                            <div class="media align-items-center">
-                                                <div class="media-head me-2">
-                                                    <div class="avatar">
-                                                        <a href="#"><img src=" img/avatar/5.jpg" alt="user"
-                                                                class="avatar-img rounded-circle"></a>
-                                                    </div>
-                                                </div>
-                                                <div class="media-body">
-                                                    <div><a href="">Would you like to have a 4-day workweek? And how
-                                                            would you compensate the extra day off?</a></div>
-                                                    <div class="fs-7"><a href="#">Damon Tucker</a><span class="ms-3"> 03
-                                                            hrs ago in </span> <a href="#" class="cat">Feedback</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer">
-
-                                            <div class="h-100">
-                                                <div class="card-body">
-                                                    <div class="d-flex align-items-center justify-content-between mb-3">
-                                                        <a href="#" class="d-flex align-items-center fs-7 me-3">
-                                                            <img src=" img/avatar/1.jpg"
-                                                                class="avatar-sm rounded-circle me-3" alt="Avatar">
-                                                            Abram Marvyn
-                                                        </a>
-                                                        <span class="fs-sm text-muted">January 24, 2023</span>
-                                                    </div>
-
-                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
-                                                        volutpat sit. Dui diam,
-                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
-                                                        habitasse porta neque tempor tellus ut.
-                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
-                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
-                                                        fusce ipsum donec amet.</p>
-                                                    <p class="mb-4">Nulla fringilla arcu justo augue fringilla in nunc
-                                                        volutpat sit. Dui diam,
-                                                        faucibus vitae ultricies vitae mollis nunc elementum. Et,
-                                                        habitasse porta neque tempor tellus ut.
-                                                        Sagittis odio porttitor erat viverra erat neque, eget nisi,
-                                                        faucibus. Habitasse dui dui nibh ipsum sem amet sed
-                                                        fusce ipsum donec amet.</p>
-                                                </div>
-                                            </div><!--/Comment-box-->
-
-                                        </div><!--/card-footer-->
-
-                                    </div><!--/card-->
-                                </div><!--/post-box-->
-
-                                <div class="pagination aos-init aos-animate" data-aos="fade-up"
-                                    data-aos-easing="linear">
-
-                                    <a href="#" class="page-numbers btn-start">
-                                        <i class="b bi-chevron-double-left"></i>
-                                    </a>
-
-                                    <a href="#" class="page-numbers btn--prev">
-                                        <i class="bi bi-chevron-left"></i>
-                                    </a>
-                                    <span class="page-numbers pagination-space"> <i class="bi bi-three-dots"></i>
-                                    </span>
-                                    <a href="#" class="page-numbers current"><span>1</span></a>
-                                    <a href="#" class="page-numbers"><span>2</span></a>
-                                    <a href="#" class="page-numbers"><span>3</span></a>
-                                    <a href="#" class="page-numbers"><span>4</span></a>
-                                    <a href="#" class="page-numbers"><span>5</span></a>
-                                    <a href="#" class="page-numbers"><span>6</span></a>
-
-                                    <span class="page-numbers pagination-space"> <i class="bi bi-three-dots"></i></span>
-                                    <a href="#" class="page-numbers btn--next">
-                                        <i class="bi bi-chevron-right"></i>
-                                    </a>
-
-                                    <a href="#" class="page-numbers btn-end">
-                                        <i class="bi bi-chevron-double-right"></i>
-                                    </a>
-
-                                    <span class="page-numbers all-pages">
-                                        70 Pages
-                                    </span>
-
-                                </div><!--/pagination-->
-
-                            </div><!-- Tab content 2 END -->
-
-                            <div class="tab-pane" id="tab-3" role="tabpanel">
-
-                                <div class="row">
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/2.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Adaline Riley</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/3.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Buster Jayden</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Maimi, USA
-                                                    </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/4.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Louisa Triston</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Beijing,
-                                                        China </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/5.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Damon Tucker</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Paris,
-                                                        France </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/6.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Charlene Cross</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Nairobi,
-                                                        Kenya </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/7.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Rafael Frank</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> Cairo,
-                                                        Egypt </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div><!-- Tab content 3 END -->
-
-                            <div class="tab-pane" id="tab-4" role="tabpanel">
-
-                                <div class="row">
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/8.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Lynda Briggs</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/9.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Bernard Holt</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/10.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Krista Haynes</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/11.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Lionel
-                                                        Henderson</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/12.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Stacey Long</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/13.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Timothy Spencer</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/14.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Kathleen Murray</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                    <div class="col-6">
-
-                                        <div class="card mb-5">
-                                            <div class="media media-xs card-body">
-                                                <img src=" img/avatar/15.jpg"
-                                                    class="avatar avatar-lg rounded-circle me-3" alt="avatar-img">
-                                                <div class="media-body valign-middle">
-                                                    <a class="fw-semibold" href="javascript:void(0)">Jorge Dean</a>
-                                                    <p class="text-muted mb-0"> <i class="bi bi-geo-alt"></i> New York,
-                                                        USA </p>
-                                                </div>
-                                                <div class="media-body valign-middle text-end mt-2"><button
-                                                        class="btn btn-mint" type="button">Follow</button></div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div><!-- Tab content 3 END -->
                         </div>
                     </div>
                 </div>
@@ -814,28 +397,54 @@
 
 <!-- Confirmation modal -->
 <div class="modal fade" id="draftDeleteModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title">Delete Post?</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Post?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
 
-      <div class="modal-body">
-        Are you sure you want to delete this Post? This action cannot be undone.
-      </div>
+            <div class="modal-body">
+                Are you sure you want to delete this Post? This action cannot be undone.
+            </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-          Cancel
-        </button>
-        <button id="deleteBtnId" type="button" class="btn btn-danger" (click)="confirmDraftDelete(selectedPostId)"
-          data-bs-dismiss="modal">
-          Delete
-        </button>
-      </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button id="deleteBtnId" type="button" class="btn btn-danger"
+                    (click)="confirmDraftDelete(selectedPostId)" data-bs-dismiss="modal">
+                    Delete
+                </button>
+            </div>
 
+        </div>
     </div>
-  </div>
+</div>
+<!-- User Post Image deletion -->
+<div class="modal fade" id="userPostImageDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Delete User Post Image?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete this User Post Image? This action cannot be undone.
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button id="deleteBtnId" type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                    Delete
+                </button>
+            </div>
+
+        </div>
+    </div>
 </div>

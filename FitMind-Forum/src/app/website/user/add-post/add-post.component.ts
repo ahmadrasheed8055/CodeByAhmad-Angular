@@ -51,21 +51,21 @@ export class AddPostComponent {
   // userId: number =
   updatePostObj: UpdatePostDTO | null = null;
 
-  constructor(private fb: FormBuilder, private router:Router) {
-   this.postForm = new FormGroup({
-  title: new FormControl('', [
-    Validators.required,
-    Validators.minLength(5),
-    Validators.maxLength(100)
-  ]),
-  description: new FormControl('', [
-    Validators.required,
-    Validators.minLength(10),
-    Validators.maxLength(1000)
-  ]),
-  category: new FormControl('', [Validators.required]),
-  image: new FormControl('')
-});
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.postForm = new FormGroup({
+      title: new FormControl('', [
+        Validators.required,
+        Validators.minLength(5),
+        Validators.maxLength(100),
+      ]),
+      description: new FormControl('', [
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(1000),
+      ]),
+      category: new FormControl('', [Validators.required]),
+      image: new FormControl(''),
+    });
   }
 
   ngOnInit() {
@@ -223,7 +223,7 @@ export class AddPostComponent {
     }
     debugger;
     this.selectedPostId = postId;
-    
+
     this.masterService.deleteDraftedPost(this.userId, postId).subscribe(
       (next) => {
         this.updateDraftButton = false;
@@ -284,13 +284,9 @@ export class AddPostComponent {
     // this.IsdraftedPostAvailable = false;
   }
 
-
   redirectingToProfile() {
-   
     this.router.navigate(['/profile-view']);
     this.clearForm();
-    
-    
   }
 
   //udpate drafted post and publish it function
@@ -301,13 +297,12 @@ export class AddPostComponent {
     formData.append('Description', this.postForm.value.description);
     if (type === 'draft') {
       formData.append('IsPublished', 'false');
-    this.buttonLoading = 'draft';
-      
-    }else{
+      this.buttonLoading = 'draft';
+    } else {
       formData.append('IsPublished', 'true');
-       this.buttonLoading = 'publish';
+      this.buttonLoading = 'publish';
     }
-    
+
     formData.append('CategoryId', this.postForm.value.category.toString());
 
     const imageFile = this.postForm.get('image')?.value;
@@ -318,10 +313,10 @@ export class AddPostComponent {
     this.masterService.updatePost(this.draftedPost.userId, formData).subscribe(
       (next) => {
         if (type === 'draft') {
-        this.snackBar.showSuccess('Draft post updated successfully');
-        }else{
-        this.snackBar.showSuccess('Drafted Post published successfully');
-        this.redirectingToProfile();
+          this.snackBar.showSuccess('Draft post updated successfully');
+        } else {
+          this.snackBar.showSuccess('Drafted Post published successfully');
+          this.redirectingToProfile();
         }
         this.buttonLoading = null;
         return;
@@ -336,6 +331,4 @@ export class AddPostComponent {
     if (this.draftedPost.userId !== 0) {
     }
   }
-
-  
 }
