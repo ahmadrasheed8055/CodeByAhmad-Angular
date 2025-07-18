@@ -117,8 +117,10 @@ export class ProfileViewComponent {
     this.editingPostId = null;
     this.updatePostForm.reset();
   }
-previewUrl: string | ArrayBuffer | null = null;
- openFileInput(event: any) {
+
+  previewUrl: string | ArrayBuffer | null = null;
+  openFileInput(event: any) {
+    debugger;
     const file = event.target as HTMLInputElement;
     if (file.files && file.files.length > 0) {
       const reader = new FileReader();
@@ -133,15 +135,16 @@ previewUrl: string | ArrayBuffer | null = null;
     }
   }
 
-  removeImage(){
+  removeImage() {
     this.previewUrl = null;
     this.updatePostForm.patchValue({
       image: null,
     });
   }
 
-
   enableUpdatePost(post: GetUserPostsDTO): void {
+    // debugger;
+
     this.editingPostId = post.postId;
     this.masterService.getAllCategories().subscribe(
       (next: any) => {
@@ -164,9 +167,48 @@ previewUrl: string | ArrayBuffer | null = null;
         Validators.maxLength(1000),
       ]),
       category: new FormControl(post.categoryId, [Validators.required]),
-      // image: new FormControl(post.postImageUrl, [Validators.required]),
+      image: new FormControl(post.postImageUrl, [Validators.required]),
     });
-    this.previewUrl = `data:image/jpeg;base64,${post.postImageUrl}` ; // Set preview URL if image exists
+    if (post.postImageUrl) {
+      this.previewUrl = `data:image/jpeg;base64,${post.postImageUrl}`;
+    }
+
+    // console.log(this.updatePostForm.value);
+  }
+
+  //udpate drafted post and publish it function
+  updateUserPost(post: GetUserPostsDTO) {
+    debugger;
+    const formData = new FormData();
+    formData.append('PostId', post.postId.toString());
+    formData.append('Title', this.updatePostForm.value.title);
+    formData.append('Description', this.updatePostForm.value.description);
+    // formData.append('PublishAt', new Date().toISOString());
+    formData.append('IsPublished', 'true');
+    formData.append(
+      'CategoryId',
+      this.updatePostForm.value.category.toString()
+    );
+
+    const imageFile = this.updatePostForm.get('image')?.value;
+    if (imageFile) {
+      formData.append('PostImage', imageFile);
+    }
+
+    this.masterService.updatePost(this.userId, formData).subscribe(
+      (next) => {
+        this.getUserPosts();
+        this.clearUpdatePostForm();
+        this.previewUrl = null;
+        this.snackBar.showSuccess('Post Updated successfully');
+        return;
+      },
+      (error) => {
+        console.log(error);
+        //  this.buttonLoading = null;
+        return;
+      }
+    );
   }
 
   confirmDraftDelete(postId: number | null) {

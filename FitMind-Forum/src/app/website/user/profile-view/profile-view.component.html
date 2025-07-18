@@ -135,8 +135,10 @@
                                                     </div>
                                                     <div class="media-body">
                                                         <div><a href="#"> {{ user.username }} </a></div>
-                                                        <div class="fs-7"><span> {{ timeAgo(postsData.publishAt) }}
-                                                            </span>
+                                                        <div class="fs-7">
+                                                            <span> {{ timeAgo(postsData.publishAt) }} </span>
+                                                            <span *ngIf="postsData.updatedAt" > (Edited) </span>
+                                                            
                                                             <!-- <a href="#" class="cat">
                                                                 {{postsData.categoryName}} </a> -->
                                                             <a href="#" class="tag-link"> {{postsData.categoryName}}</a>
@@ -281,7 +283,7 @@
 
                                                             <!-- Action Buttons -->
                                                             <div class="col-sm-12">
-                                                                <button type="button" class="btn btn-mint me-2">Update
+                                                                <button (click)="updateUserPost(postsData)" type="button" class="btn btn-mint me-2">Update
                                                                     Post</button>
                                                                 <!-- <button type="button" class="btn btn-secondary">Save as
                                                                     Draft</button> -->
