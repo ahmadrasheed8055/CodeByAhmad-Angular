@@ -1,4 +1,4 @@
-export interface GetUserPostsDTO {
+export interface GetAllPostsDTO {
   postId: number;
   title: string;
   description?: string;
@@ -7,9 +7,10 @@ export interface GetUserPostsDTO {
   isPublished: boolean;
   userId: number;
   userName?: string;
+  userImage?: string;
   categoryId: number;
   categoryName?: string;
-postImageUrl?: string;
+  postImage?: string;
   createdAt: Date;
   viewCount: number;
   likeCount?: number;

@@ -18,6 +18,7 @@ import { AddPostDTO } from '../Model/AddPost';
 import { GetDraftedPostDTO } from '../Model/GetDraftedPostDTO';
 import { UpdatePostDTO } from '../Model/UpdatePostDTO';
 import { GetUserPostsDTO } from '../Model/GetUserPosts';
+import { GetAllPostsDTO } from '../Model/GetAllPostsDTO';
 
 @Injectable({
   providedIn: 'root',
@@ -259,7 +260,15 @@ export class MasterService {
       '{userId}',
       userId.toString()
     )}`;
-    return this.http.get<GetUserPostsDTO[]>(url); // <-- add the expected return type
+    return this.http.get<GetUserPostsDTO[]>(url);
+  }
+
+   //=================Calling user posts==================
+  GET_ALL_POSTS = 'Post/getAllPosts';
+
+  getAllPosts(): Observable<GetAllPostsDTO[]> {
+    const url = `${this.API_URL}${this.GET_ALL_POSTS}`;
+    return this.http.get<GetAllPostsDTO[]>(url); 
   }
   
 }

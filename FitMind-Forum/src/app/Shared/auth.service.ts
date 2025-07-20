@@ -9,6 +9,7 @@ import * as CryptoJs from 'crypto-js';
 import { MasterService } from './master.service';
 import { BehaviorSubject, Subject, take } from 'rxjs';
 import { Router } from '@angular/router';
+import { GetUserPostsDTO } from '../Model/GetUserPosts';
 const SECURE_KEY = 'FITMIND8055';
 
 @Injectable({
@@ -18,6 +19,10 @@ export class AuthService {
   //==========APP USER OBJECT =====================
   private appUser = new BehaviorSubject<PublicAppUserDTO | null>(null);
   appUserData$ = this.appUser.asObservable();
+
+  //==========APP Posts OBJECT =====================
+  private appPosts = new BehaviorSubject<GetUserPostsDTO[] | null>(null);
+  appPostsData$ = this.appPosts.asObservable();
 
   //==========APP USER PHOTOS OBJECT =====================
   private appUserPhotos = new BehaviorSubject<AppUserPhotos | null>(null);
@@ -33,6 +38,10 @@ export class AuthService {
   
   //==========Setting app user =====================
    setAppUser(): void {
+    if(!this.isLoggedIn()){
+      return;
+    }
+
     const userId = sessionStorage.getItem('appUserId');
     if (!userId) return; // Prevent unnecessary API calls
 
@@ -60,6 +69,26 @@ export class AuthService {
            this.router.navigate(['']);
            
         }
+      },
+    });
+  }
+
+  getAllPosts(){
+    // debugger;
+    if(!this.isLoggedIn()){
+      return;
+    }
+
+    const userId = sessionStorage.getItem('appUserId');
+    if (!userId) return; // Prevent unnecessary API calls
+    // Fetch user posts
+    this.masterServices.getAllPosts().subscribe({
+      next: (posts) => {
+        this.appPosts.next(posts);
+        // console.log('User posts fetched successfully:', posts);
+      },
+      error: (err) => {
+        console.error('Error fetching user posts:', err);
       },
     });
   }
@@ -157,10 +186,10 @@ export class AuthService {
     return JSON.parse(decryptedUser);
   }
 
-  //checking user is logged in or not
-  isLoggedIn() {
-    const user = sessionStorage.getItem('appUserId');
-    
-    return !!user;
+ isLoggedIn(): boolean {
+    const userId = sessionStorage.getItem('appUserId');
+    const token = sessionStorage.getItem('token');
+    if (!userId || !token) return false;
+    return true;
   }
 }
