@@ -22,6 +22,7 @@ import { AddPostDTO } from '../../../Model/AddPost';
 import { GetDraftedPostDTO } from '../../../Model/GetDraftedPostDTO';
 import { UpdatePostDTO } from '../../../Model/UpdatePostDTO';
 import { Router } from '@angular/router';
+import { PostReactionsDTO } from '../../../Model/AddPostReaction';
 // import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -331,4 +332,6 @@ export class AddPostComponent {
     if (this.draftedPost.userId !== 0) {
     }
   }
+
+
 }

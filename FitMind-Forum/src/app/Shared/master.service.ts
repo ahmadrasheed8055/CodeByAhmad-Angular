@@ -19,6 +19,8 @@ import { GetDraftedPostDTO } from '../Model/GetDraftedPostDTO';
 import { UpdatePostDTO } from '../Model/UpdatePostDTO';
 import { GetUserPostsDTO } from '../Model/GetUserPosts';
 import { GetAllPostsDTO } from '../Model/GetAllPostsDTO';
+import { PostReactionsDTO } from '../Model/AddPostReaction';
+import { GetPostReactionsCount } from '../Model/GetPostReactionsCount';
 
 @Injectable({
   providedIn: 'root',
@@ -270,5 +272,42 @@ export class MasterService {
     const url = `${this.API_URL}${this.GET_ALL_POSTS}`;
     return this.http.get<GetAllPostsDTO[]>(url); 
   }
-  
+
+  //=================Get post reactions count==================
+  GET_POST_REACTIONS_COUNT = 'PostReactions/postReactionsCount/{postId}';
+  getPostReactionsCount(postId: number): Observable<GetPostReactionsCount> {
+    const url = this.API_URL + this.GET_POST_REACTIONS_COUNT.replace('{postId}', postId.toString());
+    return this.http.get<GetPostReactionsCount>(url);
+  }
+
+  //=================Add post reaction==================
+  ADD_POST_REACTION = 'PostReactions/addPostReaction';
+  addPostReaction(reaction: PostReactionsDTO): Observable<PostReactionsDTO> {
+    const url = this.API_URL + this.ADD_POST_REACTION;
+    return this.http.post<PostReactionsDTO>(url, reaction, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  //=================Update post reaction==================
+  UPDATE_POST_REACTION = 'PostReactions/updateReaction';
+  updatePostReaction(reaction: PostReactionsDTO): Observable<PostReactionsDTO> {
+    const url = this.API_URL + this.UPDATE_POST_REACTION;
+    return this.http.put<PostReactionsDTO>(url, reaction, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  //=================Remove reaction==================
+  REMOVE_POST_REACTION = 'PostReactions/removePostReaction/{userId}/{postId}';
+  removePostReaction(reaction: PostReactionsDTO): Observable<void> {
+    const url = this.API_URL + this.REMOVE_POST_REACTION
+      .replace('{userId}', reaction.userId.toString())
+      .replace('{postId}', reaction.postId.toString());
+    return this.http.request<void>('DELETE', url, {
+      body: reaction,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
 }
