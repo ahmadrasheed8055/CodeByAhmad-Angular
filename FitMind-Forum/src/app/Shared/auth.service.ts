@@ -10,12 +10,15 @@ import { MasterService } from './master.service';
 import { BehaviorSubject, Subject, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { GetUserPostsDTO } from '../Model/GetUserPosts';
+import { SnackBarServiceService } from './snack-bar-service.service';
 const SECURE_KEY = 'FITMIND8055';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  router = inject(Router);
+
   //==========APP USER OBJECT =====================
   private appUser = new BehaviorSubject<PublicAppUserDTO | null>(null);
   appUserData$ = this.appUser.asObservable();
@@ -28,17 +31,29 @@ export class AuthService {
   private appUserPhotos = new BehaviorSubject<AppUserPhotos | null>(null);
   appUserPhotos$ = this.appUserPhotos.asObservable();
 
+  //==========APP USER Id OBJECT =====================
+  private appUserId = new BehaviorSubject<number | null>(null);
+  appUserId$ = this.appUserId.asObservable();
+
   masterServices = inject(MasterService);
 
   constructor() {
+    const userId = sessionStorage.getItem('appUserId');
+    if (userId) {
+      this.setAppUserId(Number(userId));
+    }
     this.setAppUser();
   }
 
-   router = inject(Router);
-  
+  //==========Setting app user Id =====================
+  setAppUserId(userId: number): void {
+    this.appUserId.next(userId);
+    sessionStorage.setItem('appUserId', userId.toString());
+  }
+
   //==========Setting app user =====================
-   setAppUser(): void {
-    if(!this.isLoggedIn()){
+  setAppUser(): void {
+    if (!this.isLoggedIn()) {
       return;
     }
 
@@ -55,27 +70,26 @@ export class AuthService {
       },
       error: (err) => {
         console.error('Error fetching user:', err);
-    
+
         // Check for Unauthorized error
         if (err.status === 401) {
           console.warn('Token expired or user not authenticated.');
-    
+
           // Remove token and logout
           sessionStorage.clear();
           this.router.navigate(['']);
-        }else{
-           // Remove token and logout
-           sessionStorage.clear();
-           this.router.navigate(['']);
-           
+        } else {
+          // Remove token and logout
+          sessionStorage.clear();
+          this.router.navigate(['']);
         }
       },
     });
   }
 
-  getAllPosts(){
+  getAllPosts() {
     // debugger;
-    if(!this.isLoggedIn()){
+    if (!this.isLoggedIn()) {
       return;
     }
 
@@ -106,8 +120,6 @@ export class AuthService {
     }
     return null;
   }
-
-
 
   private getAppUserPhotos(userId: number): void {
     const photosObj = new AppUserPhotos();
@@ -176,20 +188,42 @@ export class AuthService {
 
   //=============ENCRYPT USER ID ===========
   encryptUser(userId: number): string {
-    const encryptedUser = CryptoJs.AES.encrypt(JSON.stringify(userId),SECURE_KEY).toString();
+    const encryptedUser = CryptoJs.AES.encrypt(
+      JSON.stringify(userId),
+      SECURE_KEY
+    ).toString();
     return encryptedUser;
   }
 
   //=============DEENCRYPT USER ID ===========
   decryptUser(user: string): IAppUser {
-    const decryptedUser = CryptoJs.AES.decrypt(user, SECURE_KEY).toString(CryptoJs.enc.Utf8);
+    const decryptedUser = CryptoJs.AES.decrypt(user, SECURE_KEY).toString(
+      CryptoJs.enc.Utf8
+    );
     return JSON.parse(decryptedUser);
   }
 
- isLoggedIn(): boolean {
+  isLoggedIn(): boolean {
     const userId = sessionStorage.getItem('appUserId');
     const token = sessionStorage.getItem('token');
     if (!userId || !token) return false;
     return true;
+  }
+  userIdExists(): number {
+    const userId = sessionStorage.getItem('appUserId');
+    return userId ? Number(userId) : 0;
+  }
+
+
+snackBarService = inject(SnackBarServiceService);
+  logout(): void {
+    sessionStorage.removeItem('appUserId'); // remove from session storage
+    sessionStorage.clear();
+    this.setAppUserId(0); // reset app user ID
+    this.appUserId.next(0); // clear BehaviorSubject
+    this.appUser.next(null); // clear app user data
+    this.appPosts.next(null); // clear app posts data
+    this.snackBarService.showSuccess('Logout successfully!');
+    this.router.navigate(['/']);
   }
 }

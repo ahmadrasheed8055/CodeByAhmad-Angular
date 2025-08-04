@@ -268,8 +268,8 @@ export class MasterService {
    //=================Calling user posts==================
   GET_ALL_POSTS = 'Post/getAllPosts';
 
-  getAllPosts(): Observable<GetAllPostsDTO[]> {
-    const url = `${this.API_URL}${this.GET_ALL_POSTS}`;
+  getAllPosts(userId: any = null): Observable<GetAllPostsDTO[]> {
+    const url = `${this.API_URL}${this.GET_ALL_POSTS}?userId=${userId}`;
     return this.http.get<GetAllPostsDTO[]>(url); 
   }
 

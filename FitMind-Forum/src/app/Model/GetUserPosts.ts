@@ -14,4 +14,7 @@ postImageUrl?: string;
   viewCount: number;
   likeCount?: number;
   dislikeCount?: number;
+
+  isReactedByMe?: boolean;
+
 }

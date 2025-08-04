@@ -15,4 +15,6 @@ export interface GetAllPostsDTO {
   viewCount: number;
   likeCount?: number;
   dislikeCount?: number;
+
+  isReactedByMe: boolean;
 }

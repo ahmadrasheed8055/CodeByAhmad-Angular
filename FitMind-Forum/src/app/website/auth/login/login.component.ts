@@ -78,6 +78,7 @@ export class LoginComponent implements OnInit {
   afterLogin() {
     if (sessionStorage.getItem('appUserId')) {
       this.authServices.setAppUser();
+      this.authServices.setAppUserId(Number(sessionStorage.getItem('appUserId')));
       this.authServices.getAllPosts();
     }
   }

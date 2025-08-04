@@ -1,4 +1,4 @@
-import { Component, Inject, isStandalone, NgModule } from '@angular/core';
+import { Component, inject, Inject, isStandalone, NgModule } from '@angular/core';
 import { PublicAppUserDTO, AppUserPhotos } from '../../../Model/AppUsers';
 import { AuthService } from '../../../Shared/auth.service';
 import { Subscription } from 'rxjs';
@@ -14,6 +14,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { ICategories } from '../../../Model/categories';
+import { PostReactionsDTO } from '../../../Model/AddPostReaction';
+import { GetAllPostsDTO } from '../../../Model/GetAllPostsDTO';
 
 @Component({
   selector: 'app-profile-view',
@@ -36,6 +38,7 @@ export class ProfileViewComponent {
 
   //update form
   updatePostForm!: FormGroup;
+  updatePostButtonLoading: boolean = false;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -178,7 +181,8 @@ export class ProfileViewComponent {
 
   //udpate drafted post and publish it function
   updateUserPost(post: GetUserPostsDTO) {
-    debugger;
+    // debugger;
+    this.updatePostButtonLoading = true;
     const formData = new FormData();
     formData.append('PostId', post.postId.toString());
     formData.append('Title', this.updatePostForm.value.title);
@@ -200,11 +204,14 @@ export class ProfileViewComponent {
         this.getUserPosts();
         this.clearUpdatePostForm();
         this.previewUrl = null;
+        this.updatePostButtonLoading = false;
+
         this.snackBar.showSuccess('Post Updated successfully');
         return;
       },
       (error) => {
-        console.log(error);
+        // console.log(error);
+        this.updatePostButtonLoading = false;
         //  this.buttonLoading = null;
         return;
       }
@@ -239,4 +246,63 @@ export class ProfileViewComponent {
       }
     );
   }
+
+
+snackBarService = inject(SnackBarServiceService);
+   reactionButton: boolean = false;
+    // Function to handle post reaction
+    addPostReaction(isLike: boolean | null,post:GetUserPostsDTO ) {
+      // debugger;
+      this.reactionButton = true;
+      if (!this.authService.isLoggedIn()) {
+        this.snackBarService.showError('Please log in to react to posts');
+      this.reactionButton = false;
+  
+        return;
+      }
+      if (isLike === null) {
+        this.snackBarService.showError('Please select a reaction');
+      this.reactionButton = false;
+  
+        return;
+      }
+       const userId = this.authService.userIdExists();
+
+      const postReaction: PostReactionsDTO = {
+        postId: post.postId,
+        userId: userId,
+        isLike: isLike,
+      };
+  
+      this.masterService.addPostReaction(postReaction).subscribe(
+        (response) => {
+          // console.log('Reaction added:', response);
+      this.reactionButton = false;
+  
+          this.getUserPosts();
+          // this.snackBarService.showSuccess('Reaction added successfully');
+        },
+        (error) => {
+          // if (error.status === 400) {
+          //  this.MasterService.updatePostReaction(postReaction).subscribe({
+          //     next: (updatedReaction) => {
+          //       console.log('Reaction updated:', updatedReaction);
+          //       this.getAllPosts();
+          //       this.snackBarService.showSuccess('Reaction updated successfully');
+          //     },
+          //     error: (updateError) => {
+          //       console.error('Error updating reaction:', updateError);
+          //       this.snackBarService.showError('Error updating reaction');
+          //     }
+          //  });
+  
+          //   return;
+          // }
+          // console.error('Error adding reaction:', error);
+           this.reactionButton = false;
+  
+          this.snackBarService.showError('Error adding reaction');
+        }
+      );
+    }
 }
