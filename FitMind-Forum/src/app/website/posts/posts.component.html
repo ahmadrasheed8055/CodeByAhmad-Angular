@@ -11,8 +11,8 @@
           <div class="media-head me-2">
             <div class="avatar">
               <!-- profile picture setting -->
-              <a href="#"><img [src]="'data:image/jpeg;base64,' + (postsData.userImage || '/img/avatar/default.png')" alt="postsData"
-                  class="avatar-img rounded-circle"></a>
+              <a href="#"><img [src]="'data:image/jpeg;base64,' + (postsData.userImage || '/img/avatar/default.png')"
+                  alt="postsData" class="avatar-img rounded-circle"></a>
             </div>
           </div>
           <div class="media-body">
@@ -50,38 +50,48 @@
       </div>
       <div class="card-body">
         <!-- Update Form -->
-       
+
         <!-- End Update Form -->
 
 
         <!-- <ng-template #showContent> -->
-          <h3>
-            <a href=""> {{postsData.title}} </a>
-          </h3>
-          <p>{{postsData.description}}
-          </p>
+        <h3>
+          <a href=""> {{postsData.title}} </a>
+        </h3>
+        <p>{{postsData.description}}
+        </p>
 
-          <!--  Add Photo Here -->
-          <div *ngIf="postsData.postImage !== null" class="my-3">
-            <img [src]="'data:image/jpeg;base64,' + postsData.postImage" alt="Post Image"
-              class="img-fluid rounded-3 shadow-sm w-100" style="max-height: 300px; object-fit: cover;">
-          </div>
+        <!--  Add Photo Here -->
+        <div *ngIf="postsData.postImage !== null" class="my-3">
+          <img [src]="'data:image/jpeg;base64,' + postsData.postImage" alt="Post Image"
+            class="img-fluid rounded-3 shadow-sm w-100" style="max-height: 300px; object-fit: cover;">
+        </div>
         <!-- </ng-template> -->
       </div>
 
-      <div  class="card-footer">
+      <div class="card-footer">
 
         <div class="post-stats">
           <div class="post-item d-flex align-items-center me-4">
-            <a id="upvote" href="#" class=" up-arrow me-2"><i class="bi bi-hand-thumbs-up fs-5"></i></a>
-            <span class="me-2"> {{postsData.likeCount}} </span>
+            <a [class.disabled]="reactionButton == true"  (click)="addPostReaction(true, postsData)" id="upvote" class="up-arrow me-2">
+              <i class="bi fs-5" [ngClass]="{
+                'bi-hand-thumbs-up-fill ': postsData.isReactedByMe === true,
+                'bi-hand-thumbs-up': postsData.isReactedByMe !== true
+                }"></i>
+            </a>
+            <span class="me-2">{{ postsData.likeCount }}</span>
+            <a [class.disabled]="reactionButton == true" (click)="addPostReaction(false, postsData)" class="down-arrow me-2">
+              <i class="bi fs-5" [ngClass]="{
+                'bi-hand-thumbs-down-fill': postsData.isReactedByMe === false,
+                'bi-hand-thumbs-down': postsData.isReactedByMe !== false
+              }"></i>
+            </a>
+            <span>{{ postsData.dislikeCount }}</span>
 
-            <a href="#" class="down-arrow me-2"><i class="bi bi-hand-thumbs-down fs-5"></i></a>
-            <span> {{postsData.dislikeCount}} </span>
           </div>
           <div class="post-item">
             <ul>
-              <li><a href="#"><img src=" img/avatar/6.jpg" alt="postsData"></a>
+              <!-- <li><a href="#"><img src=" img/avatar/6.jpg" alt="postsData"></a>
               </li>
               <li><a href="#"><img src=" img/avatar/7.jpg" alt="postsData"></a>
               </li>
@@ -90,7 +100,7 @@
               <li><a href="#"><img src=" img/avatar/9.jpg" alt="postsData"></a>
               </li>
               <li><a href="#"><img src=" img/avatar/10.jpg" alt="postsData"></a></li>
-              <li><a href="#"><img src=" img/avatar/11.jpg" alt="postsData"></a></li>
+              <li><a href="#"><img src=" img/avatar/11.jpg" alt="postsData"></a></li> -->
             </ul>
             <div class="post-text">{{postsData.viewCount}}</div>
             <div class="post-text">Views</div>
@@ -98,19 +108,19 @@
           <div class="post-item me-lg-5">
             <a href="#">
               <div class="post-icon"><i class="bi bi-chat-dots"></i></div>
-              <div class="post-text">1200</div>
+              <div class="post-text">0</div>
             </a>
           </div>
           <div class="post-item">
             <a href="#">
               <div class="post-icon"><i class="bi bi-bookmark"></i></div>
-              <div class="post-text">32</div>
+              <div class="post-text">0</div>
             </a>
           </div>
           <div class="post-item">
             <a href="#">
               <div class="post-icon"><i class="bi bi-share"></i></div>
-              <div class="post-text">12</div>
+              <div class="post-text">0</div>
             </a>
           </div>
           <div class="post-item">
@@ -124,8 +134,8 @@
       </div>
 
     </div>
-    </div>
-  
+  </div>
+
   }
 
 </div><!--/discussions-->
