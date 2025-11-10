@@ -166,4 +166,15 @@ export class PostsComponent implements OnInit {
       }
     );
   }
+
+
+   selectedPostImage: string | null = null;
+  openFullImageModal(image: string | null = null) {
+    this.selectedPostImage = image;
+  }
+
+  closeFullImageModal() {
+    // debugger;
+    this.selectedPostImage = null;
+  }
 }

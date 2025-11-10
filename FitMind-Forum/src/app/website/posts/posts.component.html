@@ -62,7 +62,8 @@
         </p>
 
         <!--  Add Photo Here -->
-        <div *ngIf="postsData.postImage !== null" class="my-3">
+        <div (click)="openFullImageModal(postsData.postImage)" style="cursor:pointer;"
+          *ngIf="postsData.postImage !== null" class="my-3" data-bs-toggle="modal" data-bs-target="#showFullImageModal">
           <img [src]="'data:image/jpeg;base64,' + postsData.postImage" alt="Post Image"
             class="img-fluid rounded-3 shadow-sm w-100" style="max-height: 300px; object-fit: cover;">
         </div>
@@ -73,14 +74,16 @@
 
         <div class="post-stats">
           <div class="post-item d-flex align-items-center me-4">
-            <a [class.disabled]="reactionButton == true"  (click)="addPostReaction(true, postsData)" id="upvote" class="up-arrow me-2">
+            <a [class.disabled]="reactionButton == true" (click)="addPostReaction(true, postsData)" id="upvote"
+              class="up-arrow me-2">
               <i class="bi fs-5" [ngClass]="{
                 'bi-hand-thumbs-up-fill ': postsData.isReactedByMe === true,
                 'bi-hand-thumbs-up': postsData.isReactedByMe !== true
                 }"></i>
             </a>
             <span class="me-2">{{ postsData.likeCount }}</span>
-            <a [class.disabled]="reactionButton == true" (click)="addPostReaction(false, postsData)" class="down-arrow me-2">
+            <a [class.disabled]="reactionButton == true" (click)="addPostReaction(false, postsData)"
+              class="down-arrow me-2">
               <i class="bi fs-5" [ngClass]="{
                 'bi-hand-thumbs-down-fill': postsData.isReactedByMe === false,
                 'bi-hand-thumbs-down': postsData.isReactedByMe !== false
@@ -139,3 +142,16 @@
   }
 
 </div><!--/discussions-->
+
+
+<!--  full image of post modal -->
+<div class="modal fade" id="showFullImageModal" tabindex="-1" aria-hidden="true"
+  (hidden.bs.modal)="closeFullImageModal()">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <img [src]="'data:image/jpeg;base64,' + selectedPostImage" class="img-fluid" alt="Post image">
+
+    </div>
+  </div>
+</div>

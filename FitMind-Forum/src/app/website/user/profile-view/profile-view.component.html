@@ -307,8 +307,12 @@
                                                     <p>{{postsData.description}}
                                                     </p>
 
-                                                    <!--  Add Photo Here -->
-                                                    <div *ngIf="postsData.postImageUrl !== null" class="my-3">
+                                                    <!--  Post photo  
+                                                      !!!! turn this into modal to show full image -->
+                                                    <div (click)="openFullImageModal(postsData.postImageUrl)" style="cursor:pointer;" *ngIf="postsData.postImageUrl !== null" class="my-3"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#showFullImageModal"
+                                                    >
                                                         <img [src]="'data:image/jpeg;base64,' + postsData.postImageUrl"
                                                             alt="Post Image" class="img-fluid rounded-3 shadow-sm w-100"
                                                             style="max-height: 300px; object-fit: cover;">
@@ -446,6 +450,20 @@
                     Delete
                 </button>
             </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    
+</style>
+<!--  full image of post modal -->
+<div class="modal fade" id="showFullImageModal" tabindex="-1" aria-hidden="true" (hidden.bs.modal)="closeFullImageModal()">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <img [src]="'data:image/jpeg;base64,' + selectedPostImage" class="img-fluid" alt="Post image">
 
         </div>
     </div>
