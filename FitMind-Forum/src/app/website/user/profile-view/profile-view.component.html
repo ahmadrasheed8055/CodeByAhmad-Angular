@@ -252,11 +252,19 @@
                                                                         Change
                                                                     </button>
                                                                     <!-- Delete button -->
-                                                                    <button data-bs-toggle="modal"
-                                                                        data-bs-target="#userPostImageDeleteModal"
-                                                                        class="btn btn-danger">
+                                                                    <button
+                                                                        (click)="
+                                                                            postsData.postImageUrl
+                                                                            ? openModal(updatePostForm, postsData.postId)
+                                                                            : removeImage()
+                                                                        "
+                                                                        data-bs-toggle="modal"
+                                                                        [attr.data-bs-target]="postsData.postImageUrl ? '#userPostImageDeleteModal' : null"
+                                                                        class="btn btn-danger"
+                                                                        >
                                                                         <i class="bi bi-trash-fill"></i>
                                                                     </button>
+
                                                                 </div>
                                                             </div>
                                                             <!-- File Upload -->
@@ -284,13 +292,21 @@
                                                             <!-- Action Buttons -->
                                                             <div class="col-sm-12">
 
-                                                                <button [disabled]="updatePostButtonLoading" (click)="updateUserPost(postsData)" type="button" class="btn btn-mint me-2">
-                                                                    {{(updatePostButtonLoading ? 'Updating...' : 'Update Post')}}
-                                                                    </button>
+                                                               <button
+                                                                    type="button"
+                                                                    class="btn btn-mint me-2"
+                                                                    [disabled]="updatePostButtonLoading || updatePostForm.dirty || updatePostForm.invalid"
+                                                                    (click)="updateUserPost(postsData)"
+                                                                    >
+                                                                    {{ updatePostButtonLoading ? 'Updating...' : 'Update Post' }}
+                                                                </button>
+
                                                                 <!-- <button type="button" class="btn btn-secondary">Save as
                                                                     Draft</button> -->
-                                                                <button [disabled]="updatePostButtonLoading" type="button" (click)="clearUpdatePostForm()"
-                                                                    class="btn btn-outline-secondary ms-2">Clear</button>
+                                                                <!-- <button [disabled]="updatePostButtonLoading" type="button" (click)="clearUpdatePostForm()"
+                                                                    class="btn btn-outline-secondary ms-2">Clear</button> -->
+                                                                <button [disabled]="updatePostButtonLoading" type="button" (click)="cancelUpdatePost()"
+                                                                    class="btn btn-secondary ms-2">Cancel</button>
                                                             </div>
 
                                                         </div>
@@ -324,23 +340,23 @@
 
                                                 <div class="post-stats">
                                                     <div class="post-item d-flex align-items-center me-4">
-            <a [class.disabled]="reactionButton == true"  (click)="addPostReaction(true, postsData)" id="upvote" class="up-arrow me-2">
-              <i class="bi fs-5" [ngClass]="{
-                'bi-hand-thumbs-up-fill ': postsData.isReactedByMe === true,
-                'bi-hand-thumbs-up': postsData.isReactedByMe !== true
-                }"></i>
-            </a>
-            <span class="me-2">{{ postsData.likeCount }}</span>
+                                                        <a [class.disabled]="reactionButton == true"  (click)="addPostReaction(true, postsData)" id="upvote" class="up-arrow me-2">
+                                                        <i class="bi fs-5" [ngClass]="{
+                                                            'bi-hand-thumbs-up-fill ': postsData.isReactedByMe === true,
+                                                            'bi-hand-thumbs-up': postsData.isReactedByMe !== true
+                                                            }"></i>
+                                                        </a>
+                                                        <span class="me-2">{{ postsData.likeCount }}</span>
 
-            <a [class.disabled]="reactionButton == true" (click)="addPostReaction(false, postsData)" class="down-arrow me-2">
-              <i class="bi fs-5" [ngClass]="{
-                'bi-hand-thumbs-down-fill': postsData.isReactedByMe === false,
-                'bi-hand-thumbs-down': postsData.isReactedByMe !== false
-              }"></i>
-            </a>
-            <span>{{ postsData.dislikeCount }}</span>
+                                                        <a [class.disabled]="reactionButton == true" (click)="addPostReaction(false, postsData)" class="down-arrow me-2">
+                                                        <i class="bi fs-5" [ngClass]="{
+                                                            'bi-hand-thumbs-down-fill': postsData.isReactedByMe === false,
+                                                            'bi-hand-thumbs-down': postsData.isReactedByMe !== false
+                                                        }"></i>
+                                                        </a>
+                                                        <span>{{ postsData.dislikeCount }}</span>
 
-          </div>
+                                                    </div>
                                                     <div class="post-item">
                                                         <ul>
                                                            
@@ -446,7 +462,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     Cancel
                 </button>
-                <button  id="deleteBtnId" type="button" class="btn btn-danger" data-bs-dismiss="modal">
+                <button (click)="deleteUserPostImage()" id="deleteBtnId" type="button" class="btn btn-danger" data-bs-dismiss="modal">
                     Delete
                 </button>
             </div>

@@ -5,22 +5,18 @@ import { ActivatedRoute } from '@angular/router';
 import { routes } from '../app.routes';
 
 
+
 export const authGuard: CanActivateFn = (route, state) => {
-  var httpService = inject(MasterService);
-  var router = inject(Router);
+  const router = inject(Router);
+  const httpService = inject(MasterService);
 
+  const userId = sessionStorage.getItem('appUserId');
+  const token = sessionStorage.getItem('token');
 
-  // const token = router.snapshot.queryParamMap.get('token');
-
-  // console.log(token);
-  var pageLoader = false;
-  if (sessionStorage.getItem('appUserId')) {
-    
-    return true;
+  if (userId && token) {
+    return true; // allow access
   } else {
-    router.navigate(['/home']);
-    return false;
+    router.navigate(['/home']); // redirect to home
+    return false; // block access
   }
-
-  // return true;
 };

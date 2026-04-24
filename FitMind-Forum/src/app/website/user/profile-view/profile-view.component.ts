@@ -23,6 +23,7 @@ import { ICategories } from '../../../Model/categories';
 import { PostReactionsDTO } from '../../../Model/AddPostReaction';
 import { GetAllPostsDTO } from '../../../Model/GetAllPostsDTO';
 import { debug } from 'node:console';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-view',
@@ -37,7 +38,9 @@ export class ProfileViewComponent {
   // masterService = Inject(MasterService);
   userPosts: GetUserPostsDTO[] = [];
   postsLoader: boolean = false;
-  selectedPostId: number = 0;
+  // selectedPostId: number = 0;
+  selectedPost!: FormGroup; // the form
+  selectedPostId!: number; // only the ID
   editingPostId: number | null = null;
   categoriesObj: ICategories[] = [];
 
@@ -46,6 +49,9 @@ export class ProfileViewComponent {
   //update form
   updatePostForm!: FormGroup;
   updatePostButtonLoading: boolean = false;
+
+
+  router = inject(Router);
 
   private subscriptions: Subscription = new Subscription();
 
@@ -67,7 +73,9 @@ export class ProfileViewComponent {
         this.userPhotos = photos;
       })
     );
-
+    if(!this.authService.isLoggedIn()) {
+      this.router.navigate(['/']);
+    }
     //getting all posts
     this.getUserPosts();
   }
@@ -130,7 +138,7 @@ export class ProfileViewComponent {
 
   previewUrl: string | ArrayBuffer | null = null;
   openFileInput(event: any) {
-    debugger;
+    // debugger;
     const file = event.target as HTMLInputElement;
     if (file.files && file.files.length > 0) {
       const reader = new FileReader();
@@ -197,43 +205,73 @@ export class ProfileViewComponent {
 
   //udpate drafted post and publish it function
   updateUserPost(post: GetUserPostsDTO) {
-    debugger;
+  // debugger;
 
-    this.updatePostButtonLoading = true;
-    const formData = new FormData();
-    formData.append('PostId', post.postId.toString());
-    formData.append('Title', this.updatePostForm.value.title);
-    formData.append('Description', this.updatePostForm.value.description);
-    // formData.append('PublishAt', new Date().toISOString());
-    formData.append('IsPublished', 'true');
-    formData.append(
-      'CategoryId',
-      this.updatePostForm.value.category.toString()
-    );
+  this.updatePostButtonLoading = true;
 
-    const imageFile = this.updatePostForm.get('image')?.value;
-    if (imageFile) {
-      formData.append('PostImage', imageFile);
+  const imageFile = this.updatePostForm.get('image')?.value;
+
+  // -------------------------------------
+  // 🔥 1. Detect if the image is a real file or DB bytes
+  // -------------------------------------
+  const isRealFile = imageFile instanceof File;
+
+  // -------------------------------------
+  // 🔥 2. Validate ONLY if the user selected a NEW file
+  // -------------------------------------
+  if (isRealFile) {
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+
+    if (!allowedTypes.includes(imageFile.type)) {
+      this.snackBar.showError('Only JPG, JPEG, PNG, or WEBP formats are allowed.');
+      this.updatePostButtonLoading = false;
+      return;
     }
 
-    this.masterService.updatePost(this.userId, formData).subscribe(
-      (next) => {
-        this.getUserPosts();
-        this.clearUpdatePostForm();
-        this.previewUrl = null;
-        this.updatePostButtonLoading = false;
-
-        this.snackBar.showSuccess('Post Updated successfully');
-        return;
-      },
-      (error) => {
-        // console.log(error);
-        this.updatePostButtonLoading = false;
-        //  this.buttonLoading = null;
-        return;
-      }
-    );
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (imageFile.size > maxSize) {
+      this.snackBar.showError('Image size must be less than 2MB.');
+      this.updatePostButtonLoading = false;
+      return;
+    }
   }
+
+  // -------------------------------------
+  // ✔ Build FormData
+  // -------------------------------------
+  const formData = new FormData();
+  formData.append('PostId', post.postId.toString());
+  formData.append('Title', this.updatePostForm.value.title);
+  formData.append('Description', this.updatePostForm.value.description);
+  formData.append('IsPublished', 'true');
+  formData.append('CategoryId', this.updatePostForm.value.category.toString());
+
+  // -------------------------------------
+  // 🔥 3. Only append real file (not DB bytes)
+  // -------------------------------------
+  if (isRealFile) {
+    formData.append('PostImage', imageFile);
+  }
+
+  // -------------------------------------
+  // ✔ Submit
+  // -------------------------------------
+  this.masterService.updatePost(this.userId, formData).subscribe(
+    (next) => {
+      this.getUserPosts();
+      this.clearUpdatePostForm();
+      this.previewUrl = null;
+      this.updatePostButtonLoading = false;
+
+      this.snackBar.showSuccess('Post Updated successfully');
+    },
+    (error) => {
+      this.updatePostButtonLoading = false;
+    }
+  );
+}
+
 
   confirmDraftDelete(postId: number | null) {
     if (postId === null) {
@@ -246,6 +284,7 @@ export class ProfileViewComponent {
     this.masterService.deletePost(this.userId, postId).subscribe(
       (next) => {
         this.snackBar.showSuccess('Post deleted successfully');
+        debugger;
         //create prototype for this
         const index = this.userPosts.findIndex((x) => x.postId === postId);
         if (index > -1) {
@@ -322,6 +361,39 @@ export class ProfileViewComponent {
     );
   }
 
+  openModal(updatePostForm: any, postId: any) {
+    debugger;
+    this.selectedPost = updatePostForm;
+    this.selectedPostId = postId;
+    console.log(this.selectedPost, this.selectedPostId);
+  }
 
+  deleteUserPostImage() {
+    // debugger;
+    if (this.selectedPost.value.image !== null) {
+      this.masterService
+        .deletePostImage(this.userId, this.selectedPostId)
+        .subscribe(
+          (next) => {
+            this.snackBar.showSuccess('Post image deleted successfully');
 
+            this.selectedPost.patchValue({
+              image: null,
+            });
+          },
+          (error) => {
+            this.snackBar.showError('Error deleting post image');
+          }
+        );
+    
+
+    }
+
+    this.previewUrl = null;
+  }
+  cancelUpdatePost() {
+    this.editingPostId = null;
+    this.previewUrl = null;
+    // this.updatePostForm.reset();
+  }
 }

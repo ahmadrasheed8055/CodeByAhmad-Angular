@@ -7,6 +7,7 @@ import { EmailVarificationComponent } from '../auth/emailVarification/emailVarif
 import { LoginComponent } from '../auth/login/login.component';
 import { MasterService } from '../../Shared/master.service';
 import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
+import { ForgetPasswordComponent } from '../auth/forget-password/forget-password.component';
 
 @Component({
   selector: 'app-navbar',
@@ -15,6 +16,7 @@ import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
     RouterModule,
     EmailVarificationComponent,
     LoginComponent,
+    ForgetPasswordComponent
   ],
 
   templateUrl: './navbar.component.html',

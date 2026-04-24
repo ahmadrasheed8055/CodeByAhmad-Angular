@@ -10,6 +10,7 @@ import { NavbarComponent } from './website/navbar/navbar.component';
 import { ProfileViewComponent } from './website/user/profile-view/profile-view.component';
 import { AddPostComponent } from './website/user/add-post/add-post.component';
 import { UserPostsComponent } from './website/user/user-posts/user-posts.component';
+import { ForgetPasswordComponent } from './website/auth/forget-password/forget-password.component';
 
 export const routes: Routes = [
   {
@@ -52,6 +53,11 @@ export const routes: Routes = [
     path: 'register',
     canActivate: [emailTokenGuardGuard],
     component: RegisterComponent,
+  },
+  {
+    path: 'forget-password',
+    canActivate: [emailTokenGuardGuard],
+    component: ForgetPasswordComponent,
   },
   {
     path: 'error',

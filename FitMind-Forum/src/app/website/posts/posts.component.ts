@@ -54,7 +54,7 @@ export class PostsComponent implements OnInit {
      if (userId === 0) {
       this.userId = 0;
      }
-     debugger;
+    //  debugger;
 
     this.MasterService.getAllPosts(this.userId).subscribe((posts: GetAllPostsDTO[]) => {
 
@@ -176,5 +176,27 @@ export class PostsComponent implements OnInit {
   closeFullImageModal() {
     // debugger;
     this.selectedPostImage = null;
+  }
+
+
+  deletePostImage() {
+    // if (this.updateDraftButton) {
+    //   this.masterService
+    //     .deletePostImage(this.draftedPost.userId, this.draftedPost.postId)
+    //     .subscribe(
+    //       (next) => {
+    //         this.postForm.patchValue({
+    //           image: null,
+    //         });
+    //         this.snackBar.showSuccess(
+    //           'Drafted post image deleted successfully'
+    //         );
+    //       },
+    //       (error) => {
+    //         this.snackBar.showError('Error deleting drafted post image');
+    //       }
+    //     );
+    // }
+    // this.previewUrl = null;
   }
 }

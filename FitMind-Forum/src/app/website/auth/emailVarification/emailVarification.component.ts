@@ -60,7 +60,7 @@ export class EmailVarificationComponent implements OnInit {
       (responce) => {
         // this.loading = false;
         //count down functionality
-        console.log(responce);
+        // console.log(responce);
         // debugger;
         this.countDownTimer();
         this.successMessage = 'Email sent successfully.';

@@ -57,9 +57,19 @@ export class MasterService {
   SEND_EMAIL_API = 'EmailSending/send-email?receptor=';
 
   sendRegistrationEmail(email: string) {
-    // debugger;
     const url = this.API_URL + this.SEND_EMAIL_API + encodeURIComponent(email);
+    // debugger;
 
+    return this.http.post(url, {});
+  }
+
+
+  //=====FP Email Varification API=====
+  SEND_FP_EMAIL_API = 'EmailSending/send-fp-email?receptor=';
+
+  sendForgotPasswordEmail(email: string) {
+    // debugger;
+    const url = this.API_URL + "EmailSending/send-fp-email?email=" + encodeURIComponent(email);
     return this.http.post(url, {});
   }
 

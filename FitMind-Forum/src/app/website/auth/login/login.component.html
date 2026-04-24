@@ -1,12 +1,13 @@
 <!-- Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel"  aria-hidden="true">
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
 
 
 
       <div class="modal-body">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeModal()" aria-label="Close" #closeLoginModal ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeModal()" aria-label="Close"
+          #closeLoginModal></button>
         <div class="card border-0 shadow-sm">
           <div class="card-body p-4">
 
@@ -29,21 +30,31 @@
                 </span>
                 <span class="text-danger small mx-2"
                   *ngIf="formData.controls['email'].errors?.['pattern'] && formData.controls['email'].touched">
-                   Invalid Email address.
+                  Invalid Email address.
                 </span>
               </div>
               <div class="mb-3">
                 <label class="form-label mx-2">Password</label>
                 <input formControlName="password" type="password" name="Password" class="form-control"
                   placeholder="***********">
-                  <span class="text-danger small mx-2"
+                <span class="text-danger small mx-2"
                   *ngIf="formData.controls['password'].errors?.['required'] && formData.controls['password'].touched">
                   Password is required.
                 </span>
               </div>
-              <div  *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+              <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+              <div class="mb-4 d-flex justify-content-between">
+                
+                <div class="text-primary-hover">
+                  <a href="" data-bs-toggle="modal"
+                data-bs-target="#forgotPasswordModal" class="text-secondary">
+                    <u>Forgot password?</u>
+                  </a>
+                </div>
+              </div>
               <div class="modal-footer border-0">
-                <button type="submit" class="w-100 btn btn-mint" [disabled]="formData.invalid || loginBtnLoading">{{loginBtn}}</button>
+                <button type="submit" class="w-100 btn btn-mint"
+                  [disabled]="formData.invalid || loginBtnLoading">{{loginBtn}}</button>
               </div>
             </form>
 
@@ -51,8 +62,9 @@
         </div>
       </div>
 
-     
+
 
     </div>
   </div>
 </div>
+
