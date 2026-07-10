@@ -9,13 +9,14 @@ import {
 import { HttpInterceptor, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { TokenInterceptor } from './token.interceptor';
+import { loaderInterceptor } from './loader.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([TokenInterceptor]) ,
+    provideHttpClient(withInterceptors([loaderInterceptor, TokenInterceptor]) ,
       withFetch()),
     provideAnimations(),
     provideToastr(),

@@ -19,7 +19,6 @@ import { CommonModule } from '@angular/common';
 import { MasterService } from '../../../Shared/master.service';
 import { AuthService } from '../../../Shared/auth.service';
 import { Router } from '@angular/router';
-import { NgxLoaderService } from '../../../Shared/ngx-loader.service';
 
 @Component({
   selector: 'app-login',
@@ -44,7 +43,6 @@ export class LoginComponent implements OnInit {
   loginBtn: string = 'Login';
   loginBtnLoading: boolean = false;
   @ViewChild('closeLoginModal', { static: false }) closeButton!: ElementRef;
-  ngxLoader = inject(NgxLoaderService);
 
   ngAfterViewInit() {
     // console.log('Modal close button initialized:', this.closeButton);
@@ -100,7 +98,6 @@ export class LoginComponent implements OnInit {
           sessionStorage.setItem('token', result.token);
           sessionStorage.setItem('appUserId', result.userId.toString());
           // console.log("Token: " + result.token);
-          this.ngxLoader.startLoading();
       
           this.route.navigate(['/home']).then(() => {
             this.loginBtn = 'Login';

@@ -8,8 +8,11 @@ export class NgxLoaderService {
   constructor(private ngxService: NgxUiLoaderService) {}
 
   startLoading() {
-    this.ngxService.start();  // Start the loader
-    setTimeout(() => this.ngxService.stop(), 1000);  // Stop after 2 seconds
+    this.ngxService.start();  // Start the loader without auto-stop timer
+  }
+
+  stopLoading() {
+    this.ngxService.stop();  // Stop the loader explicitly once the work is done
   }
  
 }
