@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { AddPostComponent } from '../user/add-post/add-post.component';
-import { GetUserPostsDTO } from '../../Model/GetUserPosts';
 import { MasterService } from '../../Shared/master.service';
 import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
 import { GetAllPostsDTO } from '../../Model/GetAllPostsDTO';
 import { PostReactionsDTO } from '../../Model/AddPostReaction';
 import { GetPostReactionsCount } from '../../Model/GetPostReactionsCount';
 import { AuthService } from '../../Shared/auth.service';
+import { CommentsComponent } from './comments/comments.component';
 
 @Component({
   selector: 'app-posts',
-  imports: [CommonModule],
+  imports: [CommonModule, AddPostComponent,CommentsComponent],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css'],
 })
@@ -200,3 +200,4 @@ export class PostsComponent implements OnInit {
     // this.previewUrl = null;
   }
 }
+

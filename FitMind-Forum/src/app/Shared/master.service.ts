@@ -21,6 +21,7 @@ import { GetUserPostsDTO } from '../Model/GetUserPosts';
 import { GetAllPostsDTO } from '../Model/GetAllPostsDTO';
 import { PostReactionsDTO } from '../Model/AddPostReaction';
 import { GetPostReactionsCount } from '../Model/GetPostReactionsCount';
+import { CommentDTO, AddCommentDTO } from '../Model/Comment';
 
 @Injectable({
   providedIn: 'root',
@@ -320,4 +321,21 @@ export class MasterService {
     });
   }
 
+  //=================Comments API==================
+  getComments(postId: number): Observable<CommentDTO[]> {
+    const url = `${this.API_URL}Comments/post/${postId}`;
+    return this.http.get<CommentDTO[]>(url);
+  }
+
+  addComment(comment: AddCommentDTO): Observable<CommentDTO> {
+    const url = `${this.API_URL}Comments/add-comment`;
+    return this.http.post<CommentDTO>(url, comment, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  deleteComment(commentId: number): Observable<void> {
+    const url = `${this.API_URL}Comments/delete-comment/${commentId}`;
+    return this.http.delete<void>(url);
+  }
 }

@@ -254,12 +254,12 @@
                                                                     <!-- Delete button -->
                                                                     <button
                                                                         (click)="
-                                                                            postsData.postImageUrl
+                                                                            isDbImage(updatePostForm.get('image')?.value)
                                                                             ? openModal(updatePostForm, postsData.postId)
                                                                             : removeImage()
                                                                         "
                                                                         data-bs-toggle="modal"
-                                                                        [attr.data-bs-target]="postsData.postImageUrl ? '#userPostImageDeleteModal' : null"
+                                                                        [attr.data-bs-target]="isDbImage(updatePostForm.get('image')?.value) ? '#userPostImageDeleteModal' : null"
                                                                         class="btn btn-danger"
                                                                         >
                                                                         <i class="bi bi-trash-fill"></i>
@@ -295,7 +295,7 @@
                                                                <button
                                                                     type="button"
                                                                     class="btn btn-mint me-2"
-                                                                    [disabled]="updatePostButtonLoading || updatePostForm.dirty || updatePostForm.invalid"
+                                                                    [disabled]="updatePostButtonLoading || !updatePostForm.dirty || updatePostForm.invalid"
                                                                     (click)="updateUserPost(postsData)"
                                                                     >
                                                                     {{ updatePostButtonLoading ? 'Updating...' : 'Update Post' }}

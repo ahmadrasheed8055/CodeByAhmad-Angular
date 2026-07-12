@@ -194,7 +194,7 @@ export class ProfileViewComponent {
         Validators.maxLength(1000),
       ]),
       category: new FormControl(post.categoryId, [Validators.required]),
-      image: new FormControl(post.postImageUrl, [Validators.required]),
+      image: new FormControl(post.postImageUrl),
     });
     if (post.postImageUrl) {
       this.previewUrl = `data:image/jpeg;base64,${post.postImageUrl}`;
@@ -395,5 +395,9 @@ export class ProfileViewComponent {
     this.editingPostId = null;
     this.previewUrl = null;
     // this.updatePostForm.reset();
+  }
+
+  isDbImage(imageValue: any): boolean {
+    return imageValue && typeof imageValue === 'string';
   }
 }

@@ -1,0 +1,47 @@
+ .vine-categories {
+   background: #ffffff;
+   border-radius: 12px;
+   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+   padding: 1.5rem;
+   transition: all 0.3s ease;
+ }
+ 
+ .category-item {
+   display: flex;
+   align-items: center;
+   padding: 0.75rem 1rem;
+   border-radius: 8px;
+   transition: background 0.2s ease, transform 0.1s ease;
+   text-decoration: none;
+   color: #333;
+ }
+ 
+ .category-item:hover {
+   background: #f8f9fa;
+   transform: translateX(5px);
+   color: #87bf17;
+ }
+ 
+ .category-icon {
+   width: 40px;
+   height: 40px;
+   object-fit: cover;
+   margin-right: 15px;
+   border-radius: 50%;
+   border: 2px solid #e9ecef;
+ }
+ 
+ .category-name {
+   font-weight: 500;
+   font-size: 1rem;
+ }
+ 
+ .section-title {
+   font-size: 1.2rem;
+   font-weight: 700;
+   color: #212529;
+   margin-bottom: 1rem;
+   border-bottom: 2px solid #f0f0f0;
+   padding-bottom: 0.5rem;
+ }
+
