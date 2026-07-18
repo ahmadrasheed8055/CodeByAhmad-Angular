@@ -1,178 +1,113 @@
-﻿<h5 class="my-4">Comments (140)</h5>
+<div class="comments-5" *ngIf="!isLoading">
+  <h5 class="my-4">Comments ({{ allComments.length }})</h5>
 
-<div class="comments-5">
-    <!-- Comment 1: Adaline Riley -->
-    <div class="d-flex align-items-start mb-3 aos-init aos-animate" data-aos="fade-up" data-aos-easing="linear">
-        <div class="avatar avatar-sm status-online me-2">
-            <img class="rounded-circle" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="Adaline Riley">
+  <div class="comment-item-container d-flex align-items-start mb-3" *ngFor="let comment of visibleComments">
+    <!-- Commenter Avatar -->
+    <div class="avatar avatar-sm rounded-circle me-3 flex-shrink-0">
+      <img class="avatar-img rounded-circle" [src]="getCommentAvatar(comment.userImage)" alt="Commenter Avatar">
+    </div>
+    
+    <div class="flex-grow-1">
+      <!-- Comment text bubble -->
+      <div class="comment-bubble d-inline-block">
+        <div class="align-items-center">
+          <a class="commenter-name d-block text-decoration-none" href="javascript:void(0)">{{ comment.userName }}</a>
         </div>
-        <div class="flex-1">
-            <div class="align-items-center"><a class="fw-bold mb-0" href="javascript:void(0)">Adaline Riley</a></div>
-            <p class="mb-0">Crushed my morning push day session! Finally hit a new PR on overhead press. Here is a quick look at the meal prep prep stack for the rest of the week to stay on top of my macros. Consistency is paying off! 💪</p>
-            
-            <!-- Shared Post Images (Fitness/Meal Prep Theme) -->
-            <div class="row mt-2">
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop" class="img-fluid rounded-2" alt="Healthy Meal Prep">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400&h=300&fit=crop" class="img-fluid rounded-2" alt="Gym Weights">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop" class="img-fluid rounded-2" alt="Abs Workout Progress">
-                </div>
-                <div class="col-lg-3 col-md-6 mb-3">
-                    <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400&h=300&fit=crop" class="img-fluid rounded-2" alt="Healthy Salad Bowl">
-                </div>
+        <p class="comment-text mb-0">{{ comment.commentContent }}</p>
+      </div>
+
+      <!-- Links & metadata -->
+      <div class="post-links d-flex mt-2 align-items-center">
+        <a href="javascript:void(0)" class="p-0 me-3"
+           [class.text-success]="comment.currentUserReaction === true"
+           (click)="react(comment, true)">
+           <span class="bi bi-hand-thumbs-up me-1"></span> {{ comment.likeCount || 0 }}
+        </a>
+        <a href="javascript:void(0)" class="p-0 me-3"
+           [class.text-danger]="comment.currentUserReaction === false"
+           (click)="react(comment, false)">
+           <span class="bi bi-hand-thumbs-down me-1"></span> {{ comment.dislikeCount || 0 }}
+        </a>
+        <a href="javascript:void(0)" class="p-0 me-3" (click)="toggleReplies(comment.commentId)">
+          <span class="bi bi-chat-left-text me-1"></span>
+          {{ comment.replies?.length ? (isRepliesOpen(comment.commentId) ? 'Hide Replies' : 'Replies (' + comment.replies!.length + ')') : 'Reply' }}
+        </a>
+        <span class="p-0 me-2 d-flex align-items-center"><span class="bi bi-clock-history me-1"></span> {{ timeAgo(comment.createdAt) }}</span>
+
+        <!-- Delete own comment -->
+        <a href="javascript:void(0)" class="p-0 text-danger ms-auto"
+           *ngIf="comment.userId === userId"
+           (click)="deleteComment(comment)"
+           title="Delete comment">
+          <span class="bi bi-trash"></span>
+        </a>
+      </div>
+
+      <!-- Accordion Replies list -->
+      <div *ngIf="comment.replies?.length && isRepliesOpen(comment.commentId)" class="replies-list mt-3 ms-4 ps-3 border-start">
+        <div class="d-flex align-items-start mb-3 reply-item" *ngFor="let reply of comment.replies">
+          <!-- Reply user avatar -->
+          <div class="avatar avatar-xs rounded-circle me-2 flex-shrink-0">
+            <img class="avatar-img rounded-circle" [src]="getCommentAvatar(reply.userImage)" alt="Reply User Avatar">
+          </div>
+          <div class="flex-grow-1">
+            <!-- Reply text bubble -->
+            <div class="reply-bubble d-inline-block">
+              <div class="align-items-center">
+                <a class="commenter-name d-block text-sm text-decoration-none" href="javascript:void(0)">{{ reply.userName }}</a>
+              </div>
+              <p class="comment-text mb-0 text-sm">{{ reply.commentContent }}</p>
             </div>
             
-            <div class="post-links d-flex mt-1">
-                <a href="#" class="p-0 me-3"><span class="bi bi-heart me-1"></span> Like</a>
-                <a href="#" class="p-0 me-3"><span class="bi bi-reply-all me-1"></span> Reply</a>
-                <p class="p-0 me-2"><span class="b bi-clock-history me-1"></span> 35 mins ago </p>
-            </div><!--/post links-->
-
-            <!-- Reply 1: Buster Jayden -->
-            <div class="d-flex align-items-start my-3 aos-init" data-aos="fade-up" data-aos-easing="linear">
-                <div class="avatar avatar-sm me-2">
-                    <img class="rounded-circle" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop" alt="Buster Jayden">
-                </div>
-                <div class="flex-1">
-                    <div class="align-items-center"><a class="fw-bold mb-0" href="javascript:void(0)">Buster Jayden</a></div>
-                    <p class="mb-0">Let's go! Form over weight always, but hitting an OHP milestone feels absolutely amazing. What split are you running right now?</p>
-                    <div class="post-links d-flex mt-1">
-                        <a href="#" class="p-0 me-3"><span class="bi bi-heart me-1"></span> Like</a>
-                        <a href="#" class="p-0 me-3"><span class="bi bi-reply-all me-1"></span> Reply</a>
-                        <p class="p-0 me-2"><span class="b bi-clock me-1"></span> 5 mins ago </p>
-                    </div><!--/post links-->
-                </div>
-            </div><!--/user-comment-->
-
-            <!-- Reply 2: Louisa Triston -->
-            <div class="d-flex align-items-start my-3 aos-init" data-aos="fade-up" data-aos-easing="linear">
-                <div class="avatar avatar-sm me-2">
-                    <img class="rounded-circle" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop" alt="Louisa Triston">
-                </div>
-                <div class="flex-1">
-                    <div class="align-items-center"><a class="fw-bold mb-0" href="javascript:void(0)">Louisa Triston</a></div>
-                    <p class="mb-0">That meal prep setup looks incredibly clean! Do you track your exact macro breakdown or focus purely on hitting daily protein goals?</p>
-                    <div class="post-links d-flex mt-1">
-                        <a href="#" class="p-0 me-3"><span class="bi bi-heart me-1"></span> Like</a>
-                        <a href="#" class="p-0 me-3"><span class="bi bi-reply-all me-1"></span> Reply</a>
-                        <p class="p-0 me-2"><span class="b bi-clock me-1"></span> 5 mins ago </p>
-                    </div><!--/post links-->
-                </div>
-            </div><!--/user-comment-->
-
-        </div>
-    </div><!--/user-comment-->
-
-    <!-- Comment 2: Damon Tucker -->
-    <div class="d-flex align-items-start mb-3 aos-init" data-aos="fade-up" data-aos-easing="linear">
-        <div class="avatar avatar-sm status-online me-2">
-            <img class="rounded-circle" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" alt="Damon Tucker">
-        </div>
-        <div class="flex-1">
-            <div class="align-items-center"><a class="fw-bold mb-0" href="javascript:void(0)">Damon Tucker</a></div>
-            <p class="mb-0">Reminder to everyone to not skip out on mobility work and proper warm-ups. Spent 15 minutes stretching today before jumping into heavy squats, and my hips felt completely loose. Longevity > Egotifting.</p>
-            <div class="post-links d-flex mt-1">
-                <a href="#" class="p-0 me-3"><span class="bi bi-heart me-1"></span> Like</a>
-                <a href="#" class="p-0 me-3"><span class="bi bi-reply-all me-1"></span> Reply</a>
-                <p class="p-0 me-2"><span class="b bi-clock-history me-1"></span> 35 mins ago </p>
-            </div><!--/post links-->
-        </div>
-    </div><!--/user-comment-->
-
-    <!-- Comment 3: Charlene Cross -->
-    <div class="d-flex align-items-start mb-3 aos-init" data-aos="fade-up" data-aos-easing="linear">
-        <div class="avatar avatar-sm me-2">
-            <img class="rounded-circle" src="https://images.unsplash.com/photo-1554151228-14d9def656e4?w=100&h=100&fit=crop" alt="Charlene Cross">
-        </div>
-        <div class="flex-1">
-            <div class="align-items-center"><a class="fw-bold mb-0" href="javascript:void(0)">Charlene Cross</a></div>
-            <p class="mb-0">Does anyone have recommendations for clean, plant-based protein powders that don't taste chalky? Struggling to reach my targets since transitioning away from whey isolate.</p>
-            <div class="post-links d-flex mt-1">
-                <a href="#" class="p-0 me-3"><span class="bi bi-heart me-1"></span> Like</a>
-                <a href="#" class="p-0 me-3"><span class="bi bi-reply-all me-1"></span> Reply</a>
-                <p class="p-0 me-2"><span class="b bi-clock-history me-1"></span> 35 mins ago </p>
-            </div><!--/post links-->
-
-            <!-- Reply to Charlene: Rafael Frank -->
-            <div class="d-flex align-items-start my-3 aos-init" data-aos="fade-up" data-aos-easing="linear">
-                <div class="avatar avatar-sm me-2">
-                    <img class="rounded-circle" src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=100&h=100&fit=crop" alt="Rafael Frank">
-                </div>
-                <div class="flex-1">
-                    <div class="align-items-center"><a class="fw-bold mb-0" href="javascript:void(0)">Rafael Frank</a></div>
-                    <p class="mb-0">Try looking for pea and brown rice protein blends! A mix of both usually yields a much smoother texture and a complete amino acid profile. Brand wise, Vega Sport or Sunwarrior have been great for me.</p>
-                    <div class="post-links d-flex mt-1">
-                        <a href="#" class="p-0 me-3"><span class="bi bi-heart me-1"></span> Like</a>
-                        <a href="#" class="p-0 me-3"><span class="bi bi-reply-all me-1"></span> Reply</a>
-                        <p class="p-0 me-2"><span class="b bi-clock me-1"></span> 5 mins ago </p>
-                    </div><!--/post links-->
-                </div>
-            </div><!--/user-comment-->
-
-        </div>
-    </div><!--/user-comment-->
-
-    <!-- Comment Form -->
-    <form class="row mb-3">
-        <div class="col">
-            <div class="comment-form-2 d-flex flex-column aos-init" data-aos="fade-up" data-aos-easing="linear">
-
-                <!-- Form Editor Toolbar -->
-                <div class="form-toolbar form-toolbar-middle d-flex flex-row p-2">
-                    <ul class="list-inline mb-0">
-                        <li class="list-inline-item">
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Undo"><i class="bi bi-arrow-counterclockwise"></i></button>
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Redo"><i class="bi bi-arrow-clockwise"></i></button>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-base border">Sans-Serif</button>
-                                <button type="button" class="btn btn-sm btn-base border dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span class="visually-hidden">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Sans-Serif</a></li>
-                                    <li><a class="dropdown-item" href="#">Monospace</a></li>
-                                </ul>
-                            </div>
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Font Size"><i class="bi bi-fonts"></i></button>
-                        </li>
-                        <li class="list-inline-item">
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Bold"><i class="bi bi-type-bold"></i></button>
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Italic"><i class="bi bi-type-italic"></i></button>
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Underline"><i class="bi bi-type-underline"></i></button>
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Strikethrough"><i class="bi bi-type-strikethrough"></i></button>
-                        </li>
-                        <li class="list-inline-item">
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Ordered List"><i class="bi bi-list-ol"></i></button>
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Unordered List"><i class="bi bi-list-ul"></i></button>
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Indent Decrease"><i class="bi bi-text-indent-right"></i></button>
-                            <button class="btn btn-sm btn-icon btn-base" type="button" title="Indent Increase"><i class="bi bi-text-indent-left"></i></button>
-                        </li>
-                    </ul>
-                </div>
-                <!-- Form Editor Toolbar -->
-
-                <!-- Form Textarea -->
-                <textarea class="form-custom form-custom-textarea" rows="5" placeholder="Share your routine, tips, or macro strategies..."></textarea>
-                <!-- Form Textarea -->
-
-                <!-- Form Bottom Toolbar -->
-                <div class="form-toolbar form-toolbar-bottom row justify-content-between g-2 p-2">
-                    <div class="col">
-                        <button class="btn btn-mint me-2" type="submit">Send</button>
-                        <button class="btn btn-sm btn-base btn-icon" type="button" title="Attachment"><i class="bi bi-paperclip"></i></button>
-                        <button class="btn btn-sm btn-base btn-icon" type="button" title="Link"><i class="bi bi-link-45deg"></i></button>
-                        <button class="btn btn-sm btn-base btn-icon" type="button" title="Image"><i class="bi bi-image"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-sm btn-base btn-icon" type="button" title="Delete Draft"><i class="bi bi-trash"></i></button>
-                    </div>
-                </div>
-                <!-- Form Bottom Toolbar -->
+            <div class="post-links d-flex mt-1 align-items-center text-xs">
+              <span class="bi bi-clock-history me-1"></span> {{ timeAgo(reply.createdAt) }}
             </div>
+          </div>
         </div>
-    </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center my-3" *ngIf="hasMore">
+    <button class="show-more-btn" (click)="showMore()">
+      Show More Comments <i class="bi bi-chevron-down ms-1"></i>
+    </button>
+  </div>
+
+  <!-- Comment form -->
+  <div class="comment-capsule-wrapper mt-4">
+    <div class="comment-capsule d-flex align-items-center">
+      <!-- User Avatar next to the input capsule -->
+      <div class="avatar avatar-sm rounded-circle me-3">
+        <img class="avatar-img rounded-circle" [src]="(userId && userImage) ? userImage : '/img/avatar/default.png'" alt="User Avatar">
+      </div>
+      
+      <!-- Pill shaped container -->
+      <div class="input-pill flex-grow-1 d-flex align-items-center">
+        <input type="text"
+               class="capsule-input flex-grow-1"
+               [(ngModel)]="newCommentText"
+               (keydown.enter)="submitComment()"
+               [placeholder]="userId ? 'Write a comment...' : 'Log in to join the discussion...'"
+               (focus)="handleInputFocus()"
+               (click)="handleInputFocus()">
+               
+        <!-- Send icon -->
+        <button class="send-icon-btn d-flex align-items-center justify-content-center"
+                (click)="submitComment()"
+                [disabled]="!newCommentText.trim()"
+                *ngIf="userId"
+                title="Send Comment">
+          <i class="bi bi-send-fill"></i>
+        </button>
+        <!-- Lock icon when not logged in -->
+        <button class="send-icon-btn d-flex align-items-center justify-content-center locked"
+                (click)="handleInputFocus()"
+                *ngIf="!userId"
+                title="Log in to Comment">
+          <i class="bi bi-lock-fill"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

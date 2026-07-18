@@ -2,3 +2,175 @@
   pointer-events: none;
   opacity: 0.5;
 }
+
+/* Modernized Post Card styles */
+.post-box {
+  margin-bottom: 24px;
+}
+
+.card {
+  border-radius: 16px !important;
+  background: var(--theme-white, #ffffff) !important;
+  border: 1px solid var(--border-color, #e0e0e0) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-header {
+  padding: 20px 24px !important;
+  border-bottom: 1px solid var(--border-color, #f0f2f5) !important;
+  background: transparent !important;
+}
+
+.media-body {
+  margin-left: 12px !important;
+}
+
+.media-body a {
+  font-weight: 600 !important;
+  color: var(--text-color, #1a1a1a) !important;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.media-body a:hover {
+  color: var(--green-color, #87bf17) !important;
+}
+
+.tag-link {
+  background: rgba(135, 191, 23, 0.1) !important;
+  color: var(--green-color, #87bf17) !important;
+  padding: 3px 10px !important;
+  border-radius: 20px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.tag-link:hover {
+  background: var(--green-color, #87bf17) !important;
+  color: white !important;
+}
+
+.card-body {
+  padding: 24px !important;
+}
+
+.card-body h3 {
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 12px !important;
+}
+
+.card-body h3 a {
+  color: var(--text-color, #171717) !important;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.card-body h3 a:hover {
+  color: var(--green-color, #87bf17) !important;
+}
+
+.card-body p {
+  color: var(--text-muted, #5d5d66) !important;
+  line-height: 1.6 !important;
+  font-size: 0.98rem !important;
+}
+
+.card-footer {
+  padding: 16px 24px !important;
+  background: transparent !important;
+  border-top: 1px solid var(--border-color, #f0f2f5) !important;
+}
+
+.post-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.post-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Modern Vote Bar */
+.post-item.d-flex.align-items-center {
+  background: var(--form-control, #f0f2f5);
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+:root[data-theme="dark"] .post-item.d-flex.align-items-center {
+  background: #1e1e24;
+  border-color: #2d2d35;
+}
+
+.up-arrow, .down-arrow {
+  color: var(--text-muted, #718096);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.up-arrow:hover {
+  color: var(--green-color, #87bf17) !important;
+  transform: scale(1.15);
+}
+
+.down-arrow:hover {
+  color: #ec595a !important;
+  transform: scale(1.15);
+}
+
+.up-arrow .bi-hand-thumbs-up-fill {
+  color: var(--green-color, #87bf17);
+}
+
+.down-arrow .bi-hand-thumbs-down-fill {
+  color: #ec595a;
+}
+
+/* Stats icons */
+.post-icon i {
+  font-size: 1.15rem;
+  color: var(--text-muted, #718096);
+  transition: color 0.2s ease;
+}
+
+.post-stats a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--text-muted, #718096);
+  transition: color 0.2s ease;
+}
+
+.post-stats a:hover {
+  color: var(--green-color, #87bf17);
+}
+
+.post-stats a:hover .post-icon i {
+  color: var(--green-color, #87bf17);
+}
+
+.post-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+}

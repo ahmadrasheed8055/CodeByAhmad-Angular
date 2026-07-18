@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { AddPostComponent } from '../user/add-post/add-post.component';
 import { MasterService } from '../../Shared/master.service';
 import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
@@ -11,7 +11,7 @@ import { CommentsComponent } from './comments/comments.component';
 
 @Component({
   selector: 'app-posts',
-  imports: [CommonModule, AddPostComponent,CommentsComponent],
+  imports: [CommonModule,CommentsComponent],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css'],
 })
@@ -21,17 +21,20 @@ export class PostsComponent implements OnInit {
   MasterService = inject(MasterService);
   AuthService = inject(AuthService);
   snackBarService = inject(SnackBarServiceService);
-  userId: number = Number(sessionStorage.getItem('appUserId'));
+  userId: number = 0;
   postReactionsCount: GetPostReactionsCount | null = null;
   reactionIcons: boolean = false;
+  private platformId = inject(PLATFORM_ID);
 
   ngOnInit() {
-    this.AuthService.appUserId$.subscribe((userId) => {
-      if (userId) {
-        this.userId = userId;
-      }
+    if (isPlatformBrowser(this.platformId)) {
+      this.AuthService.appUserId$.subscribe((userId) => {
+        this.userId = userId || 0;
+        this.getAllPosts();
+      });
+    } else {
       this.getAllPosts();
-    });
+    }
   }
 
   getPostReactionsCount(postId: number) {

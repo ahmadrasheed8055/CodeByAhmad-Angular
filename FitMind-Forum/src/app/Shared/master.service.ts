@@ -21,7 +21,11 @@ import { GetUserPostsDTO } from '../Model/GetUserPosts';
 import { GetAllPostsDTO } from '../Model/GetAllPostsDTO';
 import { PostReactionsDTO } from '../Model/AddPostReaction';
 import { GetPostReactionsCount } from '../Model/GetPostReactionsCount';
-import { CommentDTO, AddCommentDTO } from '../Model/Comment';
+import {
+  CommentReactionDTO,
+  GetPostComment,
+  PostComments,
+} from '../Model/commentDTO';
 
 @Injectable({
   providedIn: 'root',
@@ -42,15 +46,15 @@ export class MasterService {
           if (error.status === 0) {
             // Network error or server down
             return throwError(
-              'The server is currently unavailable. Please try again later.'
+              'The server is currently unavailable. Please try again later.',
             );
           } else {
             // Other errors like 404 or 500
             return throwError(
-              'An error occurred while fetching categories. Please try again later.'
+              'An error occurred while fetching categories. Please try again later.',
             );
           }
-        })
+        }),
       );
   }
 
@@ -64,13 +68,15 @@ export class MasterService {
     return this.http.post(url, {});
   }
 
-
   //=====FP Email Varification API=====
   SEND_FP_EMAIL_API = 'EmailSending/send-fp-email?receptor=';
 
   sendForgotPasswordEmail(email: string) {
     // debugger;
-    const url = this.API_URL + "EmailSending/send-fp-email?email=" + encodeURIComponent(email);
+    const url =
+      this.API_URL +
+      'EmailSending/send-fp-email?email=' +
+      encodeURIComponent(email);
     return this.http.post(url, {});
   }
 
@@ -96,7 +102,7 @@ export class MasterService {
   APP_USER_LOGIN_URL = 'AppUsers/login-user';
 
   loginUser(
-    userlogin: UserLoginDTO
+    userlogin: UserLoginDTO,
   ): Observable<{ token: string; userId: number }> {
     const url = this.API_URL + this.APP_USER_LOGIN_URL;
     return this.http.post<{ token: string; userId: number }>(url, userlogin, {
@@ -214,26 +220,36 @@ export class MasterService {
   //=============Delete draft post===================
   DELETE_DRAFT_POST = 'Post/deleteDraftedPost/{userId}/{postId}';
   deleteDraftedPost(userId: number, postId: number) {
-    const url = this.API_URL + this.DELETE_DRAFT_POST.replace('{userId}', userId.toString()).replace('{postId}', postId.toString());
+    const url =
+      this.API_URL +
+      this.DELETE_DRAFT_POST.replace('{userId}', userId.toString()).replace(
+        '{postId}',
+        postId.toString(),
+      );
     return this.http.put(
       url,
       {},
       {
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
   }
 
   //=============Delete post===================
   DELETE_POST = 'Post/deletePost/{userId}/{postId}';
   deletePost(userId: number, postId: number) {
-    const url = this.API_URL + this.DELETE_POST.replace('{userId}', userId.toString()).replace('{postId}', postId.toString());
+    const url =
+      this.API_URL +
+      this.DELETE_POST.replace('{userId}', userId.toString()).replace(
+        '{postId}',
+        postId.toString(),
+      );
     return this.http.put(
       url,
       {},
       {
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
   }
 
@@ -260,7 +276,7 @@ export class MasterService {
       this.API_URL +
       this.DELETE_POST_IMAGE.replace('{userId}', userId.toString()).replace(
         '{postId}',
-        postId.toString()
+        postId.toString(),
       );
     return this.http.put(url, {});
   }
@@ -271,23 +287,25 @@ export class MasterService {
   getUserAllPosts(userId: number) {
     const url = `${this.API_URL}${this.GET_USER_POSTS.replace(
       '{userId}',
-      userId.toString()
+      userId.toString(),
     )}`;
     return this.http.get<GetUserPostsDTO[]>(url);
   }
 
-   //=================Calling user posts==================
+  //=================Calling user posts==================
   GET_ALL_POSTS = 'Post/getAllPosts';
 
   getAllPosts(userId: any = null): Observable<GetAllPostsDTO[]> {
     const url = `${this.API_URL}${this.GET_ALL_POSTS}?userId=${userId}`;
-    return this.http.get<GetAllPostsDTO[]>(url); 
+    return this.http.get<GetAllPostsDTO[]>(url);
   }
 
   //=================Get post reactions count==================
   GET_POST_REACTIONS_COUNT = 'PostReactions/postReactionsCount/{postId}';
   getPostReactionsCount(postId: number): Observable<GetPostReactionsCount> {
-    const url = this.API_URL + this.GET_POST_REACTIONS_COUNT.replace('{postId}', postId.toString());
+    const url =
+      this.API_URL +
+      this.GET_POST_REACTIONS_COUNT.replace('{postId}', postId.toString());
     return this.http.get<GetPostReactionsCount>(url);
   }
 
@@ -312,9 +330,12 @@ export class MasterService {
   //=================Remove reaction==================
   REMOVE_POST_REACTION = 'PostReactions/removePostReaction/{userId}/{postId}';
   removePostReaction(reaction: PostReactionsDTO): Observable<void> {
-    const url = this.API_URL + this.REMOVE_POST_REACTION
-      .replace('{userId}', reaction.userId.toString())
-      .replace('{postId}', reaction.postId.toString());
+    const url =
+      this.API_URL +
+      this.REMOVE_POST_REACTION.replace(
+        '{userId}',
+        reaction.userId.toString(),
+      ).replace('{postId}', reaction.postId.toString());
     return this.http.request<void>('DELETE', url, {
       body: reaction,
       headers: { 'Content-Type': 'application/json' },
@@ -322,20 +343,50 @@ export class MasterService {
   }
 
   //=================Comments API==================
-  getComments(postId: number): Observable<CommentDTO[]> {
-    const url = `${this.API_URL}Comments/post/${postId}`;
-    return this.http.get<CommentDTO[]>(url);
+  // 1. Add comment
+  // service mein return type change
+  addComment(payload: PostComments): Observable<{ commentId: number }> {
+    return this.http.post<{ commentId: number }>(
+      `${this.API_URL}Post/add-comment`,
+      payload,
+    );
   }
 
-  addComment(comment: AddCommentDTO): Observable<CommentDTO> {
-    const url = `${this.API_URL}Comments/add-comment`;
-    return this.http.post<CommentDTO>(url, comment, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+  // 2. Get all comments for a post
+  getAllComments(
+    postId: number,
+    userId?: number,
+  ): Observable<GetPostComment[]> {
+    let url = `${this.API_URL}comments/getAll/${postId}`;
+    if (userId) {
+      url += `?userId=${userId}`;
+    }
+    return this.http.get<GetPostComment[]>(url);
   }
 
-  deleteComment(commentId: number): Observable<void> {
-    const url = `${this.API_URL}Comments/delete-comment/${commentId}`;
-    return this.http.delete<void>(url);
+  // 3. Get all comments by a specific user
+  getUserComments(userId: number): Observable<GetPostComment[]> {
+    return this.http.get<GetPostComment[]>(
+      `${this.API_URL}comments/getUserComments/${userId}`,
+    );
+  }
+
+  // 4. Soft-delete own comment
+  deleteComment(userId: number, commentId: number): Observable<any> {
+    return this.http.delete(
+      `${this.API_URL}comments/delete/${userId}/${commentId}`,
+    );
+  }
+
+  // 5. Like / Dislike react
+  reactToComment(payload: CommentReactionDTO): Observable<any> {
+    return this.http.post(`${this.API_URL}comments/react`, payload);
+  }
+
+  // 6. Remove reaction
+  removeReaction(userId: number, commentId: number): Observable<any> {
+    return this.http.delete(
+      `${this.API_URL}comments/removeReaction/${userId}/${commentId}`,
+    );
   }
 }

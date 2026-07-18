@@ -66,6 +66,11 @@ export class AuthService {
     this.masterServices.getAppUser(numericUserId).subscribe({
       next: (user) => {
         this.appUser.next(user);
+        // store username in session storage as well (supports userName or username)
+        const name = (user as any).userName || (user as any).username || '';
+        if (name) {
+          sessionStorage.setItem('username', name.toString());
+        }
         this.getAppUserPhotos(numericUserId);
       },
       error: (err) => {
