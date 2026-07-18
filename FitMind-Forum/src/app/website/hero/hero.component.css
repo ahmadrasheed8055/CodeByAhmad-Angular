@@ -1,0 +1,52 @@
+/* Hero Modern Fitness Style */
+.vine-hero-2 {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  padding: 100px 0;
+  text-align: center;
+  overflow: hidden;
+  /* Dark overlay for gym look */
+  background-image: linear-gradient(rgba(11, 11, 13, 0.7), rgba(11, 11, 13, 0.75)), url('/img/bg/1.jpg') !important;
+}
+
+.hero-content h1 {
+  font-family: 'Outfit', 'Inter', sans-serif !important;
+  font-size: 3.2rem !important;
+  font-weight: 900 !important;
+  letter-spacing: -1.5px !important;
+  text-transform: uppercase;
+  color: white !important;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  margin-bottom: 16px;
+}
+
+.hero-content p {
+  color: #d1d5db !important;
+  font-size: 1.15rem !important;
+  max-width: 600px;
+  margin: 0 auto !important;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-hero-cta {
+  background: linear-gradient(135deg, #87bf17 0%, #a2d829 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 32px !important;
+  border-radius: 30px !important;
+  box-shadow: 0 8px 24px rgba(135, 191, 23, 0.3) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-hero-cta:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(135, 191, 23, 0.45) !important;
+}

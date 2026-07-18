@@ -15,6 +15,16 @@
           <!-- Text -->
           <p>Ask fitness questions, share workout tips, and connect with the gym community.</p>
 
+          <!-- Dynamic CTA Button -->
+          <div class="hero-actions mt-4">
+            <a *ngIf="authService.isLoggedIn()" class="btn btn-hero-cta" routerLink="/add-post">
+              <i class="bi bi-plus-lg me-2"></i> Share a Post
+            </a>
+            <button *ngIf="!authService.isLoggedIn()" class="btn btn-hero-cta" data-bs-toggle="modal" data-bs-target="#loginModal">
+              Join the Community
+            </button>
+          </div>
+
 
         </div>
       </div> <!-- END HERO TEXT -->

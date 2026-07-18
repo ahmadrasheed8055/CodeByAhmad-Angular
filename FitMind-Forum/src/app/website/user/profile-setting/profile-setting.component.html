@@ -98,23 +98,30 @@
                         </div>
                         <div class="col-sm-6 position-relative">
                           <label for="uniqueName" class="form-label">User Name</label>
-                          <input id="uniqueName" type="text" class="form-control" [ngClass]="{
-                              'is-invalid': (profileForm.controls['uniqueName'].invalid || isTaken) && profileForm.controls['uniqueName'].touched,
-                              'is-valid': profileForm.controls['uniqueName'].valid && !isTaken && profileForm.controls['uniqueName'].touched
-                            }" formControlName="uniqueName" placeholder="Username" required />
+                          <div class="position-relative">
+                            <input id="uniqueName" type="text" class="form-control pe-5" [ngClass]="{
+                                'is-invalid': (profileForm.controls['uniqueName'].invalid || isTaken) && profileForm.controls['uniqueName'].touched,
+                                'is-valid': profileForm.controls['uniqueName'].valid && !isTaken && profileForm.controls['uniqueName'].touched
+                              }" formControlName="uniqueName" placeholder="Username" required />
+                            
+                            <!-- Status Icons -->
+                            <span *ngIf="profileForm.controls['uniqueName'].touched && !isCheckingUniqueName" class="position-absolute end-0 top-50 translate-middle-y me-3">
+                              <i *ngIf="profileForm.controls['uniqueName'].valid && !isTaken" class="bi bi-check-circle-fill text-success fs-5"></i>
+                              <i *ngIf="profileForm.controls['uniqueName'].invalid || isTaken" class="bi bi-x-circle-fill text-danger fs-5"></i>
+                            </span>
+                            
+                            <!-- Spinner while checking uniqueness -->
+                            <span *ngIf="isCheckingUniqueName" class="spinner-border spinner-border-sm text-secondary position-absolute end-0 top-50 translate-middle-y me-3" role="status"></span>
+                          </div>
+                          
                           <!-- ✅ Bootstrap Tooltip Feedback -->
-                          <div class="invalid-tooltip" *ngIf="profileForm.controls['uniqueName'].touched">
-                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['required']">This field is
-                              required.</span>
-                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['minlength']">Minimum 3 characters
-                              required.</span>
-                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['maxlength']">Maximum 20 characters
-                              allowed.</span>
-                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['pattern']">Only letters, numbers,
-                              and underscores are allowed.</span>
+                          <div class="invalid-tooltip" *ngIf="profileForm.controls['uniqueName'].touched && (profileForm.controls['uniqueName'].invalid || isTaken)">
+                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['required']">This field is required.</span>
+                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['minlength']">Minimum 3 characters required.</span>
+                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['maxlength']">Maximum 20 characters allowed.</span>
+                            <span *ngIf="profileForm.controls['uniqueName'].errors?.['pattern']">Only letters, numbers, and underscores are allowed.</span>
                             <span *ngIf="isTaken">User name already exists.</span>
                           </div>
-                          <!-- <div class="valid-tooltip">Looks good!</div> -->
                         </div>
 
 
@@ -418,7 +425,7 @@
                         </div>
                       </div>
                       <div class="d-flex pt-5">
-                        <button [disabled]="profileForm.invalid || !profileForm.dirty || isTaken "
+                        <button [disabled]="profileForm.invalid || isTaken || isCheckingUniqueName || !profileForm.dirty"
                           type="submit" class="btn btn-mint me-3">
                           Save Changes
                         </button>

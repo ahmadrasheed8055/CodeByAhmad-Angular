@@ -1,65 +1,45 @@
 <!-- Modal -->
 <div class="modal fade" id="emailVarificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-
-      <div class="modal-body">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        <div class="card border-0 shadow-sm">
-          <div class="card-body p-4">
-
-            <h3 class="text-center mb-3">Get Started</h3>
-            <p class="text-center text-muted">Enter your email to receive a registration link.</p>
-
-
-              <div class="mb-3">
-                <!-- <label class="form-label">Email address</label> -->
-                <input
-                #emailInput="ngModel"
-                [(ngModel)]="email"
-                type="email"
-                name="email"
-                (ngModelChange)="onInputClear($event)"
-                class="form-control"
-                placeholder="name@example.com"
-                [ngModel]="email"
-                [pattern]="emailPattern"
-                required>
-
-                <!-- <p>Current Value: {{ email }}</p> -->
-              </div>
-              <div class="text-center">
-                <small class="text-muted">Already have an account?</small>
-                <a href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal" class="small fw-bold">Login</a>
-              </div>
-
-
-                <!-- <div  *ngIf="emailInput.invalid && emailInput.touched" class="alert alert-danger mt-3">Please enter valid email.</div> -->
-                <div  *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
-                <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
-
-
-          </div>
+      <div class="modal-body p-4 position-relative">
+        <button type="button" class="btn-close position-absolute end-0 top-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+        
+        <div class="text-center mt-3 mb-4">
+          <h3 class="modal-title font-weight-bold mb-2">Create Account</h3>
+          <div class="text-muted small">Enter your email to receive a secure registration link.</div>
         </div>
-      </div>
 
-      <div class="modal-footer border-0">
+        <div class="mb-3">
+          <label class="form-label mx-1">Email Address</label>
+          <input
+            #emailInput="ngModel"
+            [(ngModel)]="email"
+            type="email"
+            name="email"
+            (ngModelChange)="onInputClear($event)"
+            class="form-control"
+            placeholder="name@gmail.com"
+            [pattern]="emailPattern"
+            required>
+          <span class="text-danger small mx-1 mt-1 d-block"
+            *ngIf="emailInput.invalid && emailInput.touched">
+            Only &#64;gmail.com emails are accepted.
+          </span>
+        </div>
 
-        <button class="w-100 btn btn-mint"   (click)="sendEmail()" [disabled]="loading || !email || emailInput.invalid" >
+        <div class="text-center mb-4">
+          <small class="text-muted">Already have an account? </small>
+          <a href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal" class="fw-bold text-green">Login</a>
+        </div>
 
-          {{emailSentingFormButton}}
-          <!-- @if(loading){
-            Sending...
-          }@else if (successMessage) {
-            Resend Email
-          }@else {
-            Send Email
-          } -->
+        <div *ngIf="errorMessage" class="alert alert-danger py-2 small mt-2">{{ errorMessage }}</div>
+        <div *ngIf="successMessage" class="alert alert-success py-2 small mt-2">{{ successMessage }}</div>
+
+        <button class="w-100 btn btn-mint py-2 font-weight-bold rounded-pill" (click)="sendEmail()" [disabled]="loading || !email || emailInput.invalid">
+          {{ emailSentingFormButton }}
         </button>
-
       </div>
-
     </div>
   </div>
 </div>
-

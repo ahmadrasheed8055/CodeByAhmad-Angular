@@ -1,47 +1,62 @@
- .vine-categories {
-   background: #ffffff;
-   border-radius: 12px;
-   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-   padding: 1.5rem;
-   transition: all 0.3s ease;
- }
- 
- .category-item {
-   display: flex;
-   align-items: center;
-   padding: 0.75rem 1rem;
-   border-radius: 8px;
-   transition: background 0.2s ease, transform 0.1s ease;
-   text-decoration: none;
-   color: #333;
- }
- 
- .category-item:hover {
-   background: #f8f9fa;
-   transform: translateX(5px);
-   color: #87bf17;
- }
- 
- .category-icon {
-   width: 40px;
-   height: 40px;
-   object-fit: cover;
-   margin-right: 15px;
-   border-radius: 50%;
-   border: 2px solid #e9ecef;
- }
- 
- .category-name {
-   font-weight: 500;
-   font-size: 1rem;
- }
- 
- .section-title {
-   font-size: 1.2rem;
-   font-weight: 700;
-   color: #212529;
-   margin-bottom: 1rem;
-   border-bottom: 2px solid #f0f0f0;
-   padding-bottom: 0.5rem;
- }
+.vine-categories {
+  background: var(--theme-white) !important;
+  border-radius: 16px !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03) !important;
+  padding: 24px !important;
+  transition: all 0.3s ease;
+}
 
+:root[data-theme="dark"] .vine-categories {
+  border-color: #2d2d35 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+.section-title {
+  font-family: 'Outfit', 'Inter', sans-serif !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 1.05rem !important;
+  color: var(--theme-black) !important;
+  border-bottom: 2.5px solid var(--green-color) !important;
+  display: inline-block;
+  padding-bottom: 6px;
+  margin-bottom: 24px !important;
+}
+
+.category-item {
+  display: flex !important;
+  align-items: center;
+  padding: 12px 14px !important;
+  border-radius: 12px !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  color: var(--text-color) !important;
+  margin-bottom: 8px !important;
+  text-decoration: none;
+}
+
+.category-item:hover {
+  background: rgba(135, 191, 23, 0.08) !important;
+  color: var(--green-color) !important;
+  transform: translateX(6px);
+}
+
+.category-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+  margin-right: 14px !important;
+  border: 1px solid var(--border-color) !important;
+  transition: transform 0.3s ease;
+}
+
+.category-item:hover .category-icon {
+  transform: scale(1.1) rotate(-8deg);
+}
+
+.category-name {
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+}

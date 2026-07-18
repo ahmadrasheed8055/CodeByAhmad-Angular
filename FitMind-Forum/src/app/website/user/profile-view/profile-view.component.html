@@ -1,5 +1,9 @@
-<div class="profile-banner"
+<div class="profile-banner position-relative"
     [style.backgroundImage]="'url(' + (userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null' ? 'img/bg/1.jpg' : userPhotos.backgroundPhoto) + ')'">
+    <input #bgCoverInput type="file" (change)="onUploadBackgroundPhoto($event)" hidden>
+    <button *ngIf="user && userId === user.id" (click)="bgCoverInput.click()" class="btn btn-edit-banner position-absolute bottom-0 end-0 m-3" title="Edit cover background">
+        <i class="bi bi-camera-fill me-2"></i> Edit Cover
+    </button>
 </div>
 
 
@@ -9,9 +13,13 @@
 
             <div class="col-lg-3 aos-init aos-animate" data-aos="fade-right" data-aos-easing="linear">
 
-                <div class="user-profile-img">
+                <div class="user-profile-img position-relative">
                     <img [src]="(userPhotos.profilePhoto ? userPhotos.profilePhoto : 'img/avatar/default.png' ) "
                         alt="img">
+                    <input #profilePhotoInput type="file" (change)="onUploadProfilePhoto($event)" hidden>
+                    <button *ngIf="user && userId === user.id" (click)="profilePhotoInput.click()" class="profile-avatar-overlay d-flex align-items-center justify-content-center" title="Change profile photo">
+                        <i class="bi bi-camera-fill"></i>
+                    </button>
                 </div>
 
                 <div class="user-profile-details">

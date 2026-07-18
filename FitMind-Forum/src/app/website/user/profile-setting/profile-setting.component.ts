@@ -84,6 +84,12 @@ export class ProfileSettingComponent implements OnInit {
       instagramLink: new FormControl(null),
     });
 
+    this.profileForm.controls['uniqueName'].valueChanges.subscribe(() => {
+      if (this.profileForm.controls['uniqueName'].dirty) {
+        this.isCheckingUniqueName = true;
+      }
+    });
+
     this.profileForm.controls['uniqueName'].valueChanges.pipe(
       skip(1),// skip the first load
       filter((value): value is string => value !== null && value !== undefined),
@@ -92,8 +98,7 @@ export class ProfileSettingComponent implements OnInit {
       switchMap((value) => this.masterServices.checkUniqueName(value, this.user.id))
     ).subscribe((isTaken) => {
       this.isTaken = isTaken;
-      this.isCheckingUniqueName = true;
-      // console.log(isTaken);
+      this.isCheckingUniqueName = false;
     });
 
     // Subscribe to user data and update form

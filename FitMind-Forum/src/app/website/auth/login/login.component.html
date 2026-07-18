@@ -1,70 +1,54 @@
 <!-- Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-
-
-
-      <div class="modal-body">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeModal()" aria-label="Close"
-          #closeLoginModal></button>
-        <div class="card border-0 shadow-sm">
-          <div class="card-body p-4">
-
-            <h3 class="text-center mb-3">Login</h3>
-            <!-- <p class="text-center text-muted">Join our awesome community.</p> -->
-            <div class="text-center">
-              <small class="text-muted">Don't have an account?</small>
-              <a href="" data-bs-toggle="modal" [attr.data-bs-target]="emailVarificationModal"
-                class="small fw-bold">Register</a>
-            </div>
-            <form [formGroup]="formData" (ngSubmit)="login()">
-
-              <div class="mb-3">
-                <label class="form-label mx-2">Email address</label>
-                <input formControlName="email" type="email" name="Email" class="form-control"
-                  placeholder="name@email.com">
-                <span class="text-danger small mx-2"
-                  *ngIf="formData.controls['email'].errors?.['required'] && formData.controls['email'].touched">
-                  Email is required.
-                </span>
-                <span class="text-danger small mx-2"
-                  *ngIf="formData.controls['email'].errors?.['pattern'] && formData.controls['email'].touched">
-                  Invalid Email address.
-                </span>
-              </div>
-              <div class="mb-3">
-                <label class="form-label mx-2">Password</label>
-                <input formControlName="password" type="password" name="Password" class="form-control"
-                  placeholder="***********">
-                <span class="text-danger small mx-2"
-                  *ngIf="formData.controls['password'].errors?.['required'] && formData.controls['password'].touched">
-                  Password is required.
-                </span>
-              </div>
-              <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
-              <div class="mb-4 d-flex justify-content-between">
-                
-                <div class="text-primary-hover">
-                  <a href="" data-bs-toggle="modal"
-                data-bs-target="#forgotPasswordModal" class="text-secondary">
-                    <u>Forgot password?</u>
-                  </a>
-                </div>
-              </div>
-              <div class="modal-footer border-0">
-                <button type="submit" class="w-100 btn btn-mint"
-                  [disabled]="formData.invalid || loginBtnLoading">{{loginBtn}}</button>
-              </div>
-            </form>
-
+      <div class="modal-body p-4 position-relative">
+        <button type="button" class="btn-close position-absolute end-0 top-0 m-3" data-bs-dismiss="modal" (click)="closeModal()" aria-label="Close" #closeLoginModal></button>
+        
+        <div class="text-center mt-3 mb-4">
+          <h3 class="modal-title font-weight-bold mb-2">Login to FitJoin</h3>
+          <div class="text-muted small">
+            Don't have an account? 
+            <a href="" data-bs-toggle="modal" [attr.data-bs-target]="emailVarificationModal" class="fw-bold text-green">Register</a>
           </div>
         </div>
+
+        <form [formGroup]="formData" (ngSubmit)="login()">
+          <div class="mb-3">
+            <label class="form-label mx-1">Email Address</label>
+            <input formControlName="email" type="email" name="Email" class="form-control" placeholder="name@email.com">
+            <span class="text-danger small mx-1 mt-1 d-block"
+              *ngIf="formData.controls['email'].errors?.['required'] && formData.controls['email'].touched">
+              Email is required.
+            </span>
+            <span class="text-danger small mx-1 mt-1 d-block"
+              *ngIf="formData.controls['email'].errors?.['pattern'] && formData.controls['email'].touched">
+              Only &#64;gmail.com emails are accepted.
+            </span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label mx-1">Password</label>
+            <input formControlName="password" type="password" name="Password" class="form-control" placeholder="••••••••">
+            <span class="text-danger small mx-1 mt-1 d-block"
+              *ngIf="formData.controls['password'].errors?.['required'] && formData.controls['password'].touched">
+              Password is required.
+            </span>
+          </div>
+
+          <div *ngIf="errorMessage" class="alert alert-danger mt-3 py-2 small">{{ errorMessage }}</div>
+
+          <div class="mb-4 d-flex justify-content-end">
+            <a href="" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" class="small text-muted text-decoration-none">
+              Forgot password?
+            </a>
+          </div>
+
+          <button type="submit" class="w-100 btn btn-mint py-2 font-weight-bold rounded-pill" [disabled]="formData.invalid || loginBtnLoading">
+            {{ loginBtn }}
+          </button>
+        </form>
       </div>
-
-
-
     </div>
   </div>
 </div>
-

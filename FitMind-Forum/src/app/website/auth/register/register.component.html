@@ -1,31 +1,31 @@
 <!-- ==============================================
    Main
 =============================================== -->
-<div class="vine-login mt-5">
+<div class="vine-login my-5">
   <div class="container">
-    <div class="row gy-5 justify-content-center">
-      <div class="col-md-6 col-lg-6 col-xxl-6">
-        <div class="card">
-          <div class="card-body p-4 p-xl-5">
-            <div class="login-header text-center">
-              <h1 class="fitmind-text">Fit Join</h1>
-              <p class="small mb-4">Join our awesome community.</p>
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6 col-xl-5">
+        <div class="card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+          <div class="card-body p-4 p-md-5">
+            <div class="login-header text-center mb-4">
+              <h1 class="fitmind-text mb-2">FitJoin</h1>
+              <p class="text-muted small">Complete your registration to join our gym community.</p>
             </div>
 
             <!-- Form Start -->
             <form [formGroup]="appForm" (ngSubmit)="addUser()">
               <!-- Name Field -->
               <div class="mb-3">
-                <label class="form-label">Name</label>
-                <input formControlName="userName" type="text" class="form-control" placeholder="Rachel Roth">
+                <label class="form-label mx-1">Name</label>
+                <input formControlName="userName" type="text" class="form-control" placeholder="John Doe">
                 <!-- Required Validation -->
-                <span class="text-danger small"
+                <span class="text-danger small mx-1 mt-1 d-block"
                   *ngIf="appForm.controls['userName'].errors?.['required'] && appForm.controls['userName'].touched">
                   Username is required.
                 </span>
 
                 <!-- Min Length Validation -->
-                <span class="text-danger small"
+                <span class="text-danger small mx-1 mt-1 d-block"
                   *ngIf="appForm.controls['userName'].errors?.['minlength'] && appForm.controls['userName'].touched">
                   Username must be at least 3 characters long.
                 </span>
@@ -33,41 +33,43 @@
 
               <!-- Email Field (Read-Only) -->
               <div class="mb-3">
-                <label class="form-label">Email address</label>
-                <input formControlName="email" type="email" class="form-control" placeholder="name@gmail.com"
-                  readonly>
+                <label class="form-label mx-1">Email Address</label>
+                <input formControlName="email" type="email" class="form-control" placeholder="name@gmail.com" readonly>
               </div>
 
               <!-- Password Field -->
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input formControlName="password" type="password" class="form-control" placeholder="***********">
+              <div class="mb-4">
+                <label class="form-label mx-1">Password</label>
+                <input formControlName="password" type="password" class="form-control" placeholder="••••••••">
                 <!-- Error Messages -->
-                <span class="text-danger small"
+                <span class="text-danger small mx-1 mt-1 d-block"
                   *ngIf="appForm.controls['password'].errors?.['required'] && appForm.controls['password'].touched">
                   Password is required.
                 </span>
 
-                <span class="text-danger small"
+                <span class="text-danger small mx-1 mt-1 d-block"
                   *ngIf="appForm.controls['password'].errors?.['minlength'] && appForm.controls['password'].touched">
                   Password must be at least 6 characters long.
                 </span>
 
-                <span class="text-danger small"
+                <span class="text-danger small mx-1 mt-1 d-block"
                   *ngIf="appForm.controls['password'].errors?.['pattern'] && appForm.controls['password'].touched">
                   Password must contain at least one uppercase letter and one number.
                 </span>
               </div>
 
               <!-- Submit Button -->
-              <div class="mb-3">
-                <button type="submit" class="w-100 btn btn-mint" [disabled]="appForm.invalid">Create Account</button>
+              <div class="mb-4">
+                <button type="submit" class="w-100 btn btn-mint py-2 font-weight-bold rounded-pill" [disabled]="appForm.invalid">
+                  Create Account
+                </button>
               </div>
-              <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+              <div *ngIf="successMessage" class="alert alert-success py-2 small mt-3">{{ successMessage }}</div>
+              
               <!-- Login Redirect -->
               <div class="text-center">
-                <small>Already have an account?</small>
-                <a routerLink="/login" class="small font-weight-bold">Login</a>
+                <small class="text-muted">Already have an account? </small>
+                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#loginModal" class="fw-bold text-green">Login</a>
               </div>
             </form>
             <!-- Form End -->

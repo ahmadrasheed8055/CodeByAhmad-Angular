@@ -68,9 +68,9 @@
     </div>
   </div>
 
-  <div class="text-center my-3" *ngIf="hasMore">
-    <button class="show-more-btn" (click)="showMore()">
-      Show More Comments <i class="bi bi-chevron-down ms-1"></i>
+  <div class="text-center my-3" *ngIf="showToggleBtn">
+    <button class="comments-toggle-btn" (click)="toggleComments()" [title]="currentCount < allComments.length ? 'Show More Comments' : 'Collapse Comments'">
+      <i class="bi fs-5" [ngClass]="currentCount < allComments.length ? 'bi-chevron-down' : 'bi-chevron-up'"></i>
     </button>
   </div>
 

@@ -10,7 +10,19 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
   const isBrowser = isPlatformBrowser(platformId);
 
-  if (isBrowser) {
+  // List of endpoints that should NOT trigger the full-screen loading spinner
+  const silentUrls = [
+    'check-unique-name',
+    'PostReactions',
+    'comments',
+    'reactions',
+    'react',
+    'removeReaction'
+  ];
+
+  const isSilent = silentUrls.some(url => req.url.includes(url));
+
+  if (isBrowser && !isSilent) {
     const loaderService = inject(NgxLoaderService);
 
     // Increment active requests and start loading

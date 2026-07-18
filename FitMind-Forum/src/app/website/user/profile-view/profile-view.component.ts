@@ -400,4 +400,52 @@ export class ProfileViewComponent {
   isDbImage(imageValue: any): boolean {
     return imageValue && typeof imageValue === 'string';
   }
+
+  onUploadProfilePhoto(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      this.snackBar.showError('Only JPEG, PNG, or JPG files are allowed');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.masterService.uploadProfilePicture(formData, this.user.id).subscribe({
+      next: () => {
+        this.snackBar.showSuccess('Profile picture updated successfully!');
+        this.authService.updateProfilePhoto(this.user.id);
+      },
+      error: () => {
+        this.snackBar.showError('Error uploading profile picture');
+      }
+    });
+  }
+
+  onUploadBackgroundPhoto(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      this.snackBar.showError('Only JPEG, PNG, or JPG files are allowed');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.masterService.uploadBackgroundPicture(formData, this.user.id).subscribe({
+      next: () => {
+        this.snackBar.showSuccess('Background cover updated successfully!');
+        this.authService.updateBackgroundPhoto(this.user.id);
+      },
+      error: () => {
+        this.snackBar.showError('Error uploading background cover');
+      }
+    });
+  }
 }

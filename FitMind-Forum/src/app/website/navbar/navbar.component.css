@@ -1,0 +1,110 @@
+/* Glassmorphism Navbar */
+.vine-navbar {
+  backdrop-filter: blur(12px) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-bottom: 1px solid var(--border-color, #e2e8f0) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.3s ease;
+}
+
+:root[data-theme="dark"] .vine-navbar {
+  background: rgba(17, 17, 17, 0.8) !important;
+  border-bottom-color: #2d2d35 !important;
+}
+
+/* Logo styling */
+.fitmind-text {
+  font-family: 'Outfit', 'Inter', sans-serif !important;
+  font-weight: 900 !important;
+  font-size: 28px !important;
+  letter-spacing: -1.5px !important;
+  background: linear-gradient(135deg, #87bf17 0%, #a2d829 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-transform: uppercase;
+}
+
+/* Modern search bar container inside navbar */
+.search-form input {
+  height: 40px !important;
+  border-radius: 20px !important;
+  padding-left: 45px !important;
+  background: var(--form-control, #f0f2f5) !important;
+  border: 1px solid var(--border-color, #e0e0e0) !important;
+  font-size: 0.9rem !important;
+  transition: all 0.25s ease !important;
+}
+
+.search-form input:focus {
+  background: var(--theme-white) !important;
+  border-color: var(--green-color, #87bf17) !important;
+  box-shadow: 0 0 0 3px rgba(135, 191, 23, 0.15) !important;
+}
+
+/* Search icon */
+.search-form .bi-search {
+  color: var(--green-color, #87bf17) !important;
+  margin-left: 8px;
+}
+
+/* Pill capsule create button */
+.btn-create-post {
+  background: linear-gradient(135deg, #87bf17 0%, #95d41a 100%) !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 25px !important;
+  padding: 8px 20px !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 15px rgba(135, 191, 23, 0.25) !important;
+  transition: all 0.25s ease !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-create-post:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(135, 191, 23, 0.35) !important;
+  background: linear-gradient(135deg, #95d41a 0%, #87bf17 100%) !important;
+}
+
+/* Secondary login button */
+.btn-login-nav {
+  border: 2px solid var(--green-color) !important;
+  color: var(--green-color) !important;
+  background: transparent !important;
+  font-weight: 700 !important;
+  border-radius: 25px !important;
+  padding: 6px 22px !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-login-nav:hover {
+  background: var(--green-color) !important;
+  color: white !important;
+}
+
+/* Dropdown avatar animation */
+.dropdown-menu-size-md {
+  border-radius: 16px !important;
+  padding: 12px !important;
+}
+
+.dropdown-item {
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  transition: background 0.2s ease, color 0.2s ease !important;
+}
+
+.dropdown-item:hover {
+  background: rgba(135, 191, 23, 0.08) !important;
+  color: var(--green-color) !important;
+}
+
+.dropdown-item-icon i {
+  font-size: 1.1rem !important;
+}

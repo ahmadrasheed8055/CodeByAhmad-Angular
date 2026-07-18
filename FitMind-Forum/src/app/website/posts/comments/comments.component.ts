@@ -152,13 +152,17 @@ export class CommentsComponent implements OnInit, OnChanges {
     this.visibleComments = this.allComments.slice(0, this.currentCount);
   }
 
-  showMore(): void {
-    this.currentCount += this.pageSize;
+  toggleComments(): void {
+    if (this.currentCount < this.allComments.length) {
+      this.currentCount += this.pageSize;
+    } else {
+      this.currentCount = 3;
+    }
     this.updateVisible();
   }
 
-  get hasMore(): boolean {
-    return this.currentCount < this.allComments.length;
+  get showToggleBtn(): boolean {
+    return this.allComments.length > 3;
   }
 
   toggleReplies(commentId: number): void {

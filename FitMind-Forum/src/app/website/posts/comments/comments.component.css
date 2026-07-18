@@ -129,7 +129,7 @@
   font-weight: 600;
   color: var(--text-color, #171717) !important;
   font-size: 0.9rem;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 .comment-text {
@@ -190,22 +190,37 @@
   background: rgba(30, 30, 36, 0.6);
 }
 
-/* Show more button link */
-.show-more-btn {
-  background: transparent;
-  border: none;
-  color: var(--green-color, #87bf17);
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* Modern Circular Comments Toggle Button */
+.comments-toggle-btn {
+  background: var(--form-control, #f0f2f5) !important;
+  border: 1px solid var(--border-color, #e0e0e0) !important;
+  color: var(--text-muted, #718096) !important;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+  outline: none !important;
 }
 
-.show-more-btn:hover {
-  color: var(--green-color-hover, #9dc54c);
-  text-decoration: underline;
+:root[data-theme="dark"] .comments-toggle-btn {
+  background: #1e1e24 !important;
+  border-color: #333 !important;
+  color: #a0a0a0 !important;
+}
+
+.comments-toggle-btn:hover {
+  background: var(--green-color, #87bf17) !important;
+  border-color: var(--green-color, #87bf17) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(135, 191, 23, 0.3);
+}
+
+.comments-toggle-btn:active {
+  transform: translateY(0);
 }
