@@ -72,3 +72,108 @@
 .profile-avatar-overlay i {
   transition: transform 0.2s ease;
 }
+
+.post-stats {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Modern Vote & Action Pills */
+.post-action-pill {
+  background: var(--form-control, #f0f2f5);
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+:host-context([data-theme="dark"]) .post-action-pill,
+:host-context([data-bs-theme="dark"]) .post-action-pill {
+  background: #1e1e24;
+  border-color: #2d2d35;
+}
+
+.post-action-pill:hover {
+  background: rgba(135, 191, 23, 0.08);
+  border-color: rgba(135, 191, 23, 0.3);
+}
+
+.post-action-pill a {
+  color: var(--text-muted, #718096);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.post-action-pill i {
+  color: var(--text-muted, #718096);
+  transition: color 0.2s ease;
+}
+
+.post-action-pill span {
+  color: var(--text-color, #4a5568);
+  transition: color 0.2s ease;
+}
+
+.post-action-pill:hover a,
+.post-action-pill:hover i,
+.post-action-pill:hover span {
+  color: var(--green-color, #87bf17) !important;
+}
+
+.up-arrow, .down-arrow {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.up-arrow:hover {
+  transform: scale(1.15);
+}
+
+.down-arrow:hover {
+  transform: scale(1.15);
+}
+
+.up-arrow .bi-hand-thumbs-up-fill.text-success {
+  color: var(--green-color, #87bf17) !important;
+}
+
+.down-arrow .bi-hand-thumbs-down-fill.text-danger {
+  color: #ec595a !important;
+}
+
+.fs-7 {
+  font-size: 0.85rem !important;
+}
+
+/* Floating Image Modal Styling */
+.post-image-modal-content {
+  background-color: #1e1e24 !important;
+  border: 1px solid #333644 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+}
+
+:host-context([data-theme="light"]) .post-image-modal-content,
+:host-context([data-bs-theme="light"]) .post-image-modal-content {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
+}
+
+.post-modal-img {
+  max-height: 80vh;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  display: block;
+}

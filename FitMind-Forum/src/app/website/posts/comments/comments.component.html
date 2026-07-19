@@ -1,7 +1,13 @@
 <div class="comments-wrapper" *ngIf="!isLoading">
   <!-- Collapsible Comments List -->
   <div class="comments-list-section" *ngIf="showCommentsList">
-    <h5 class="mb-3 mt-1 text-sm font-semibold text-muted">Comments ({{ allComments.length }})</h5>
+    <h5 class="mb-3 mt-1 text-sm font-semibold text-muted" *ngIf="allComments.length > 0">Comments ({{ allComments.length }})</h5>
+
+    <!-- Empty Comments State -->
+    <div class="no-comments-state text-center py-3 text-muted" *ngIf="!allComments || allComments.length === 0">
+      <i class="bi bi-chat-square-dots fs-4 d-block mb-1 opacity-50"></i>
+      <span class="text-sm">No comments yet</span>
+    </div>
 
     <div class="comment-item-container d-flex align-items-start mb-3" *ngFor="let comment of visibleComments">
       <!-- Commenter Avatar -->
@@ -11,38 +17,45 @@
       
       <div class="flex-grow-1">
         <!-- Comment text bubble -->
-        <div class="comment-bubble d-inline-block">
-          <div class="align-items-center">
-            <a class="commenter-name d-block text-decoration-none" href="javascript:void(0)">{{ comment.userName }}</a>
+        <div class="comment-bubble d-inline-block position-relative">
+          <div class="d-flex justify-content-between align-items-start mb-1 pe-4">
+            <a class="commenter-name d-block text-decoration-none mb-0" href="javascript:void(0)">{{ comment.userName }}</a>
+            <!-- Three-dots dropdown -->
+            <div class="dropdown comment-options-dropdown" *ngIf="comment.userId === userId">
+              <a href="javascript:void(0)" class="text-muted text-decoration-none p-1" data-bs-toggle="dropdown" aria-expanded="false" title="Options">
+                <i class="bi bi-three-dots-vertical"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="min-width: 120px;">
+                <li>
+                  <a class="dropdown-item text-danger d-flex align-items-center py-2" href="javascript:void(0)" (click)="deleteComment(comment)">
+                    <i class="bi bi-trash me-2"></i> Delete
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
           <p class="comment-text mb-0">{{ comment.commentContent }}</p>
         </div>
 
         <!-- Links & metadata -->
-        <div class="post-links d-flex mt-2 align-items-center">
-          <a href="javascript:void(0)" class="p-0 me-3"
+        <div class="post-links d-flex mt-1 align-items-center gap-3">
+          <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
              [class.text-success]="comment.currentUserReaction === true"
              (click)="react(comment, true)">
-             <span class="bi bi-hand-thumbs-up me-1"></span> {{ comment.likeCount || 0 }}
+             <i class="bi bi-hand-thumbs-up me-1"></i> <span class="fw-medium">{{ comment.likeCount || 0 }}</span>
           </a>
-          <a href="javascript:void(0)" class="p-0 me-3"
+          <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
              [class.text-danger]="comment.currentUserReaction === false"
              (click)="react(comment, false)">
-             <span class="bi bi-hand-thumbs-down me-1"></span> {{ comment.dislikeCount || 0 }}
+             <i class="bi bi-hand-thumbs-down me-1"></i> <span class="fw-medium">{{ comment.dislikeCount || 0 }}</span>
           </a>
-          <a href="javascript:void(0)" class="p-0 me-3" (click)="toggleReplies(comment.commentId)">
-            <span class="bi bi-chat-left-text me-1"></span>
-            {{ comment.replies?.length ? (isRepliesOpen(comment.commentId) ? 'Hide Replies' : 'Replies (' + comment.replies!.length + ')') : 'Reply' }}
+          <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center" (click)="toggleReplies(comment.commentId)">
+            <i class="bi bi-chat-left-text me-1"></i>
+            <span class="fw-medium">{{ comment.replies?.length ? (isRepliesOpen(comment.commentId) ? 'Hide Replies' : 'Replies (' + comment.replies!.length + ')') : 'Reply' }}</span>
           </a>
-          <span class="p-0 me-2 d-flex align-items-center"><span class="bi bi-clock-history me-1"></span> {{ timeAgo(comment.createdAt) }}</span>
-
-          <!-- Delete own comment -->
-          <a href="javascript:void(0)" class="p-0 text-danger ms-auto"
-             *ngIf="comment.userId === userId"
-             (click)="deleteComment(comment)"
-             title="Delete comment">
-            <span class="bi bi-trash"></span>
-          </a>
+          <span class="p-0 text-muted small d-flex align-items-center">
+             <i class="bi bi-clock-history me-1"></i> {{ timeAgo(comment.createdAt) }}
+          </span>
         </div>
 
         <!-- Accordion Replies list -->
@@ -54,15 +67,15 @@
             </div>
             <div class="flex-grow-1">
               <!-- Reply text bubble -->
-              <div class="reply-bubble d-inline-block">
-                <div class="align-items-center">
-                  <a class="commenter-name d-block text-sm text-decoration-none" href="javascript:void(0)">{{ reply.userName }}</a>
+              <div class="reply-bubble d-inline-block position-relative">
+                <div class="align-items-center mb-1">
+                  <a class="commenter-name d-block text-sm text-decoration-none mb-0" href="javascript:void(0)">{{ reply.userName }}</a>
                 </div>
                 <p class="comment-text mb-0 text-sm">{{ reply.commentContent }}</p>
               </div>
               
               <div class="post-links d-flex mt-1 align-items-center text-xs">
-                <span class="bi bi-clock-history me-1"></span> {{ timeAgo(reply.createdAt) }}
+                <span class="text-muted d-flex align-items-center"><i class="bi bi-clock-history me-1"></i> {{ timeAgo(reply.createdAt) }}</span>
               </div>
             </div>
           </div>

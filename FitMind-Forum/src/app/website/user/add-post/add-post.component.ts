@@ -109,6 +109,9 @@ export class AddPostComponent {
       this.postForm.patchValue({
         image: file.files[0],
       });
+      this.postForm.get('image')?.markAsDirty();
+      this.postForm.markAsDirty();
+      this.postForm.updateValueAndValidity();
     }
   }
 
@@ -121,6 +124,9 @@ export class AddPostComponent {
             this.postForm.patchValue({
               image: null,
             });
+            this.postForm.get('image')?.markAsDirty();
+            this.postForm.markAsDirty();
+            this.postForm.updateValueAndValidity();
             this.snackBar.showSuccess(
               'Drafted post image deleted successfully'
             );
@@ -131,6 +137,9 @@ export class AddPostComponent {
         );
     }
     this.previewUrl = null;
+    this.postForm.get('image')?.markAsDirty();
+    this.postForm.markAsDirty();
+    this.postForm.updateValueAndValidity();
   }
 
   //add post

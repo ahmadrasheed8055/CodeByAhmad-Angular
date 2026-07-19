@@ -54,12 +54,12 @@
                           *ngIf="postForm.controls['category'].invalid && postForm.controls['category'].touched">
                           *
                         </span></label>
-                      <select formControlName="category" placeholder="Select a category" class="form-select text-muted">
+                      <select formControlName="category" class="form-select">
                         <option value="" disabled selected>Select a category</option>
                         <option *ngIf="!categoriesObj" value="" disabled selected>Wait...</option>
 
                         <ng-container *ngFor="let category of categoriesObj">
-                          <option class="text-dark" value="{{category.id}}">{{category.name}}</option>
+                          <option [value]="category.id">{{category.name}}</option>
                         </ng-container>
 
                       </select>

@@ -158,6 +158,9 @@ export class ProfileViewComponent {
       this.updatePostForm.patchValue({
         image: file.files[0],
       });
+      this.updatePostForm.get('image')?.markAsDirty();
+      this.updatePostForm.markAsDirty();
+      this.updatePostForm.updateValueAndValidity();
     }
   }
 
@@ -166,6 +169,9 @@ export class ProfileViewComponent {
     this.updatePostForm.patchValue({
       image: null,
     });
+    this.updatePostForm.get('image')?.markAsDirty();
+    this.updatePostForm.markAsDirty();
+    this.updatePostForm.updateValueAndValidity();
   }
   selectedPostImage: string | null = null;
   openFullImageModal(image: string | null = null) {
@@ -389,7 +395,7 @@ export class ProfileViewComponent {
 
   deleteUserPostImage() {
     // debugger;
-    if (this.selectedPost.value.image !== null) {
+    if (this.selectedPost && this.selectedPost.value.image !== null) {
       this.masterService
         .deletePostImage(this.userId, this.selectedPostId)
         .subscribe(
@@ -399,16 +405,22 @@ export class ProfileViewComponent {
             this.selectedPost.patchValue({
               image: null,
             });
+            this.selectedPost.get('image')?.markAsDirty();
+            this.selectedPost.markAsDirty();
+            this.selectedPost.updateValueAndValidity();
           },
           (error) => {
             this.snackBar.showError('Error deleting post image');
           }
         );
-    
-
     }
 
     this.previewUrl = null;
+    if (this.updatePostForm) {
+      this.updatePostForm.get('image')?.markAsDirty();
+      this.updatePostForm.markAsDirty();
+      this.updatePostForm.updateValueAndValidity();
+    }
   }
   cancelUpdatePost() {
     this.editingPostId = null;

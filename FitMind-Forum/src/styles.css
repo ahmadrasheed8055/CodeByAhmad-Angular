@@ -5715,3 +5715,56 @@ a.close-list-item {
   font-size: 0.9rem;
   font-weight: 500;
 }
+
+/* Global Professional Pill-Shaped Buttons */
+button,
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger,
+.btn-warning,
+.btn-info,
+.btn-light,
+.btn-dark,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-mint,
+.btn-base {
+  border-radius: 50px !important;
+}
+
+/* Preserve standard menu item layout inside dropdowns */
+.dropdown-menu .dropdown-item {
+  border-radius: 8px !important;
+}
+
+/* Select & Option Styling for Light/Dark Theme */
+select.form-select,
+.form-select {
+  background-color: var(--form-control, #f0f2f5) !important;
+  color: var(--text-color, #171717) !important;
+  border-color: var(--border-color, #e0e0e0) !important;
+  border-radius: 12px !important;
+}
+
+select.form-select option,
+.form-select option {
+  background-color: var(--theme-white, #ffffff) !important;
+  color: var(--text-color, #171717) !important;
+}
+
+:root[data-theme="dark"] select.form-select,
+:root[data-bs-theme="dark"] select.form-select {
+  background-color: #1e1e24 !important;
+  color: #efefef !important;
+  border-color: #2d2d35 !important;
+}
+
+:root[data-theme="dark"] select.form-select option,
+:root[data-bs-theme="dark"] select.form-select option {
+  background-color: #1e1e24 !important;
+  color: #efefef !important;
+}

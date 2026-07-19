@@ -130,6 +130,12 @@
   max-width: 100%;
 }
 
+.comment-options-dropdown {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
 :root[data-theme="dark"] .comment-bubble {
   background: #1e1e24;
 }
@@ -138,7 +144,6 @@
   font-weight: 600;
   color: var(--text-color, #171717) !important;
   font-size: 0.9rem;
-  margin-bottom: 6px;
 }
 
 .comment-text {
@@ -148,7 +153,7 @@
 }
 
 .post-links {
-  margin-top: 6px;
+  margin-top: 4px;
   font-size: 0.8rem;
   color: var(--text-muted, #718096);
 }
