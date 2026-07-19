@@ -15,6 +15,6 @@ postImageUrl?: string;
   likeCount?: number;
   dislikeCount?: number;
 
-  isReactedByMe?: boolean;
+  isReactedByMe?: boolean | null;
 
 }

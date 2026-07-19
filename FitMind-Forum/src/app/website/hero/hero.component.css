@@ -1,40 +1,162 @@
-/* Hero Modern Fitness Style */
+/* Hero Section - Aurora Mesh Gradient Style (image_8895e3.png) */
 .vine-hero-2 {
   position: relative;
-  background-size: cover;
-  background-position: center;
-  padding: 100px 0;
+  margin-top: 0 !important; /* Eliminates vertical gap between navbar and hero section */
+  padding: 110px 0 85px 0 !important;
   text-align: center;
+  overflow: hidden !important; /* Isolate blur filters within hero section boundary */
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  background-color: #ffffff !important; /* Solid white light base theme */
+  background-image: none !important;
+}
+
+:host-context([data-bs-theme="dark"]) .vine-hero-2,
+:host-context([data-theme="dark"]) .vine-hero-2 {
+  background-color: #0c0d10 !important;
+  border-bottom-color: #2a2c35 !important;
+}
+
+/* Aurora Glow Container - Non-interactive decorative layer */
+.aurora-glow-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  /* Dark overlay for gym look */
-  background-image: linear-gradient(rgba(11, 11, 13, 0.7), rgba(11, 11, 13, 0.75)), url('/img/bg/1.jpg') !important;
+  pointer-events: none !important; /* Guarantees zero interference with buttons/links */
+  z-index: 1;
 }
 
-.hero-content h1 {
-  font-family: 'Outfit', 'Inter', sans-serif !important;
-  font-size: 3.2rem !important;
-  font-weight: 900 !important;
-  letter-spacing: -1.5px !important;
+/* Bottom-Left Corner Glow - Vibrant Gym Brand Color #a2d829 */
+.aurora-blob-bottom-left {
+  position: absolute;
+  bottom: -22%;
+  left: -10%;
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(162, 216, 41, 0.6) 0%, rgba(162, 216, 41, 0.25) 45%, rgba(255, 255, 255, 0) 75%);
+  filter: blur(75px);
+  opacity: 0.95;
+  transform: translateZ(0);
+}
+
+/* Right Edge / Top-Right Corner Glow - Vibrant Coral Tint #ec595a */
+.aurora-blob-top-right {
+  position: absolute;
+  top: -15%;
+  right: -8%;
+  width: 680px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236, 89, 90, 0.35) 0%, rgba(236, 89, 90, 0.12) 50%, rgba(255, 255, 255, 0) 75%);
+  filter: blur(80px);
+  opacity: 0.88;
+  transform: translateZ(0);
+}
+
+:host-context([data-bs-theme="dark"]) .aurora-blob-bottom-left,
+:host-context([data-theme="dark"]) .aurora-blob-bottom-left {
+  background: radial-gradient(circle, rgba(162, 216, 41, 0.35) 0%, rgba(12, 13, 16, 0) 70%);
+}
+
+:host-context([data-bs-theme="dark"]) .aurora-blob-top-right,
+:host-context([data-theme="dark"]) .aurora-blob-top-right {
+  background: radial-gradient(circle, rgba(236, 89, 90, 0.28) 0%, rgba(12, 13, 16, 0) 70%);
+}
+
+/* Top dashed subline with brand accent color #a2d829 */
+.hero-subline {
+  color: #a2d829 !important;
+  font-size: 0.88rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 2.5px !important;
   text-transform: uppercase;
-  color: white !important;
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.hero-content p {
-  color: #d1d5db !important;
-  font-size: 1.15rem !important;
-  max-width: 600px;
+.subline-dash {
+  opacity: 0.85;
+}
+
+/* Main bold brush headline */
+.hero-title {
+  font-family: 'Permanent Marker', 'Caveat Brush', cursive, sans-serif !important;
+  font-size: 4.8rem !important;
+  line-height: 1.15 !important;
+  color: #161618 !important;
+  margin: 14px 0 12px 0 !important;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: none !important;
+}
+
+:host-context([data-bs-theme="dark"]) .hero-title,
+:host-context([data-theme="dark"]) .hero-title {
+  color: #ffffff !important;
+}
+
+/* Organic curved hand-drawn vector underline stroke */
+.highlight-underline {
+  position: relative;
+  display: inline-block;
+  color: inherit;
+}
+
+.curved-underline {
+  position: absolute;
+  left: 0;
+  bottom: -12px;
+  width: 100%;
+  height: 20px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.curved-underline path {
+  stroke: #a2d829 !important;
+}
+
+/* Italic tagline */
+.hero-tagline {
+  font-size: 1.35rem !important;
+  font-style: italic !important;
+  color: #4b5563 !important;
+  margin-bottom: 14px !important;
+  font-weight: 500 !important;
+  text-shadow: none !important;
+}
+
+:host-context([data-bs-theme="dark"]) .hero-tagline,
+:host-context([data-theme="dark"]) .hero-tagline {
+  color: #9ca3af !important;
+}
+
+/* Description text */
+.hero-description {
+  color: #6b7280 !important;
+  font-size: 1.08rem !important;
+  max-width: 650px;
   margin: 0 auto !important;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  line-height: 1.6 !important;
+  text-shadow: none !important;
 }
 
+:host-context([data-bs-theme="dark"]) .hero-description,
+:host-context([data-theme="dark"]) .hero-description {
+  color: #9ca3af !important;
+}
+
+/* CTA button */
 .btn-hero-cta {
   background: linear-gradient(135deg, #87bf17 0%, #a2d829 100%) !important;
   border: none !important;
   color: white !important;
   font-weight: 800 !important;
-  font-size: 1rem !important;
+  font-size: 0.95rem !important;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 12px 32px !important;

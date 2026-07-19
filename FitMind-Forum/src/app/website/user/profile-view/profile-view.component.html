@@ -350,16 +350,16 @@
                                                     <div class="post-item d-flex align-items-center me-4">
                                                         <a [class.disabled]="reactionButton == true"  (click)="addPostReaction(true, postsData)" id="upvote" class="up-arrow me-2">
                                                         <i class="bi fs-5" [ngClass]="{
-                                                            'bi-hand-thumbs-up-fill ': postsData.isReactedByMe === true,
-                                                            'bi-hand-thumbs-up': postsData.isReactedByMe !== true
+                                                            'bi-hand-thumbs-up-fill': postsData.isReactedByMe === true && authService.isLoggedIn(),
+                                                            'bi-hand-thumbs-up': postsData.isReactedByMe !== true || !authService.isLoggedIn()
                                                             }"></i>
                                                         </a>
                                                         <span class="me-2">{{ postsData.likeCount }}</span>
 
                                                         <a [class.disabled]="reactionButton == true" (click)="addPostReaction(false, postsData)" class="down-arrow me-2">
                                                         <i class="bi fs-5" [ngClass]="{
-                                                            'bi-hand-thumbs-down-fill': postsData.isReactedByMe === false,
-                                                            'bi-hand-thumbs-down': postsData.isReactedByMe !== false
+                                                            'bi-hand-thumbs-down-fill': postsData.isReactedByMe === false && authService.isLoggedIn(),
+                                                            'bi-hand-thumbs-down': postsData.isReactedByMe !== false || !authService.isLoggedIn()
                                                         }"></i>
                                                         </a>
                                                         <span>{{ postsData.dislikeCount }}</span>
@@ -373,9 +373,14 @@
                                                         <div class="post-text">Views</div>
                                                     </div>
                                                     <div class="post-item me-lg-5">
-                                                        <a href="#">
-                                                            <div class="post-icon"><i class="bi bi-chat-dots"></i></div>
-                                                            <div class="post-text">0</div>
+                                                        <a href="javascript:void(0)" (click)="toggleComments(postsData.postId)" class="d-flex align-items-center text-decoration-none">
+                                                            <div class="post-icon d-flex align-items-center">
+                                                                <!-- Modern Minimal Message Square SVG Icon -->
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="post-text">{{ commentCounts[postsData.postId] || 0 }}</div>
                                                         </a>
                                                     </div>
                                                     <div class="post-item">
@@ -399,6 +404,12 @@
                                                 </div>
 
                                             </div>
+                                            
+                                            <!-- Comments Section -->
+                                            <app-comments [postId]="postsData.postId"
+                                                          [showCommentsList]="!!isCommentsVisibleMap[postsData.postId]"
+                                                          (commentCountChanged)="commentCounts[postsData.postId] = $event">
+                                            </app-comments>
 
                                         </div>
                                     </div><!--/post-box-->

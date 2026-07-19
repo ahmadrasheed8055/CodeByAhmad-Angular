@@ -12,10 +12,10 @@ Navbar
   <nav class="navbar navbar-expand-lg py-0">
     <div class="container align-items-center">
       <div class="logo">
-        <a class="navbar-brand" type="button">
+        <a class="navbar-brand text-decoration-none" routerLink="/home" style="cursor: pointer;">
           <!-- <img class="logo-dark" src="img/logo dark.png" alt="Logo"> -->
 
-          <h1 class="fitmind-text">FitJoin</h1>
+          <h1 class="fitmind-text mb-0">FitJoin</h1>
         </a>
       </div>
       <div class="offcanvas nav-offcanvas offcanvas-start" tabindex="-1" id="offcanvas_Header_01"
@@ -40,19 +40,16 @@ Navbar
         </div>
       </div>
       @if (authServices.isLoggedIn()) {
-      <div class="header-end d-flex justify-content-end">
+      <div class="header-end d-flex align-items-center justify-content-end">
 
-        <!--  Add Post Start -->
-        <!-- <div class="h-col h-plus-toggle">
-          <a class="btn btn-mint rounded-circle" routerLink="add-post" >
-            <i class="bi bi-plus-lg"></i>
-            Add post
-          </a>
-        </div> -->
+        <!-- Theme Toggle Switcher -->
+        <button class="btn btn-theme-toggle me-2" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill text-warning' : 'bi-moon-stars-fill'"></i>
+        </button>
+
+        <!-- Create Post Button -->
         <button class="btn btn-create-post" routerLink="add-post"> <i class="bi bi-plus-lg"></i> Create</button>
         <!-- Add Post END -->
-
-
 
         <!-- Account -->
         <div *ngIf="userPhotos.profilePhoto !== 'data:image/jpeg;base64,null' || userPhotos.profilePhoto" class="nav-item ms-3 dropdown h-col">
@@ -119,9 +116,14 @@ Navbar
 
 
 
-      <a href="" class="btn btn-login-nav" data-bs-toggle="modal"
-        [attr.data-bs-target]="loginModal">Login</a>
-      <div class="header-end d-flex justify-content-end">
+      <div class="header-end d-flex align-items-center justify-content-end">
+        <!-- Theme Toggle Switcher -->
+        <button class="btn btn-theme-toggle me-2" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill text-warning' : 'bi-moon-stars-fill'"></i>
+        </button>
+
+        <a href="" class="btn btn-login-nav me-2" data-bs-toggle="modal"
+          [attr.data-bs-target]="loginModal">Login</a>
         <!-- Translate dropdown START -->
         <div class="nav-item dropdown h-col d-none d-lg-block">
           <a class="h-translate-icon h-icon" href="#" id="languageDropdown" role="button" data-bs-auto-close="outside"

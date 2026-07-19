@@ -1,3 +1,12 @@
+/* Eliminate top margin gap between profile banner wallpaper and navbar */
+.profile-banner {
+  margin-top: 0 !important;
+  padding-top: 65px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
 /* Profile banner camera button */
 .btn-edit-banner {
   background: rgba(11, 11, 13, 0.6) !important;

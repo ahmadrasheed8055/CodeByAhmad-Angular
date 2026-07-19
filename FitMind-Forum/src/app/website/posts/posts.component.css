@@ -114,7 +114,8 @@
   border: 1px solid var(--border-color, #e2e8f0);
 }
 
-:root[data-theme="dark"] .post-item.d-flex.align-items-center {
+:host-context([data-theme="dark"]) .post-item.d-flex.align-items-center,
+:host-context([data-bs-theme="dark"]) .post-item.d-flex.align-items-center {
   background: #1e1e24;
   border-color: #2d2d35;
 }
@@ -173,4 +174,52 @@
 .post-text {
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+/* Premium Create Post Card Container (image_89e03b.png match) */
+.create-post-card {
+  border-radius: 16px !important;
+  background: var(--theme-white, #ffffff) !important;
+  border: 1px solid var(--border-color, #e0e0e0) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+}
+
+:host-context([data-bs-theme="dark"]) .create-post-card,
+:host-context([data-theme="dark"]) .create-post-card {
+  background: #16171d !important;
+  border-color: #2a2c35 !important;
+}
+
+.create-post-pill {
+  background: var(--form-control, #f0f2f5) !important;
+  border-radius: 50px !important;
+  border: 1px solid var(--border-color, #e0e0e0) !important;
+  transition: all 0.25s ease !important;
+}
+
+:host-context([data-bs-theme="dark"]) .create-post-pill,
+:host-context([data-theme="dark"]) .create-post-pill {
+  background: #1c1e26 !important;
+  border-color: #2a2c35 !important;
+}
+
+.create-post-pill:hover {
+  background: rgba(162, 216, 41, 0.1) !important;
+  border-color: var(--green-color, #a2d829) !important;
+}
+
+.create-post-placeholder {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted, #718096) !important;
+}
+
+.create-action-btn {
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  padding: 6px 12px !important;
+}
+
+.create-action-btn:hover {
+  background: rgba(162, 216, 41, 0.12) !important;
 }

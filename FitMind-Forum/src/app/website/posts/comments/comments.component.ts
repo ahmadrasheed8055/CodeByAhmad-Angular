@@ -6,6 +6,8 @@ import {
   SimpleChanges,
   inject,
   PLATFORM_ID,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
@@ -34,6 +36,8 @@ import { AppUserPhotos } from '../../../Model/AppUsers';
 })
 export class CommentsComponent implements OnInit, OnChanges {
   @Input() postId!: number;
+  @Input() showCommentsList: boolean = false;
+  @Output() commentCountChanged = new EventEmitter<number>();
 
   masterService: MasterService = inject(MasterService);
   authService: AuthService = inject(AuthService);
@@ -143,6 +147,7 @@ export class CommentsComponent implements OnInit, OnChanges {
         this.currentCount = 3; // Initial number of comments to show
         this.updateVisible();
         this.isLoading = false;
+        this.commentCountChanged.emit(this.allComments.length);
       },
       error: () => (this.isLoading = false),
     });
@@ -224,6 +229,7 @@ export class CommentsComponent implements OnInit, OnChanges {
         this.visibleComments.unshift(newComment);
         this.newCommentText = '';
         this.snakBarService.showSuccess('Comment added successfully.');
+        this.commentCountChanged.emit(this.allComments.length);
       },
       error: (err) => {
         console.error('Comment add fail hua:', err);
@@ -246,6 +252,7 @@ export class CommentsComponent implements OnInit, OnChanges {
           (c) => c.commentId !== comment.commentId,
         );
         this.updateVisible();
+        this.commentCountChanged.emit(this.allComments.length);
       },
       error: (err) => {
         console.error('Delete fail hua:', err);

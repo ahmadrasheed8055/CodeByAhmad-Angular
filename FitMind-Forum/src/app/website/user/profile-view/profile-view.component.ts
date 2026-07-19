@@ -24,11 +24,12 @@ import { PostReactionsDTO } from '../../../Model/AddPostReaction';
 import { GetAllPostsDTO } from '../../../Model/GetAllPostsDTO';
 import { debug } from 'node:console';
 import { Router } from '@angular/router';
+import { CommentsComponent } from '../../posts/comments/comments.component';
 
 @Component({
   selector: 'app-profile-view',
   standalone: true,
-  imports: [DatePipe, CommonModule, ReactiveFormsModule],
+  imports: [DatePipe, CommonModule, ReactiveFormsModule, CommentsComponent],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.css',
 })
@@ -38,6 +39,13 @@ export class ProfileViewComponent {
   // masterService = Inject(MasterService);
   userPosts: GetUserPostsDTO[] = [];
   postsLoader: boolean = false;
+
+  isCommentsVisibleMap: { [key: number]: boolean } = {};
+  commentCounts: { [key: number]: number } = {};
+
+  toggleComments(postId: number) {
+    this.isCommentsVisibleMap[postId] = !this.isCommentsVisibleMap[postId];
+  }
   // selectedPostId: number = 0;
   selectedPost!: FormGroup; // the form
   selectedPostId!: number; // only the ID
@@ -56,7 +64,7 @@ export class ProfileViewComponent {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private masterService: MasterService,
     private snackBar: SnackBarServiceService
   ) {}
@@ -307,21 +315,49 @@ export class ProfileViewComponent {
   reactionButton: boolean = false;
   // Function to handle post reaction
   addPostReaction(isLike: boolean | null, post: GetUserPostsDTO) {
-    // debugger;
-    this.reactionButton = true;
     if (!this.authService.isLoggedIn()) {
       this.snackBarService.showError('Please log in to react to posts');
-      this.reactionButton = false;
-
       return;
     }
     if (isLike === null) {
       this.snackBarService.showError('Please select a reaction');
-      this.reactionButton = false;
-
       return;
     }
     const userId = this.authService.userIdExists();
+
+    // 1. Backup original states for potential rollback
+    const originalReaction = post.isReactedByMe;
+    const originalLikes = post.likeCount;
+    const originalDislikes = post.dislikeCount;
+
+    // 2. Optimistic State Updates
+    if (isLike) {
+      if (post.isReactedByMe === true) {
+        // Undo like
+        post.isReactedByMe = null;
+        post.likeCount = Math.max(0, (post.likeCount || 0) - 1);
+      } else {
+        if (post.isReactedByMe === false) {
+          // Switch from dislike to like
+          post.dislikeCount = Math.max(0, (post.dislikeCount || 0) - 1);
+        }
+        post.isReactedByMe = true;
+        post.likeCount = (post.likeCount || 0) + 1;
+      }
+    } else {
+      if (post.isReactedByMe === false) {
+        // Undo dislike
+        post.isReactedByMe = null;
+        post.dislikeCount = Math.max(0, (post.dislikeCount || 0) - 1);
+      } else {
+        if (post.isReactedByMe === true) {
+          // Switch from like to dislike
+          post.likeCount = Math.max(0, (post.likeCount || 0) - 1);
+        }
+        post.isReactedByMe = false;
+        post.dislikeCount = (post.dislikeCount || 0) + 1;
+      }
+    }
 
     const postReaction: PostReactionsDTO = {
       postId: post.postId,
@@ -329,36 +365,19 @@ export class ProfileViewComponent {
       isLike: isLike,
     };
 
-    this.masterService.addPostReaction(postReaction).subscribe(
-      (response) => {
-        // console.log('Reaction added:', response);
-        this.reactionButton = false;
-
-        this.getUserPosts();
-        // this.snackBarService.showSuccess('Reaction added successfully');
+    // 3. Silent API Dispatch
+    this.masterService.addPostReaction(postReaction).subscribe({
+      next: () => {
+        // Optimistic UI updated already, do NOT trigger heavy list refreshes!
       },
-      (error) => {
-        // if (error.status === 400) {
-        //  this.MasterService.updatePostReaction(postReaction).subscribe({
-        //     next: (updatedReaction) => {
-        //       console.log('Reaction updated:', updatedReaction);
-        //       this.getAllPosts();
-        //       this.snackBarService.showSuccess('Reaction updated successfully');
-        //     },
-        //     error: (updateError) => {
-        //       console.error('Error updating reaction:', updateError);
-        //       this.snackBarService.showError('Error updating reaction');
-        //     }
-        //  });
-
-        //   return;
-        // }
-        // console.error('Error adding reaction:', error);
-        this.reactionButton = false;
-
-        this.snackBarService.showError('Error adding reaction');
+      error: () => {
+        // Rollback states on sync failure
+        post.isReactedByMe = originalReaction;
+        post.likeCount = originalLikes;
+        post.dislikeCount = originalDislikes;
+        this.snackBarService.showError('Sync failed. Please try again.');
       }
-    );
+    });
   }
 
   openModal(updatePostForm: any, postId: any) {

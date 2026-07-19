@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../Shared/auth.service';
 import { AppUser, AppUserPhotos, PublicAppUserDTO } from '../../Model/AppUsers';
@@ -33,22 +33,48 @@ export class NavbarComponent implements OnInit {
   router = inject(Router);
   masterServices = inject(MasterService);
   snackBarService = inject(SnackBarServiceService);
+  private platformId = inject(PLATFORM_ID);
+
+  isDarkMode: boolean = false;
+
   ngOnInit() {
-    // //debugger;
+    if (isPlatformBrowser(this.platformId)) {
+      this.initTheme();
+    }
 
     this.authServices.appUserData$.subscribe((user) => {
-      //debugger;
       if (user) {
-        // Ensure user is not null/undefined
-        this.user = { ...user }; // Create a new object to avoid unintended mutations
+        this.user = { ...user };
       }
     });
     this.authServices.appUserPhotos$.subscribe((photos) => {
-      //debugger;
       if (!photos) return;
       this.userPhotos = photos;
     });
-    // console.log(this.user);
+  }
+
+  initTheme() {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      this.isDarkMode = storedTheme === 'dark';
+    } else {
+      this.isDarkMode = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    }
+    this.applyTheme(this.isDarkMode ? 'dark' : 'light');
+  }
+
+  toggleTheme() {
+    this.isDarkMode = !this.isDarkMode;
+    const theme = this.isDarkMode ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    this.applyTheme(theme);
+  }
+
+  applyTheme(theme: string) {
+    if (isPlatformBrowser(this.platformId)) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-bs-theme', theme);
+    }
   }
 
   constructor() {

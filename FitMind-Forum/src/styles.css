@@ -67,12 +67,13 @@
     --dark: #1f1e22;
     --gen-font-family: 'Karla',sans-serif;
     --blue-color: #0195ff;
-    --green-color: #87bf17;
-    --green-color-hover: #9dc54c;
-    --link-color: #87bf17;
+    --green-color: #a2d829;
+    --green-color-hover: #b5e448;
+    --link-color: #a2d829;
     --logo-width: 170px;
     --logo-height: 55px;
 }
+:root[data-bs-theme="light"],
 :root[data-theme="light"] {
     --bg-color: #f0f2f5;
     --text-color: #5d5d66;
@@ -91,13 +92,14 @@
     --text-muted: #6c757d;
 
   }
+  :root[data-bs-theme="dark"],
   :root[data-theme="dark"] {
-    --bg-color: #111111;
+    --bg-color: #0d0e11;
     --text-color: #efefef;
     --theme: #ec595a;
-    --theme-white: #1d2023;
+    --theme-white: #16171d;
     --theme-black: #fff;
-    --border-color: #404040;
+    --border-color: #2a2c35;
 
     --bg-icons: #1a1a1e;
     --bg-icons-hover: #c4c6c7;
@@ -105,9 +107,26 @@
     --color-icons: #fff;
 
     --link-hover: var(--text-color);
-    --form-control: #121519d9;
-    --text-muted: #dddfe0;
+    --form-control: #1a1b22;
+    --text-muted: #9ca3af;
   }
+
+/* Global Smooth Theme Shift Transition Hook */
+body,
+.vine-navbar,
+.card,
+.post-box,
+.comment-bubble,
+.input-pill,
+.dropdown-menu,
+.modal-content,
+.offcanvas,
+.qa-sidebar-stats {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
 
 
 /****************************/
@@ -1016,7 +1035,7 @@ input, select{
 .vine-hero-2 {
   position: relative;
   overflow: hidden;
-  margin-top: 100px;
+  margin-top: 0;
   padding: 40px 0px;
 }
 .vine-hero-3 {
@@ -3890,7 +3909,7 @@ display: block;
   background-repeat: no-repeat;
   background-size: cover;
   height: 250px;
-  margin-top: 100px;
+  margin-top: 0 !important;
 }
 .user-profile-img {
   padding: 0px 0;

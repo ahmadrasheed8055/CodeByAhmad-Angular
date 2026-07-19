@@ -13,7 +13,7 @@ import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-forget-password',
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './forget-password.component.html',
   styleUrl: './forget-password.component.css',
 })
