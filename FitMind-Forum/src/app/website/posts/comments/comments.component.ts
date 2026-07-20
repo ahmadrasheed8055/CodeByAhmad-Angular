@@ -13,19 +13,15 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   FormsModule,
   ReactiveFormsModule,
-  FormGroup,
-  FormControl,
-  Validators,
 } from '@angular/forms';
 import { MasterService } from '../../../Shared/master.service';
+import { CommentService } from '../../../Shared/comment.service';
 import { AuthService } from '../../../Shared/auth.service';
 import { SnackBarServiceService } from '../../../Shared/snack-bar-service.service';
 import {
-  CommentReactionDTO,
-  GetPostComment,
-  PostComments,
-} from '../../../Model/commentDTO';
-import { AppUserPhotos } from '../../../Model/AppUsers';
+  PostComment,
+  AddCommentRequest
+} from '../../../Model/comment.interface';
 
 @Component({
   selector: 'app-comments',
@@ -40,10 +36,11 @@ export class CommentsComponent implements OnInit, OnChanges {
   @Output() commentCountChanged = new EventEmitter<number>();
 
   masterService: MasterService = inject(MasterService);
+  commentService: CommentService = inject(CommentService);
   authService: AuthService = inject(AuthService);
 
-  allComments: GetPostComment[] = [];
-  visibleComments: GetPostComment[] = [];
+  allComments: PostComment[] = [];
+  visibleComments: PostComment[] = [];
   isLoading = false;
   newCommentText = '';
   userId: number = 0;
@@ -52,13 +49,15 @@ export class CommentsComponent implements OnInit, OnChanges {
   currentCount: number = 0;
   pageSize: number = 3;
   openReplies: { [key: number]: boolean } = {};
+  
+  // State for replying
+  replyingToCommentId: number | null = null;
+  replyText: { [key: number]: string } = {};
 
   snakBarService: SnackBarServiceService = inject(SnackBarServiceService);
   private platformId = inject(PLATFORM_ID);
 
-  constructor() {
-    // this.fetchCurrentUser();
-  }
+  constructor() {}
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -95,20 +94,19 @@ export class CommentsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // when parent sets/changes postId, (re)load comments
     if (changes['postId'] && changes['postId'].currentValue) {
       this.loadComments();
     }
   }
 
   timeAgo(date: Date | string): string {
+    if (!date) return '';
     const inputDate = new Date(date);
     const now = new Date();
     const seconds = Math.floor((+now - +inputDate) / 1000);
     if (seconds < 10) return 'Just now';
     let interval = Math.floor(seconds / 31536000);
     if (interval >= 1) {
-      // Show full date with year
       return inputDate.toLocaleDateString('en-US', {
         day: '2-digit',
         month: 'short',
@@ -117,7 +115,6 @@ export class CommentsComponent implements OnInit, OnChanges {
     }
     interval = Math.floor(seconds / 2592000);
     if (interval >= 1 || Math.floor(seconds / 86400) > 6) {
-      // Show short date without year (for < 1 year but older than 6 days)
       return inputDate.toLocaleDateString('en-US', {
         day: '2-digit',
         month: 'short',
@@ -133,7 +130,7 @@ export class CommentsComponent implements OnInit, OnChanges {
     return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
   }
 
-  getCommentAvatar(image: string | null): string {
+  getCommentAvatar(image: string | null | undefined): string {
     if (!image) return '/img/avatar/default.png';
     if (image.startsWith('data:')) return image;
     return 'data:image/jpeg;base64,' + image;
@@ -141,10 +138,10 @@ export class CommentsComponent implements OnInit, OnChanges {
 
   private loadComments(): void {
     this.isLoading = true;
-    this.masterService.getAllComments(this.postId, this.userId).subscribe({
+    this.commentService.getRootComments(this.postId, this.userId).subscribe({
       next: (data) => {
         this.allComments = data;
-        this.currentCount = 3; // Initial number of comments to show
+        this.currentCount = 3;
         this.updateVisible();
         this.isLoading = false;
         this.commentCountChanged.emit(this.allComments.length);
@@ -170,18 +167,27 @@ export class CommentsComponent implements OnInit, OnChanges {
     return this.allComments.length > 3;
   }
 
-  toggleReplies(commentId: number): void {
-    this.openReplies[commentId] = !this.openReplies[commentId];
+  toggleReplies(comment: PostComment): void {
+    this.openReplies[comment.commentId] = !this.openReplies[comment.commentId];
+    
+    // Fetch replies if opening and they are not loaded
+    if (this.openReplies[comment.commentId] && !comment.replies) {
+      this.commentService.getReplies(comment.commentId, this.userId).subscribe({
+        next: (replies) => {
+          comment.replies = replies;
+        },
+        error: (err) => console.error('Failed to load replies:', err)
+      });
+    }
   }
 
   isRepliesOpen(commentId: number): boolean {
     return !!this.openReplies[commentId];
   }
 
-  //fetching image of user
   fetchCurrentUser(): void {
     this.masterService.getProfilePicture(this.userId).subscribe({
-      next: (image) => {
+      next: (image: any) => {
         this.userImage = image ? `data:image/jpeg;base64,${image}` : '';
       },
       error: (err) => console.error('Error fetching profile photo:', err),
@@ -191,7 +197,7 @@ export class CommentsComponent implements OnInit, OnChanges {
   fetchComments(): void {
     this.loadComments();
   }
-  //posting comment
+
   submitComment(): void {
     if (!this.userId) {
       this.snakBarService.showError('Please log in to add a comment.');
@@ -201,31 +207,31 @@ export class CommentsComponent implements OnInit, OnChanges {
     const text = this.newCommentText.trim();
     if (!text) return;
 
-    const payload: PostComments = {
-      PostId: this.postId,
-      UserId: this.userId,
-      CommentContent: text,
+    const payload: AddCommentRequest = {
+      postId: this.postId,
+      userId: this.userId,
+      commentContent: text,
     };
 
-    this.masterService.addComment(payload).subscribe({
+    this.commentService.addComment(payload).subscribe({
       next: (res) => {
-        // Backend sirf ID deta hai, baaki data hum khud jodte hain (jo already pata hai)
-        const newComment: GetPostComment = {
+        const newComment: PostComment = {
           commentId: res.commentId,
           postId: this.postId,
           userId: this.userId,
-          userName: this.userName, // from session storage
-          userImage: this.userImage, // from database
+          userName: this.userName,
+          userImage: this.userImage,
           commentContent: text,
-          createdAt: 'Just now',
+          createdAt: new Date().toISOString(),
+          isDeleted: false,
           likeCount: 0,
           dislikeCount: 0,
-          currentUserReaction: null,
+          repliesCount: 0,
+          isReactedByMe: null,
           replies: [],
         };
 
         this.allComments.unshift(newComment);
-        // keep visibleComments in sync
         this.visibleComments.unshift(newComment);
         this.newCommentText = '';
         this.snakBarService.showSuccess('Comment added successfully.');
@@ -239,20 +245,104 @@ export class CommentsComponent implements OnInit, OnChanges {
       },
     });
   }
+  
+  startReply(commentId: number): void {
+    if (!this.userId) {
+      this.snakBarService.showError('Please log in to reply.');
+      return;
+    }
+    this.replyingToCommentId = commentId;
+    this.openReplies[commentId] = true;
+    
+    // Load replies so the user can see their reply appear
+    const comment = this.allComments.find(c => c.commentId === commentId);
+    if (comment && !comment.replies) {
+       this.commentService.getReplies(comment.commentId, this.userId).subscribe({
+        next: (replies) => {
+          comment.replies = replies;
+        }
+       });
+    }
+  }
 
-  // react(comment: GetPostComment, isLike: boolean): void {}
+  cancelReply(): void {
+    this.replyingToCommentId = null;
+  }
+  
+  submitReply(parentComment: PostComment): void {
+    if (!this.userId) {
+      this.snakBarService.showError('Please log in to reply.');
+      return;
+    }
 
-  // ---- Delete own comment ----
-  deleteComment(comment: GetPostComment): void {
-    if (comment.userId !== this.userId) return; // safety — sirf apna hi delete
+    const text = (this.replyText[parentComment.commentId] || '').trim();
+    if (!text) return;
 
-    this.masterService.deleteComment(this.userId, comment.commentId).subscribe({
-      next: () => {
-        this.allComments = this.allComments.filter(
-          (c) => c.commentId !== comment.commentId,
+    const payload: AddCommentRequest = {
+      postId: this.postId,
+      userId: this.userId,
+      commentContent: text,
+      parentCommentId: parentComment.commentId
+    };
+
+    this.commentService.addComment(payload).subscribe({
+      next: (res) => {
+        const newReply: PostComment = {
+          commentId: res.commentId,
+          postId: this.postId,
+          userId: this.userId,
+          userName: this.userName,
+          userImage: this.userImage,
+          commentContent: text,
+          createdAt: new Date().toISOString(),
+          isDeleted: false,
+          parentCommentId: parentComment.commentId,
+          likeCount: 0,
+          dislikeCount: 0,
+          repliesCount: 0,
+          isReactedByMe: null,
+          replies: [],
+        };
+
+        if (!parentComment.replies) {
+            parentComment.replies = [];
+        }
+        parentComment.replies.push(newReply);
+        parentComment.repliesCount++;
+        
+        this.replyText[parentComment.commentId] = '';
+        this.replyingToCommentId = null;
+        this.snakBarService.showSuccess('Reply added successfully.');
+      },
+      error: (err) => {
+        console.error('Reply add fail hua:', err);
+        this.snakBarService.showError(
+          err?.error?.message || 'Failed to add reply.',
         );
-        this.updateVisible();
-        this.commentCountChanged.emit(this.allComments.length);
+      },
+    });
+  }
+
+  deleteComment(comment: PostComment, parentComment?: PostComment): void {
+    if (comment.userId !== this.userId) return;
+
+    this.commentService.deleteComment(this.userId, comment.commentId).subscribe({
+      next: () => {
+        if (parentComment && parentComment.replies) {
+            // It's a reply
+            parentComment.replies = parentComment.replies.filter(
+                (c) => c.commentId !== comment.commentId
+            );
+            parentComment.repliesCount--;
+        } else {
+            // It's a root comment
+            this.allComments = this.allComments.filter(
+              (c) => c.commentId !== comment.commentId,
+            );
+            this.updateVisible();
+            this.commentCountChanged.emit(this.allComments.length);
+        }
+        this.snakBarService.showSuccess('Comment deleted successfully.');
       },
       error: (err) => {
         console.error('Delete fail hua:', err);
@@ -261,51 +351,40 @@ export class CommentsComponent implements OnInit, OnChanges {
     });
   }
 
-  // ---- Like / Dislike toggle ----
-  react(comment: GetPostComment, isLike: boolean): void {
-    const alreadySameReaction = comment.currentUserReaction === isLike;
+  react(comment: PostComment, isLike: boolean): void {
+    const wasLiked = comment.isReactedByMe === true;
+    const wasDisliked = comment.isReactedByMe === false;
 
-    if (alreadySameReaction) {
-      // same button dobara click = reaction remove (toggle off)
-      this.masterService
-        .removeReaction(this.userId, comment.commentId)
-        .subscribe({
-          next: () => {
-            if (isLike) comment.likeCount = (comment.likeCount || 1) - 1;
-            else comment.dislikeCount = (comment.dislikeCount || 1) - 1;
-            comment.currentUserReaction = null;
-          },
-          error: (err) => {
-            console.error('Reaction remove fail hui:', err);
-            this.snakBarService.showError('Failed to remove reaction.');
-          },
-        });
-      return;
+    if (isLike) {
+      this.commentService.likeComment(comment.commentId, this.userId).subscribe({
+        next: (res) => {
+            if (wasLiked) {
+                // Toggled off
+                comment.likeCount--;
+                comment.isReactedByMe = null;
+            } else {
+                if (wasDisliked) comment.dislikeCount--;
+                comment.likeCount++;
+                comment.isReactedByMe = true;
+            }
+        },
+        error: () => this.snakBarService.showError('Failed to like comment.')
+      });
+    } else {
+      this.commentService.dislikeComment(comment.commentId, this.userId).subscribe({
+        next: (res) => {
+             if (wasDisliked) {
+                // Toggled off
+                comment.dislikeCount--;
+                comment.isReactedByMe = null;
+             } else {
+                if (wasLiked) comment.likeCount--;
+                comment.dislikeCount++;
+                comment.isReactedByMe = false;
+             }
+        },
+        error: () => this.snakBarService.showError('Failed to dislike comment.')
+      });
     }
-
-    const payload: CommentReactionDTO = {
-      CommentId: comment.commentId,
-      UserId: this.userId,
-      IsLike: isLike,
-    };
-
-    this.masterService.reactToComment(payload).subscribe({
-      next: () => {
-        // optimistic local update — agar previous reaction thi to uska count bhi adjust karein
-        if (comment.currentUserReaction === true)
-          comment.likeCount = (comment.likeCount || 1) - 1;
-        if (comment.currentUserReaction === false)
-          comment.dislikeCount = (comment.dislikeCount || 1) - 1;
-
-        if (isLike) comment.likeCount = (comment.likeCount || 0) + 1;
-        else comment.dislikeCount = (comment.dislikeCount || 0) + 1;
-
-        comment.currentUserReaction = isLike;
-      },
-      error: (err) => {
-        console.error('Reaction fail hui:', err);
-        this.snakBarService.showError('Failed to update reaction.');
-      },
-    });
   }
 }

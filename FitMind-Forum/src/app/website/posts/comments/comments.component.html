@@ -40,18 +40,21 @@
         <!-- Links & metadata -->
         <div class="post-links d-flex mt-1 align-items-center gap-3">
           <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
-             [class.text-success]="comment.currentUserReaction === true"
+             [class.text-success]="comment.isReactedByMe === true"
              (click)="react(comment, true)">
              <i class="bi bi-hand-thumbs-up me-1"></i> <span class="fw-medium">{{ comment.likeCount || 0 }}</span>
           </a>
           <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
-             [class.text-danger]="comment.currentUserReaction === false"
+             [class.text-danger]="comment.isReactedByMe === false"
              (click)="react(comment, false)">
              <i class="bi bi-hand-thumbs-down me-1"></i> <span class="fw-medium">{{ comment.dislikeCount || 0 }}</span>
           </a>
-          <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center" (click)="toggleReplies(comment.commentId)">
+          <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center" (click)="toggleReplies(comment)">
             <i class="bi bi-chat-left-text me-1"></i>
-            <span class="fw-medium">{{ comment.replies?.length ? (isRepliesOpen(comment.commentId) ? 'Hide Replies' : 'Replies (' + comment.replies!.length + ')') : 'Reply' }}</span>
+            <span class="fw-medium">{{ comment.repliesCount ? (isRepliesOpen(comment.commentId) ? 'Hide Replies' : 'Replies (' + comment.repliesCount + ')') : 'Reply' }}</span>
+          </a>
+          <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center" (click)="startReply(comment.commentId)" *ngIf="!isRepliesOpen(comment.commentId) || replyingToCommentId !== comment.commentId">
+            <i class="bi bi-reply me-1"></i> Reply
           </a>
           <span class="p-0 text-muted small d-flex align-items-center">
              <i class="bi bi-clock-history me-1"></i> {{ timeAgo(comment.createdAt) }}
@@ -59,7 +62,8 @@
         </div>
 
         <!-- Accordion Replies list -->
-        <div *ngIf="comment.replies?.length && isRepliesOpen(comment.commentId)" class="replies-list mt-3 ms-4 ps-3 border-start">
+        <div *ngIf="isRepliesOpen(comment.commentId)" class="replies-list mt-3 ms-4 ps-3 border-start">
+          
           <div class="d-flex align-items-start mb-3 reply-item" *ngFor="let reply of comment.replies">
             <!-- Reply user avatar -->
             <div class="avatar avatar-xs rounded-circle me-2 flex-shrink-0">
@@ -68,17 +72,85 @@
             <div class="flex-grow-1">
               <!-- Reply text bubble -->
               <div class="reply-bubble d-inline-block position-relative">
-                <div class="align-items-center mb-1">
+                <div class="d-flex justify-content-between align-items-start mb-1 pe-4">
                   <a class="commenter-name d-block text-sm text-decoration-none mb-0" href="javascript:void(0)">{{ reply.userName }}</a>
+                  
+                  <div class="dropdown comment-options-dropdown" *ngIf="reply.userId === userId">
+                    <a href="javascript:void(0)" class="text-muted text-decoration-none p-1" data-bs-toggle="dropdown" aria-expanded="false" title="Options">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="min-width: 120px;">
+                      <li>
+                        <a class="dropdown-item text-danger d-flex align-items-center py-2" href="javascript:void(0)" (click)="deleteComment(reply, comment)">
+                          <i class="bi bi-trash me-2"></i> Delete
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+
                 </div>
                 <p class="comment-text mb-0 text-sm">{{ reply.commentContent }}</p>
               </div>
               
-              <div class="post-links d-flex mt-1 align-items-center text-xs">
+              <div class="post-links d-flex mt-1 align-items-center gap-3 text-xs">
+                <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
+                   [class.text-success]="reply.isReactedByMe === true"
+                   (click)="react(reply, true)">
+                   <i class="bi bi-hand-thumbs-up me-1"></i> <span class="fw-medium">{{ reply.likeCount || 0 }}</span>
+                </a>
+                <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
+                   [class.text-danger]="reply.isReactedByMe === false"
+                   (click)="react(reply, false)">
+                   <i class="bi bi-hand-thumbs-down me-1"></i> <span class="fw-medium">{{ reply.dislikeCount || 0 }}</span>
+                </a>
                 <span class="text-muted d-flex align-items-center"><i class="bi bi-clock-history me-1"></i> {{ timeAgo(reply.createdAt) }}</span>
               </div>
             </div>
           </div>
+          
+          <!-- Reply Input Box -->
+          <div class="reply-input-wrapper mt-3 d-flex align-items-center" *ngIf="replyingToCommentId === comment.commentId">
+            <div class="avatar avatar-xs rounded-circle me-2 flex-shrink-0">
+              <img class="avatar-img rounded-circle" [src]="(userId && userImage) ? userImage : '/img/avatar/default.png'" alt="User Avatar">
+            </div>
+            <div class="input-pill flex-grow-1 d-flex align-items-center form-control-sm border rounded-pill px-3 py-1 bg-light">
+              <input type="text"
+                     class="capsule-input flex-grow-1 border-0 bg-transparent text-sm"
+                     style="outline: none;"
+                     [(ngModel)]="replyText[comment.commentId]"
+                     (keydown.enter)="submitReply(comment)"
+                     [placeholder]="userId ? 'Write a reply...' : 'Log in to reply...'"
+                     (focus)="handleInputFocus()"
+                     (click)="handleInputFocus()">
+              
+              <button class="send-icon-btn border-0 bg-transparent text-primary ms-2 p-0"
+                      (click)="submitReply(comment)"
+                      [disabled]="!replyText[comment.commentId]?.trim()"
+                      *ngIf="userId"
+                      title="Send Reply">
+                <i class="bi bi-send-fill"></i>
+              </button>
+              <button class="send-icon-btn border-0 bg-transparent text-muted ms-2 p-0 locked"
+                      (click)="handleInputFocus()"
+                      *ngIf="!userId"
+                      title="Log in to Reply">
+                <i class="bi bi-lock-fill"></i>
+              </button>
+              <button class="border-0 bg-transparent text-danger ms-2 p-0"
+                      (click)="cancelReply()"
+                      title="Cancel">
+                <i class="bi bi-x-circle-fill"></i>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Add Reply Button (if not already replying) -->
+          <button class="btn btn-sm btn-link text-decoration-none mt-2 p-0 text-muted" 
+                  *ngIf="replyingToCommentId !== comment.commentId" 
+                  (click)="startReply(comment.commentId)">
+            <i class="bi bi-reply"></i> Add a reply
+          </button>
+          
         </div>
       </div>
     </div>
