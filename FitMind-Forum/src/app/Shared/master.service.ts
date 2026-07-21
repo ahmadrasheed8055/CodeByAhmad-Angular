@@ -90,6 +90,24 @@ export class MasterService {
     return this.http.get(url, {});
   }
 
+  //==========FP Token Validation==============
+  RESET_TOKEN_VALIDATION_API = 'EmailSending/validate-reset-token';
+
+  validateResetToken(token: string) {
+    const url = this.API_URL + this.RESET_TOKEN_VALIDATION_API + '?token=' + token;
+    return this.http.get(url, {});
+  }
+
+  //==========Reset Password==============
+  RESET_PASSWORD_API = 'AppUsers/reset-password';
+
+  resetPassword(payload: { token: string; newPassword: string }) {
+    const url = this.API_URL + this.RESET_PASSWORD_API;
+    return this.http.post(url, payload, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   //==========User registration==============
   APP_USER_REGISTRATION_URL = 'AppUsers/add-app-user';
 
@@ -300,6 +318,32 @@ export class MasterService {
     return this.http.get<GetAllPostsDTO[]>(url);
   }
 
+  // ============ Save Post =================
+  savePost(userId: number, postId: number) {
+    return this.http.post(`${this.API_URL}Post/savePost/${userId}/${postId}`, {});
+  }
+
+  unsavePost(userId: number, postId: number) {
+    return this.http.delete(`${this.API_URL}Post/unsavePost/${userId}/${postId}`);
+  }
+
+  getSavedPosts(userId: number) {
+    return this.http.get<GetAllPostsDTO[]>(`${this.API_URL}Post/getSavedPosts/${userId}`);
+  }
+
+  // ============ Hide Post =================
+  hidePost(userId: number, postId: number) {
+    return this.http.post(`${this.API_URL}Post/hidePost/${userId}/${postId}`, {});
+  }
+
+  unhidePost(userId: number, postId: number) {
+    return this.http.delete(`${this.API_URL}Post/unhidePost/${userId}/${postId}`);
+  }
+
+  getHiddenPosts(userId: number) {
+    return this.http.get<GetAllPostsDTO[]>(`${this.API_URL}Post/getHiddenPosts/${userId}`);
+  }
+
   //=================Get post reactions count==================
   GET_POST_REACTIONS_COUNT = 'PostReactions/postReactionsCount/{postId}';
   getPostReactionsCount(postId: number): Observable<GetPostReactionsCount> {
@@ -347,7 +391,7 @@ export class MasterService {
   // service mein return type change
   addComment(payload: PostComments): Observable<{ commentId: number }> {
     return this.http.post<{ commentId: number }>(
-      `${this.API_URL}Post/add-comment`,
+      `${this.API_URL}comments/add-comment`,
       payload,
     );
   }

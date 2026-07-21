@@ -24,11 +24,6 @@
   transition: all 0.3s ease;
 }
 
-:root[data-theme="dark"] .input-pill {
-  background: #1e1e24;
-  border-color: #333;
-}
-
 .input-pill:focus-within {
   border-color: var(--green-color, #87bf17);
   box-shadow: 0 0 0 3px rgba(135, 191, 23, 0.15);
@@ -40,7 +35,7 @@
   outline: none !important;
   font-size: 0.95rem;
   padding: 6px 0;
-  color: var(--text-color);
+  color: var(--text-color, #1a1a1a);
   width: 100%;
   box-shadow: none !important;
   height: auto !important;
@@ -48,7 +43,7 @@
 }
 
 .capsule-input::placeholder {
-  color: #a0a0a0;
+  color: var(--text-muted, #a0a0a0);
   font-style: italic;
 }
 
@@ -72,26 +67,16 @@
 }
 
 .send-icon-btn:disabled {
-  background: #cccccc;
-  color: #888888;
+  background: var(--border-color, #cccccc);
+  color: var(--text-muted, #888888);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-:root[data-theme="dark"] .send-icon-btn:disabled {
-  background: #2d2d35;
-  color: #555;
-}
-
 .send-icon-btn.locked {
-  background: #e0e0e0;
-  color: #888888;
+  background: var(--border-color, #e0e0e0);
+  color: var(--text-muted, #888888);
   cursor: pointer;
-}
-
-:root[data-theme="dark"] .send-icon-btn.locked {
-  background: #2d2d35;
-  color: #aaa;
 }
 
 .send-icon-btn i {
@@ -103,12 +88,7 @@
 .comments-5 {
   padding: 24px;
   border-top: 1px solid var(--border-color, #f0f2f5);
-  background: rgba(248, 249, 250, 0.4);
-}
-
-:root[data-theme="dark"] .comments-5 {
-  background: rgba(26, 26, 30, 0.2);
-  border-top-color: #2d2d35;
+  background: transparent;
 }
 
 .comments-5 h5 {
@@ -124,6 +104,7 @@
 
 .comment-bubble {
   background: var(--form-control, #f0f2f5);
+  border: 1px solid var(--border-color, #e0e0e0);
   border-radius: 16px;
   padding: 12px 16px;
   display: inline-block;
@@ -134,10 +115,6 @@
   position: absolute;
   top: 8px;
   right: 8px;
-}
-
-:root[data-theme="dark"] .comment-bubble {
-  background: #1e1e24;
 }
 
 .commenter-name {
@@ -184,24 +161,17 @@
   border-left: 2px solid var(--border-color, #e2e8f0);
 }
 
-:root[data-theme="dark"] .replies-list {
-  border-left-color: #2d2d35;
-}
-
 .reply-item {
   padding-top: 8px;
 }
 
 .reply-bubble {
-  background: rgba(240, 242, 245, 0.6);
+  background: var(--form-control, #f0f2f5);
+  border: 1px solid var(--border-color, #e0e0e0);
   border-radius: 12px;
   padding: 10px 14px;
   display: inline-block;
   max-width: 100%;
-}
-
-:root[data-theme="dark"] .reply-bubble {
-  background: rgba(30, 30, 36, 0.6);
 }
 
 /* Modern Circular Comments Toggle Button */
@@ -221,12 +191,6 @@
   outline: none !important;
 }
 
-:root[data-theme="dark"] .comments-toggle-btn {
-  background: #1e1e24 !important;
-  border-color: #333 !important;
-  color: #a0a0a0 !important;
-}
-
 .comments-toggle-btn:hover {
   background: var(--green-color, #87bf17) !important;
   border-color: var(--green-color, #87bf17) !important;
@@ -237,4 +201,26 @@
 
 .comments-toggle-btn:active {
   transform: translateY(0);
+}
+
+/* Angular Component Host Context Overrides for Dark Mode */
+:host-context([data-bs-theme="dark"]) .reply-bubble,
+:host-context([data-theme="dark"]) .reply-bubble,
+:host-context(.dark) .reply-bubble {
+  background: var(--form-control, #1a1b22) !important;
+  border-color: var(--border-color, #2a2c35) !important;
+}
+
+:host-context([data-bs-theme="dark"]) .comment-bubble,
+:host-context([data-theme="dark"]) .comment-bubble,
+:host-context(.dark) .comment-bubble {
+  background: var(--form-control, #1a1b22) !important;
+  border-color: var(--border-color, #2a2c35) !important;
+}
+
+:host-context([data-bs-theme="dark"]) .input-pill,
+:host-context([data-theme="dark"]) .input-pill,
+:host-context(.dark) .input-pill {
+  background: var(--form-control, #1a1b22) !important;
+  border-color: var(--border-color, #2a2c35) !important;
 }

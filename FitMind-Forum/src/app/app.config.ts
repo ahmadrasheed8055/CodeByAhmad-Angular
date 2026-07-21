@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideToastr } from 'ngx-toastr';
 import { routes } from './app.routes';
 import {
@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideClientHydration(withEventReplay()),
     provideHttpClient(withInterceptors([loaderInterceptor, TokenInterceptor]) ,
       withFetch()),

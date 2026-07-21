@@ -13,6 +13,11 @@
 
   <router-outlet></router-outlet> 
 
-
-
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top-btn" 
+          [class.show]="showScrollTop" 
+          (click)="scrollToTop()" 
+          title="Go to top">
+    <i class="bi bi-arrow-up-short"></i>
+  </button>
 </div>

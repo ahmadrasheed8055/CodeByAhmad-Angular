@@ -5768,3 +5768,20 @@ select.form-select option,
   background-color: #1e1e24 !important;
   color: #efefef !important;
 }
+
+/*------------------------------------------------------------------
+* Snackbar Styling
+*-------------------------------------------------------------------*/
+.success-snackbar {
+  background-color: var(--green-color) !important;
+  color: var(--white) !important;
+  border-radius: 50rem !important;
+  padding: 10px 20px !important;
+}
+
+.error-snackbar {
+  background-color: var(--theme) !important;
+  color: var(--white) !important;
+  border-radius: 50rem !important;
+  padding: 10px 20px !important;
+}

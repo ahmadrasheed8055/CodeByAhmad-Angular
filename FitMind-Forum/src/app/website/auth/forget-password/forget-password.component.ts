@@ -63,8 +63,16 @@ export class ForgetPasswordComponent {
             'Password reset email sent successfully. Please check your inbox.'
           );
           this.forgotPasswordForm.reset();
+          this.loading = false;
+          this.emailSentingFormButton = 'Send Reset Link';
+          const closeBtn = document.querySelector('#forgotPasswordModal .btn-close') as HTMLElement;
+          if (closeBtn) {
+            closeBtn.click();
+          }
         },
         error: (error) => {
+          this.loading = false;
+          this.emailSentingFormButton = 'Send Reset Link';
           // Error handling based on status code or message
           if (error.status === 400) {
             this.messages.showError('Email format is not correct.');

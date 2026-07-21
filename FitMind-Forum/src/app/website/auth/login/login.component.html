@@ -7,6 +7,7 @@
         
         <div class="text-center mt-3 mb-4">
           <h3 class="modal-title font-weight-bold mb-2">Login to FitJoin</h3>
+
           <div class="text-muted small">
             Don't have an account? 
             <a href="" data-bs-toggle="modal" [attr.data-bs-target]="emailVarificationModal" class="fw-bold text-green">Register</a>
@@ -29,7 +30,12 @@
 
           <div class="mb-3">
             <label class="form-label mx-1">Password</label>
-            <input formControlName="password" type="password" name="Password" class="form-control" placeholder="••••••••">
+            <div class="position-relative">
+              <input formControlName="password" [type]="hidePassword ? 'password' : 'text'" name="Password" class="form-control pe-5" placeholder="••••••••">
+              <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent" (click)="hidePassword = !hidePassword" style="box-shadow: none;">
+                <i class="bi text-muted" [ngClass]="hidePassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
             <span class="text-danger small mx-1 mt-1 d-block"
               *ngIf="formData.controls['password'].errors?.['required'] && formData.controls['password'].touched">
               Password is required.

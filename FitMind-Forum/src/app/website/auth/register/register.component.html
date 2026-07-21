@@ -40,7 +40,12 @@
               <!-- Password Field -->
               <div class="mb-4">
                 <label class="form-label mx-1">Password</label>
-                <input formControlName="password" type="password" class="form-control" placeholder="••••••••">
+                <div class="position-relative">
+                  <input formControlName="password" [type]="hidePassword ? 'password' : 'text'" class="form-control pe-5" placeholder="••••••••">
+                  <button type="button" class="btn position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent" (click)="hidePassword = !hidePassword" style="box-shadow: none;">
+                    <i class="bi text-muted" [ngClass]="hidePassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                  </button>
+                </div>
                 <!-- Error Messages -->
                 <span class="text-danger small mx-1 mt-1 d-block"
                   *ngIf="appForm.controls['password'].errors?.['required'] && appForm.controls['password'].touched">

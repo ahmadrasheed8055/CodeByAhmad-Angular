@@ -1,5 +1,9 @@
 <div class="profile-banner position-relative"
-    [style.backgroundImage]="'url(' + (userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null' ? 'img/bg/1.jpg' : userPhotos.backgroundPhoto) + ')'">
+    [ngClass]="{'default-banner-gradient': !userPhotos?.backgroundPhoto || userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null'}"
+    [style.backgroundImage]="(userPhotos?.backgroundPhoto && userPhotos.backgroundPhoto !== 'data:image/jpeg;base64,null') ? 'url(' + userPhotos.backgroundPhoto + ')' : null"
+    (click)="userPhotos?.backgroundPhoto ? openFullImageModal(userPhotos.backgroundPhoto) : null" 
+    [style.cursor]="userPhotos?.backgroundPhoto ? 'pointer' : 'default'"
+    data-bs-toggle="modal" [attr.data-bs-target]="userPhotos?.backgroundPhoto ? '#showFullImageModal' : null">
     <input #bgCoverInput type="file" (change)="onUploadBackgroundPhoto($event)" hidden>
     <button *ngIf="user && userId === user.id" (click)="bgCoverInput.click()" class="btn btn-edit-banner position-absolute bottom-0 end-0 m-3" title="Edit cover background">
         <i class="bi bi-camera-fill me-2"></i> Edit Cover
@@ -13,9 +17,14 @@
 
             <div class="col-lg-3 aos-init aos-animate" data-aos="fade-right" data-aos-easing="linear">
 
-                <div class="user-profile-img position-relative">
-                    <img [src]="(userPhotos.profilePhoto ? userPhotos.profilePhoto : 'img/avatar/default.png' ) "
-                        alt="img">
+                <div class="user-profile-img position-relative" 
+                     (click)="userPhotos?.profilePhoto ? openFullImageModal(userPhotos.profilePhoto) : null"
+                     [style.cursor]="userPhotos?.profilePhoto ? 'pointer' : 'default'"
+                     data-bs-toggle="modal" [attr.data-bs-target]="userPhotos?.profilePhoto ? '#showFullImageModal' : null">
+                    <img *ngIf="userPhotos?.profilePhoto && userPhotos.profilePhoto !== 'data:image/jpeg;base64,null'" [src]="userPhotos.profilePhoto" alt="Avatar">
+                    <div *ngIf="!userPhotos?.profilePhoto || userPhotos.profilePhoto === 'data:image/jpeg;base64,null'" class="default-avatar d-flex align-items-center justify-content-center">
+                        <span class="text-white fs-1 fw-bold">{{ (user?.username || 'U').charAt(0) | uppercase }}</span>
+                    </div>
                     <input #profilePhotoInput type="file" (change)="onUploadProfilePhoto($event)" hidden>
                     <button *ngIf="user && userId === user.id" (click)="profilePhotoInput.click()" class="profile-avatar-overlay d-flex align-items-center justify-content-center" title="Change profile photo">
                         <i class="bi bi-camera-fill"></i>
@@ -32,7 +41,8 @@
                         <ul>
                             <li><span class="item-number">2.1k</span> <span class="item-text">Followers</span></li>
                             <li><span class="item-number">400</span> <span class="item-text">Following</span></li>
-                            <!-- <li> <a href="javascript:void(0)" class="btn btn-sm btn-mint rounded-pill"> Follow</a> </li> -->
+                            <li *ngIf="userId !== profileUserId"> <a href="javascript:void(0)" class="btn btn-sm btn-mint rounded-pill me-2"><i class="bi bi-person-plus-fill me-1"></i> Follow</a> </li>
+                            <li *ngIf="userId !== profileUserId"> <a href="javascript:void(0)" class="btn btn-sm btn-outline-secondary rounded-pill"><i class="bi bi-chat-left-text-fill me-1"></i> Message</a> </li>
                         </ul>
                     </div>
                     <div class="user-profile-followers">
@@ -82,27 +92,18 @@
                             <ul class="nav nav-tabs nav-bottom-line nav-responsive border-0 nav-justified"
                                 role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <a class="nav-link mb-0 active" data-bs-toggle="tab" href="#tab-1"
-                                        aria-selected="true" role="tab">
+                                    <a class="nav-link mb-0" [class.active]="activeTab === 'posts'" (click)="setActiveTab('posts')" style="cursor: pointer;">
                                         <i class="bi bi-gear fa-fw me-2"></i>Posts
                                     </a>
                                 </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-2" aria-selected="false"
-                                        role="tab" tabindex="-1">
-                                        <i class="bi bi-chat-dots fa-fw me-2"></i>Comments
+                                <li class="nav-item" role="presentation" *ngIf="userId === profileUserId">
+                                    <a class="nav-link mb-0" [class.active]="activeTab === 'saved'" (click)="setActiveTab('saved')" style="cursor: pointer;">
+                                        <i class="bi bi-bookmark fa-fw me-2"></i>Saved
                                     </a>
                                 </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-3" aria-selected="false"
-                                        role="tab" tabindex="-1">
-                                        <i class="bi bi-people me-2"></i> Following
-                                    </a>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link mb-0" data-bs-toggle="tab" href="#tab-4" aria-selected="false"
-                                        role="tab" tabindex="-1">
-                                        <i class="bi bi-people me-2"></i> Followers
+                                <li class="nav-item" role="presentation" *ngIf="userId === profileUserId">
+                                    <a class="nav-link mb-0" [class.active]="activeTab === 'hidden'" (click)="setActiveTab('hidden')" style="cursor: pointer;">
+                                        <i class="bi bi-eye-slash fa-fw me-2"></i>Hidden
                                     </a>
                                 </li>
                             </ul>
@@ -136,44 +137,44 @@
                                                 <div class="media align-items-center">
                                                     <div class="media-head me-2">
                                                         <div class="avatar">
-                                                            <a href="#"><img
+                                                            <a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"><img
                                                                     [src]="userPhotos.profilePhoto || '/img/avatar/default.png'"
                                                                     alt="user" class="avatar-img rounded-circle"></a>
                                                         </div>
                                                     </div>
                                                     <div class="media-body">
-                                                        <div><a href="#"> {{ user.username }} </a></div>
+                                                        <div><a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"> {{ postsData.userName || user.username }} </a></div>
                                                         <div class="fs-7">
                                                             <span> {{ timeAgo(postsData.publishAt) }} </span>
                                                             <span *ngIf="postsData.updatedAt" > (Edited) </span>
                                                             
-                                                            <!-- <a href="#" class="cat">
+                                                            <!-- <a href="javascript:void(0)" class="cat">
                                                                 {{postsData.categoryName}} </a> -->
-                                                            <a href="#" class="tag-link"> {{postsData.categoryName}}</a>
+                                                            <a href="javascript:void(0)" class="tag-link"> {{postsData.categoryName}}</a>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="card-action-wrap">
                                                     <!-- <p class="me-2 text-danger d-flex"><i class="bi bi-pin"></i> <span
                                                             class="d-none d-sm-block">Pinned</span></p> -->
-                                                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
+                                                    <a class="dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i
                                                             class="bi bi-three-dots-vertical"></i></a>
                                                     <div class="dropdown-menu dropdown-menu-end">
-                                                        <a class="dropdown-item" (click)="enableUpdatePost(postsData)"
+                                                        <a *ngIf="postsData.userId === userId" class="dropdown-item" (click)="enableUpdatePost(postsData)"
                                                             style="cursor: pointer;"><i class="bi bi-pencil me-2"></i>
                                                             Edit Post</a>
 
-                                                        <a href="#" class="dropdown-item"><i
-                                                                class="bi bi-eye-slash me-2"></i>
-                                                            Hide Post</a>
+                                                        <a *ngIf="userId > 0 && postsData.userId === userId" href="javascript:void(0)" (click)="hidePost(postsData)" class="dropdown-item"><i
+                                                                class="bi me-2" [ngClass]="activeTab === 'hidden' ? 'bi-eye' : 'bi-eye-slash'"></i>
+                                                            {{ activeTab === 'hidden' ? 'Unhide Post' : 'Hide Post' }}</a>
 
-                                                        <a class="dropdown-item" data-bs-toggle="modal"
+                                                        <a *ngIf="postsData.userId === userId" class="dropdown-item" data-bs-toggle="modal"
                                                             data-bs-target="#draftDeleteModal"
                                                             (click)="selectedPostId = postsData.postId" href=""><i
                                                                 class="bi bi-trash3 me-2"></i> Delete Post</a>
 
-                                                        <div class="dropdown-divider"></div>
-                                                        <a class="dropdown-item" href="#"><i class="bi bi-pin me-2"></i>
+                                                        <div *ngIf="postsData.userId === userId" class="dropdown-divider"></div>
+                                                        <a *ngIf="postsData.userId === userId" class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pin me-2"></i>
                                                             Pin Post</a>
                                                     </div>
                                                 </div>
@@ -332,7 +333,7 @@
 
                                                     <!--  Post photo  
                                                       !!!! turn this into modal to show full image -->
-                                                    <div (click)="openFullImageModal(postsData.postImageUrl)" style="cursor:pointer;" *ngIf="postsData.postImageUrl !== null" class="my-3"
+                                                    <div (click)="openFullImageModal(postsData.postImageUrl)" style="cursor:pointer;" *ngIf="postsData.postImageUrl" class="my-3"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#showFullImageModal"
                                                     >
@@ -382,27 +383,27 @@
 
                                                     <!-- Bookmark Pill -->
                                                     <div class="post-action-pill">
-                                                        <a href="#" class="d-flex align-items-center text-decoration-none w-100">
-                                                            <i class="bi bi-bookmark fs-5 text-muted me-2"></i>
-                                                            <span class="fw-semibold fs-7">0</span>
+                                                        <a href="javascript:void(0)" (click)="toggleSavePost(postsData)" class="d-flex align-items-center text-decoration-none w-100">
+                                                            <i class="bi fs-5 me-2" [ngClass]="{'bi-bookmark-fill text-primary': postsData.isSavedByMe, 'bi-bookmark text-muted': !postsData.isSavedByMe}"></i>
+                                                            <span class="fw-semibold fs-7">{{ postsData.isSavedByMe ? 'Saved' : 'Save' }}</span>
                                                         </a>
                                                     </div>
 
                                                     <!-- Share Pill -->
                                                     <div class="post-action-pill">
-                                                        <a href="#" class="d-flex align-items-center text-decoration-none w-100">
+                                                        <a href="javascript:void(0)" (click)="openShareModal(postsData.postId)" data-bs-toggle="modal" data-bs-target="#sharePostModalProfile" class="d-flex align-items-center text-decoration-none w-100">
                                                             <i class="bi bi-share fs-5 text-muted me-2"></i>
-                                                            <span class="fw-semibold fs-7">0</span>
+                                                            <span class="fw-semibold fs-7">Share</span>
                                                         </a>
                                                     </div>
 
                                                     <!-- Report Pill -->
-                                                    <div class="post-action-pill">
+                                                    <!-- <div class="post-action-pill">
                                                         <a href="#" class="d-flex align-items-center text-decoration-none w-100">
                                                             <i class="bi bi-flag fs-5 text-muted me-2"></i>
                                                             <span class="fw-semibold fs-7">Report</span>
                                                         </a>
-                                                    </div>
+                                                    </div> -->
                                                 </div>
 
                                             </div>
@@ -415,6 +416,12 @@
 
                                         </div>
                                     </div><!--/post-box-->
+                                    } @empty {
+                                        <div *ngIf="!postsLoader" class="text-center py-5">
+                                            <h5 class="text-muted fw-normal" *ngIf="activeTab === 'posts'">No posts found</h5>
+                                            <h5 class="text-muted fw-normal" *ngIf="activeTab === 'saved'">No saved posts found</h5>
+                                            <h5 class="text-muted fw-normal" *ngIf="activeTab === 'hidden'">No hidden posts found</h5>
+                                        </div>
                                     }
 
 
@@ -492,6 +499,27 @@
     </div>
 </div>
 
+<!-- Share Modal (Profile View) -->
+<div class="modal fade" id="sharePostModalProfile" tabindex="-1" aria-labelledby="sharePostModalProfileLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title" id="sharePostModalProfileLabel">Share Post</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3">Copy the link below to share this post:</p>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" [value]="shareLink" readonly #shareInputProfile>
+          <button class="btn btn-primary" type="button" (click)="copyShareLink(shareInputProfile)">
+            <i class="bi bi-clipboard"></i> Copy
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
     
 </style>
@@ -500,7 +528,7 @@
     <div class="modal-dialog modal-dialog-centered modal-xl p-2">
         <div class="modal-content post-image-modal-content">
             <div class="modal-body p-2 d-flex justify-content-center align-items-center">
-                <img [src]="'data:image/jpeg;base64,' + selectedPostImage" alt="Post image" class="post-modal-img">
+                <img [src]="selectedPostImage" alt="Post image" class="post-modal-img">
             </div>
         </div>
     </div>

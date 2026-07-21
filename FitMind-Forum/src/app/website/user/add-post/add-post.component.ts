@@ -144,17 +144,14 @@ export class AddPostComponent {
 
   //add post
   onSubmit(type: 'publish' | 'draft') {
-    // debugger;
     this.buttonLoading = type;
 
     if (this.postForm.valid) {
-      debugger;
       const formData = new FormData();
       const userId = sessionStorage.getItem('appUserId');
 
       formData.append('Title', this.postForm.value.title);
       formData.append('Description', this.postForm.value.description);
-      formData.append('UpdatedAt', new Date().toISOString());
       if (type === 'draft') {
         formData.append('IsPublished', 'false');
       } else if (type === 'publish') {
@@ -170,26 +167,22 @@ export class AddPostComponent {
 
       this.masterService.addPost(formData).subscribe(
         (next) => {
-          // this.snackBar.showSuccess('Post added successfully');
           if (type === 'draft') {
             this.snackBar.showSuccess('Post saved as draft');
             this.IsdraftedPostAvailable = true;
             this.getDraftedPost();
+            this.clearForm();
           } else if (type === 'publish') {
-            this.redirectingToProfile();
             this.snackBar.showSuccess('Post published successfully');
-            // this.redirectingToProfile(this.draftedPost.postId);
+            this.redirectingToProfile();
           }
           this.buttonLoading = null;
-          this.updateDraftButton = true;
-          // this.previewUrl = null;
-          // this.postForm.reset();
         },
         (error) => {
           if (error.status === 400) {
             this.snackBar.showError(error.error);
           } else if (error.status === 404) {
-            this.snackBar.showError('Categorie not found'); //
+            this.snackBar.showError('Category not found');
           } else if (error.status === 422) {
             this.snackBar.showError('Inappropriate content.');
           } else if (error.status === 500) {
@@ -290,8 +283,7 @@ export class AddPostComponent {
     this.updateDraftButton = false;
     this.selectedPostId = 0;
     this.buttonLoading = null;
-    // this.draftedPost = null;
-    // this.IsdraftedPostAvailable = false;
+    this.draftedPost = null;
   }
 
   redirectingToProfile() {
@@ -301,6 +293,11 @@ export class AddPostComponent {
 
   //udpate drafted post and publish it function
   updatePost(type: 'publish' | 'draft') {
+    if (!this.draftedPost || !this.draftedPost.postId) {
+      this.snackBar.showError('No draft selected.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('PostId', this.draftedPost.postId.toString());
     formData.append('Title', this.postForm.value.title);
@@ -324,22 +321,20 @@ export class AddPostComponent {
       (next) => {
         if (type === 'draft') {
           this.snackBar.showSuccess('Draft post updated successfully');
+          this.getDraftedPost();
         } else {
           this.snackBar.showSuccess('Drafted Post published successfully');
+          this.clearForm();
           this.redirectingToProfile();
         }
         this.buttonLoading = null;
-        return;
       },
       (error) => {
         console.log(error);
+        this.snackBar.showError(error?.error?.message || 'Error updating post.');
         this.buttonLoading = null;
-        return;
       }
     );
-
-    if (this.draftedPost.userId !== 0) {
-    }
   }
 
 

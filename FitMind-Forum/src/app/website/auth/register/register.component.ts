@@ -58,6 +58,7 @@ export class RegisterComponent implements OnInit {
   snackMessageService = inject(SnackBarServiceService);
   //user object
   successMessage: string = '';
+  hidePassword: boolean = true;
   showSuccess(message: string) {
     this.snackMessageService.showSuccess(message);
   }
@@ -78,18 +79,29 @@ export class RegisterComponent implements OnInit {
     
     this.services.addAppUser(newUser).subscribe(
       (next: any) => {
-        debugger;
-        // const encryptedUser = this.authServices.encryptUser(newUser.id);
-        // sessionStorage.setItem('appUserId', next.id);
-       
-        // console.log('User Added!');
-        // this.successMessage = 'User Added!';
         this.showSuccess("Your account has been created successfully!");
         
+        // Auto login
+        this.services.loginUser({ Email: newUser.Email, HashedPassword: newUser.PasswordHash }).subscribe({
+          next: (loginResult: any) => {
+            sessionStorage.setItem('token', loginResult.token);
+            sessionStorage.setItem('appUserId', loginResult.userId.toString());
+            this.router.navigate(['/home']).then(() => {
+              if (sessionStorage.getItem('appUserId')) {
+                this.authServices.setAppUser();
+                this.authServices.setAppUserId(Number(sessionStorage.getItem('appUserId')));
+                this.authServices.getAllPosts();
+              }
+              // Close modals if any are open
+              const closeBtn = document.querySelector('.btn-close') as HTMLElement;
+              if (closeBtn) closeBtn.click();
+            });
+          },
+          error: (err) => console.log('Auto-login failed', err)
+        });
       },
       (error: any) => {
         this.showError("Error adding this user!");
-       
       }
     );
   }

@@ -20,13 +20,13 @@ export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
         // Token expired or unauthorized
-        sessionStorage.removeItem('token');
+        sessionStorage.clear();
         router.navigate(['']);
       }
 
        // Server down or unreachable
       if (error.status === 0 || error.status >= 500) {
-        sessionStorage.removeItem('token');
+        sessionStorage.clear();
         router.navigate(['']);
       }
       return throwError(() => error);

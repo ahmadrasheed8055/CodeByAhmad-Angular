@@ -12,14 +12,16 @@
     <div class="comment-item-container d-flex align-items-start mb-3" *ngFor="let comment of visibleComments">
       <!-- Commenter Avatar -->
       <div class="avatar avatar-sm rounded-circle me-3 flex-shrink-0">
-        <img class="avatar-img rounded-circle" [src]="getCommentAvatar(comment.userImage)" alt="Commenter Avatar">
+        <a [routerLink]="['/profile', comment.userId]" style="cursor: pointer;">
+          <img class="avatar-img rounded-circle" [src]="getCommentAvatar(comment.userImage)" alt="Commenter Avatar">
+        </a>
       </div>
       
       <div class="flex-grow-1">
         <!-- Comment text bubble -->
         <div class="comment-bubble d-inline-block position-relative">
           <div class="d-flex justify-content-between align-items-start mb-1 pe-4">
-            <a class="commenter-name d-block text-decoration-none mb-0" href="javascript:void(0)">{{ comment.userName }}</a>
+            <a class="commenter-name d-block text-decoration-none mb-0" [routerLink]="['/profile', comment.userId]" style="cursor: pointer;">{{ comment.userName }}</a>
             <!-- Three-dots dropdown -->
             <div class="dropdown comment-options-dropdown" *ngIf="comment.userId === userId">
               <a href="javascript:void(0)" class="text-muted text-decoration-none p-1" data-bs-toggle="dropdown" aria-expanded="false" title="Options">
@@ -67,13 +69,15 @@
           <div class="d-flex align-items-start mb-3 reply-item" *ngFor="let reply of comment.replies">
             <!-- Reply user avatar -->
             <div class="avatar avatar-xs rounded-circle me-2 flex-shrink-0">
-              <img class="avatar-img rounded-circle" [src]="getCommentAvatar(reply.userImage)" alt="Reply User Avatar">
+              <a [routerLink]="['/profile', reply.userId]" style="cursor: pointer;">
+                <img class="avatar-img rounded-circle" [src]="getCommentAvatar(reply.userImage)" alt="Reply User Avatar">
+              </a>
             </div>
             <div class="flex-grow-1">
               <!-- Reply text bubble -->
               <div class="reply-bubble d-inline-block position-relative">
                 <div class="d-flex justify-content-between align-items-start mb-1 pe-4">
-                  <a class="commenter-name d-block text-sm text-decoration-none mb-0" href="javascript:void(0)">{{ reply.userName }}</a>
+                  <a class="commenter-name d-block text-sm text-decoration-none mb-0" [routerLink]="['/profile', reply.userId]" style="cursor: pointer;">{{ reply.userName }}</a>
                   
                   <div class="dropdown comment-options-dropdown" *ngIf="reply.userId === userId">
                     <a href="javascript:void(0)" class="text-muted text-decoration-none p-1" data-bs-toggle="dropdown" aria-expanded="false" title="Options">
@@ -113,7 +117,7 @@
             <div class="avatar avatar-xs rounded-circle me-2 flex-shrink-0">
               <img class="avatar-img rounded-circle" [src]="(userId && userImage) ? userImage : '/img/avatar/default.png'" alt="User Avatar">
             </div>
-            <div class="input-pill flex-grow-1 d-flex align-items-center form-control-sm border rounded-pill px-3 py-1 bg-light">
+            <div class="input-pill flex-grow-1 d-flex align-items-center form-control-sm rounded-pill px-3 py-1">
               <input type="text"
                      class="capsule-input flex-grow-1 border-0 bg-transparent text-sm"
                      style="outline: none;"
@@ -125,10 +129,11 @@
               
               <button class="send-icon-btn border-0 bg-transparent text-primary ms-2 p-0"
                       (click)="submitReply(comment)"
-                      [disabled]="!replyText[comment.commentId]?.trim()"
+                      [disabled]="!replyText[comment.commentId]?.trim() || isSubmitting"
                       *ngIf="userId"
                       title="Send Reply">
-                <i class="bi bi-send-fill"></i>
+                <i class="bi bi-send-fill" *ngIf="!isSubmitting"></i>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="isSubmitting"></span>
               </button>
               <button class="send-icon-btn border-0 bg-transparent text-muted ms-2 p-0 locked"
                       (click)="handleInputFocus()"
@@ -184,10 +189,11 @@
         <!-- Send icon -->
         <button class="send-icon-btn d-flex align-items-center justify-content-center"
                 (click)="submitComment()"
-                [disabled]="!newCommentText.trim()"
+                [disabled]="!newCommentText.trim() || isSubmitting"
                 *ngIf="userId"
                 title="Send Comment">
-          <i class="bi bi-send-fill"></i>
+          <i class="bi bi-send-fill" *ngIf="!isSubmitting"></i>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="isSubmitting"></span>
         </button>
         <!-- Lock icon when not logged in -->
         <button class="send-icon-btn d-flex align-items-center justify-content-center locked"

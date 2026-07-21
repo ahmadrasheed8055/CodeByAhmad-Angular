@@ -1,4 +1,5 @@
 <!-- Create Post Card Overlay (image_89e03b.png UX Match) -->
+@if (AuthService.isLoggedIn()) {
 <div class="create-post-card card mb-4 shadow-sm border-0" data-aos="fade-down" data-aos-easing="linear">
   <div class="card-body p-3">
     <!-- Top Row: Avatar + Pill Input -->
@@ -54,6 +55,7 @@
     </div>
   </div>
 </div>
+}
 
 <div class="discussions">
 
@@ -66,39 +68,38 @@
           <div class="media-head me-2">
             <div class="avatar">
               <!-- profile picture setting -->
-              <a href="#"><img [src]="postsData.userImage ? 'data:image/jpeg;base64,' + postsData.userImage : '/img/avatar/default.png'"
+              <a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"><img [src]="postsData.userImage ? 'data:image/jpeg;base64,' + postsData.userImage : '/img/avatar/default.png'"
                   alt="postsData" class="avatar-img rounded-circle"></a>
             </div>
           </div>
           <div class="media-body">
-            <div><a href="#"> {{ postsData.userName }} </a></div>
+            <div><a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"> {{ postsData.userName }} </a></div>
             <div class="fs-7">
               <span> {{ timeAgo(postsData.publishAt) }} </span>
-              <span *ngIf="postsData.updatedAt"> (Edited) </span>
+              <span *ngIf="postsData.updatedAt && postsData.publishAt && postsData.updatedAt > postsData.publishAt"> (Edited) </span>
 
-              <!-- <a href="#" class="cat">
+              <!-- <a href="javascript:void(0)" class="cat">
                                                                 {{postsData.categoryName}} </a> -->
-              <a href="#" class="tag-link"> {{postsData.categoryName}}</a>
+              <a href="javascript:void(0)" class="tag-link"> {{postsData.categoryName}}</a>
             </div>
           </div>
         </div>
         <div class="card-action-wrap">
           <!-- <p class="me-2 text-danger d-flex"><i class="bi bi-pin"></i> <span
                                                             class="d-none d-sm-block">Pinned</span></p> -->
-          <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></a>
+          <a *ngIf="userId > 0 && postsData.userId === userId" class="dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></a>
           <div class="dropdown-menu dropdown-menu-end">
-            <!-- <a class="dropdown-item" (click)="enableUpdatePost(postsData)" style="cursor: pointer;"><i
-                class="bi bi-pencil me-2"></i>
+            <!-- <a *ngIf="postsData.userId === userId" class="dropdown-item" (click)="enableUpdatePost(postsData)" style="cursor: pointer;"><i class="bi bi-pencil me-2"></i>
               Edit Post</a> -->
 
-            <a href="#" class="dropdown-item"><i class="bi bi-eye-slash me-2"></i>
+            <a *ngIf="userId > 0 && postsData.userId === userId" href="javascript:void(0)" (click)="hidePost(postsData)" class="dropdown-item"><i class="bi bi-eye-slash me-2"></i>
               Hide Post</a>
 
-            <!-- <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#draftDeleteModal"
+            <!-- <a *ngIf="postsData.userId === userId" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#draftDeleteModal"
               (click)="selectedPostId = postsData.postId" href=""><i class="bi bi-trash3 me-2"></i> Delete Post</a> -->
 
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#"><i class="bi bi-pin me-2"></i>
+            <div *ngIf="postsData.userId === userId" class="dropdown-divider"></div>
+            <a *ngIf="postsData.userId === userId" class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pin me-2"></i>
               Pin Post</a>
           </div>
         </div>
@@ -118,7 +119,7 @@
 
         <!--  Add Photo Here -->
         <div (click)="openFullImageModal(postsData.postImage)" style="cursor:pointer;"
-          *ngIf="postsData.postImage !== null" class="my-3" data-bs-toggle="modal" data-bs-target="#showFullImageModal">
+          *ngIf="postsData.postImage" class="my-3" data-bs-toggle="modal" data-bs-target="#showFullImageModal">
           <img [src]="'data:image/jpeg;base64,' + postsData.postImage" alt="Post Image"
             class="img-fluid rounded-3 shadow-sm w-100" style="max-height: 300px; object-fit: cover;">
         </div>
@@ -164,27 +165,27 @@
 
           <!-- Bookmark Pill -->
           <div class="post-action-pill">
-            <a href="#" class="d-flex align-items-center text-decoration-none w-100">
-              <i class="bi bi-bookmark fs-5 text-muted me-2"></i>
-              <span class="fw-semibold fs-7">0</span>
+            <a href="javascript:void(0)" (click)="toggleSavePost(postsData)" class="d-flex align-items-center text-decoration-none w-100">
+              <i class="bi fs-5 me-2" [ngClass]="{'bi-bookmark-fill text-primary': postsData.isSavedByMe, 'bi-bookmark text-muted': !postsData.isSavedByMe}"></i>
+              <span class="fw-semibold fs-7">{{ postsData.isSavedByMe ? 'Saved' : 'Save' }}</span>
             </a>
           </div>
 
           <!-- Share Pill -->
           <div class="post-action-pill">
-            <a href="#" class="d-flex align-items-center text-decoration-none w-100">
+            <a href="javascript:void(0)" (click)="openShareModal(postsData.postId)" data-bs-toggle="modal" data-bs-target="#sharePostModal" class="d-flex align-items-center text-decoration-none w-100">
               <i class="bi bi-share fs-5 text-muted me-2"></i>
-              <span class="fw-semibold fs-7">0</span>
+              <span class="fw-semibold fs-7">Share</span>
             </a>
           </div>
 
           <!-- Report Pill -->
-          <div class="post-action-pill">
+          <!-- <div class="post-action-pill">
             <a href="#" class="d-flex align-items-center text-decoration-none w-100">
               <i class="bi bi-flag fs-5 text-muted me-2"></i>
               <span class="fw-semibold fs-7">Report</span>
             </a>
-          </div>
+          </div> -->
         </div>
 
       </div>
@@ -209,6 +210,27 @@
     <div class="modal-content post-image-modal-content">
       <div class="modal-body p-2 d-flex justify-content-center align-items-center">
         <img [src]="'data:image/jpeg;base64,' + selectedPostImage" alt="Post image" class="post-modal-img">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Share Post Modal -->
+<div class="modal fade" id="sharePostModal" tabindex="-1" aria-labelledby="sharePostModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="sharePostModalLabel">Share Post</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="mb-3 text-muted">Copy the link below to share this post.</p>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" [value]="shareLink" readonly #shareInput>
+          <button class="btn btn-outline-primary" type="button" (click)="copyShareLink(shareInput)">
+            <i class="bi bi-clipboard"></i> Copy
+          </button>
+        </div>
       </div>
     </div>
   </div>

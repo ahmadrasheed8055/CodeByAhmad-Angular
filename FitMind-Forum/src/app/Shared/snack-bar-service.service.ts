@@ -15,7 +15,7 @@ export class SnackBarServiceService {
   }
 
   showError(message: string) {
-    this.snackBar.open(message, 'Close', {
+    this.snackBar.open(message, '', {
       duration: 3000,
       panelClass: ['error-snackbar'], // Apply error style
     });

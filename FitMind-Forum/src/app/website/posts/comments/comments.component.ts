@@ -14,6 +14,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { MasterService } from '../../../Shared/master.service';
 import { CommentService } from '../../../Shared/comment.service';
 import { AuthService } from '../../../Shared/auth.service';
@@ -26,7 +27,7 @@ import {
 @Component({
   selector: 'app-comments',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './comments.component.html',
   styleUrls: ['./comments.component.css'],
 })
@@ -42,6 +43,7 @@ export class CommentsComponent implements OnInit, OnChanges {
   allComments: PostComment[] = [];
   visibleComments: PostComment[] = [];
   isLoading = false;
+  isSubmitting = false;
   newCommentText = '';
   userId: number = 0;
   userName: string = '';
@@ -96,6 +98,12 @@ export class CommentsComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['postId'] && changes['postId'].currentValue) {
       this.loadComments();
+    }
+    if (changes['showCommentsList'] && changes['showCommentsList'].currentValue === false) {
+      this.replyText = {};
+      this.openReplies = {};
+      this.newCommentText = '';
+      this.replyingToCommentId = null;
     }
   }
 
@@ -203,9 +211,12 @@ export class CommentsComponent implements OnInit, OnChanges {
       this.snakBarService.showError('Please log in to add a comment.');
       return;
     }
+    if (this.isSubmitting) return;
 
     const text = this.newCommentText.trim();
     if (!text) return;
+
+    this.isSubmitting = true;
 
     const payload: AddCommentRequest = {
       postId: this.postId,
@@ -236,12 +247,14 @@ export class CommentsComponent implements OnInit, OnChanges {
         this.newCommentText = '';
         this.snakBarService.showSuccess('Comment added successfully.');
         this.commentCountChanged.emit(this.allComments.length);
+        this.isSubmitting = false;
       },
       error: (err) => {
         console.error('Comment add fail hua:', err);
         this.snakBarService.showError(
           err?.error?.message || 'Failed to add comment.',
         );
+        this.isSubmitting = false;
       },
     });
   }
@@ -274,9 +287,12 @@ export class CommentsComponent implements OnInit, OnChanges {
       this.snakBarService.showError('Please log in to reply.');
       return;
     }
+    if (this.isSubmitting) return;
 
     const text = (this.replyText[parentComment.commentId] || '').trim();
     if (!text) return;
+
+    this.isSubmitting = true;
 
     const payload: AddCommentRequest = {
       postId: this.postId,
@@ -313,12 +329,14 @@ export class CommentsComponent implements OnInit, OnChanges {
         this.replyText[parentComment.commentId] = '';
         this.replyingToCommentId = null;
         this.snakBarService.showSuccess('Reply added successfully.');
+        this.isSubmitting = false;
       },
       error: (err) => {
         console.error('Reply add fail hua:', err);
         this.snakBarService.showError(
           err?.error?.message || 'Failed to add reply.',
         );
+        this.isSubmitting = false;
       },
     });
   }
@@ -352,6 +370,11 @@ export class CommentsComponent implements OnInit, OnChanges {
   }
 
   react(comment: PostComment, isLike: boolean): void {
+    if (!this.userId) {
+      this.snakBarService.showError('Login to react on the comment');
+      return;
+    }
+
     const wasLiked = comment.isReactedByMe === true;
     const wasDisliked = comment.isReactedByMe === false;
 

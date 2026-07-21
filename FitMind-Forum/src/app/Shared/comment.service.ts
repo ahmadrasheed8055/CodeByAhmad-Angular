@@ -33,7 +33,7 @@ export class CommentService {
       likeCount: c.likeCount ?? c.LikeCount ?? 0,
       dislikeCount: c.dislikeCount ?? c.DislikeCount ?? 0,
       isReactedByMe: c.isReactedByMe !== undefined ? c.isReactedByMe : c.IsReactedByMe,
-      replies: c.replies ?? c.Replies ?? []
+      replies: c.replies ?? c.Replies
     };
   }
 

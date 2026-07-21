@@ -23,13 +23,13 @@ import { ICategories } from '../../../Model/categories';
 import { PostReactionsDTO } from '../../../Model/AddPostReaction';
 import { GetAllPostsDTO } from '../../../Model/GetAllPostsDTO';
 import { debug } from 'node:console';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommentsComponent } from '../../posts/comments/comments.component';
 
 @Component({
   selector: 'app-profile-view',
   standalone: true,
-  imports: [DatePipe, CommonModule, ReactiveFormsModule, CommentsComponent],
+  imports: [DatePipe, CommonModule, ReactiveFormsModule, CommentsComponent, RouterModule],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.css',
 })
@@ -60,6 +60,10 @@ export class ProfileViewComponent {
 
 
   router = inject(Router);
+  route = inject(ActivatedRoute);
+
+  profileUserId: number = 0;
+  activeTab: 'posts' | 'saved' | 'hidden' = 'posts';
 
   private subscriptions: Subscription = new Subscription();
 
@@ -84,23 +88,164 @@ export class ProfileViewComponent {
     if(!this.authService.isLoggedIn()) {
       this.router.navigate(['/']);
     }
-    //getting all posts
-    this.getUserPosts();
+    this.subscriptions.add(
+      this.route.paramMap.subscribe(params => {
+        const idParam = params.get('id');
+        if (idParam) {
+          this.profileUserId = +idParam;
+        } else {
+          this.profileUserId = this.authService.userIdExists();
+        }
+        
+        if (!this.profileUserId) {
+          this.router.navigate(['/']);
+          return;
+        }
+
+        // Fetch the user's profile info
+        this.masterService.getAppUser(this.profileUserId).subscribe({
+          next: (user: PublicAppUserDTO) => {
+            this.user = user;
+            // Also need to fetch background and profile photos using existing APIs
+            this.masterService.getProfilePicture(this.profileUserId).subscribe({
+              next: (pic: any) => { this.userPhotos = { ...this.userPhotos, profilePhoto: pic ? `data:image/jpeg;base64,${pic}` : '' }; },
+              error: () => {}
+            });
+            this.masterService.getBackgroundPicture(this.profileUserId).subscribe({
+              next: (bg: any) => { this.userPhotos = { ...this.userPhotos, backgroundPhoto: bg ? `data:image/jpeg;base64,${bg}` : '' }; },
+              error: () => {}
+            });
+            this.loadPostsForTab(this.activeTab);
+          },
+          error: () => {
+            this.router.navigate(['/error?status=404']);
+          }
+        });
+      })
+    );
+  }
+
+  setActiveTab(tab: 'posts' | 'saved' | 'hidden') {
+    this.activeTab = tab;
+    this.loadPostsForTab(tab);
+  }
+
+  loadPostsForTab(tab: 'posts' | 'saved' | 'hidden') {
+    if (tab === 'posts') {
+      this.getUserPosts();
+    } else if (tab === 'saved') {
+      this.getSavedPosts();
+    } else if (tab === 'hidden') {
+      this.getHiddenPosts();
+    }
   }
 
   getUserPosts(): void {
     this.postsLoader = true;
-    this.masterService.getUserAllPosts(this.user.id).subscribe({
+    this.userPosts = [];
+    this.masterService.getUserAllPosts(this.profileUserId).subscribe({
       next: (posts: GetUserPostsDTO[]) => {
         this.userPosts = posts;
         this.postsLoader = false;
-        // console.log(this.userPosts);
       },
       error: (err: any) => {
         console.error('Error fetching user posts:', err);
         this.postsLoader = false;
       },
     });
+  }
+
+  getSavedPosts(): void {
+    this.postsLoader = true;
+    this.userPosts = [];
+    this.masterService.getSavedPosts(this.profileUserId).subscribe({
+      next: (posts: any[]) => {
+        this.userPosts = posts.filter(post => !post.isHidden);
+        this.postsLoader = false;
+      },
+      error: (err: any) => {
+        console.error('Error fetching saved posts:', err);
+        this.postsLoader = false;
+      },
+    });
+  }
+
+  getHiddenPosts(): void {
+    this.postsLoader = true;
+    this.userPosts = [];
+    this.masterService.getHiddenPosts(this.profileUserId).subscribe({
+      next: (posts: any[]) => {
+        this.userPosts = posts;
+        this.postsLoader = false;
+      },
+      error: (err: any) => {
+        console.error('Error fetching hidden posts:', err);
+        this.postsLoader = false;
+      },
+    });
+  }
+
+  hidePost(post: any) {
+    if (!this.authService.isLoggedIn()) {
+      this.snackBar.showError('Please log in to hide/unhide posts');
+      return;
+    }
+    
+    if (this.activeTab === 'hidden') {
+      this.masterService.unhidePost(this.user.id, post.postId).subscribe({
+        next: () => {
+          this.userPosts = this.userPosts.filter(p => p.postId !== post.postId);
+          this.snackBar.showSuccess('Post unhidden');
+        },
+        error: () => this.snackBar.showError('Failed to unhide post')
+      });
+    } else {
+      this.masterService.hidePost(this.user.id, post.postId).subscribe({
+        next: () => {
+          this.userPosts = this.userPosts.filter(p => p.postId !== post.postId);
+          this.snackBar.showSuccess('Post hidden');
+        },
+        error: () => this.snackBar.showError('Failed to hide post')
+      });
+    }
+  }
+
+  toggleSavePost(post: any) {
+    if (!this.authService.isLoggedIn()) {
+      this.snackBar.showError('Please log in to save posts');
+      return;
+    }
+    if (post.isSavedByMe) {
+      this.masterService.unsavePost(this.user.id, post.postId).subscribe({
+        next: () => {
+          post.isSavedByMe = false;
+          this.snackBar.showSuccess('Post unsaved');
+          if (this.activeTab === 'saved') {
+            this.userPosts = this.userPosts.filter(p => p.postId !== post.postId);
+          }
+        },
+        error: () => this.snackBar.showError('Failed to unsave post')
+      });
+    } else {
+      this.masterService.savePost(this.user.id, post.postId).subscribe({
+        next: () => {
+          post.isSavedByMe = true;
+          this.snackBar.showSuccess('Post saved');
+        },
+        error: () => this.snackBar.showError('Failed to save post')
+      });
+    }
+  }
+
+  shareLink: string = '';
+  openShareModal(postId: number) {
+    this.shareLink = window.location.origin + '/post/' + postId;
+  }
+
+  copyShareLink(inputElement: HTMLInputElement) {
+    inputElement.select();
+    document.execCommand('copy');
+    this.snackBar.showSuccess('Link copied to clipboard!');
   }
 
   ngOnDestroy(): void {
@@ -175,7 +320,11 @@ export class ProfileViewComponent {
   }
   selectedPostImage: string | null = null;
   openFullImageModal(image: string | null = null) {
-    this.selectedPostImage = image;
+    if (image && !image.startsWith('data:image')) {
+      this.selectedPostImage = 'data:image/jpeg;base64,' + image;
+    } else {
+      this.selectedPostImage = image;
+    }
   }
 
   closeFullImageModal() {

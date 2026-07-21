@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
   errorMessage: string = '';
   loginBtn: string = 'Login';
   loginBtnLoading: boolean = false;
+  hidePassword: boolean = true;
   @ViewChild('closeLoginModal', { static: false }) closeButton!: ElementRef;
 
   ngAfterViewInit() {
@@ -70,6 +71,7 @@ export class LoginComponent implements OnInit {
       this.formData.reset();
       this.errorMessage = '';
       this.loginBtnLoading = false;
+      this.hidePassword = true;
     }
   }
 

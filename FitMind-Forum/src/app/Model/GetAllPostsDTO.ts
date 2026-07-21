@@ -17,4 +17,5 @@ export interface GetAllPostsDTO {
   dislikeCount?: number;
 
   isReactedByMe?: boolean | null;
+  isSavedByMe?: boolean;
 }

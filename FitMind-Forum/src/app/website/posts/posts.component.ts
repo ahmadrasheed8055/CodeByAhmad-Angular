@@ -27,6 +27,11 @@ export class PostsComponent implements OnInit {
   currentUserImage: string = '';
   postReactionsCount: GetPostReactionsCount | null = null;
   reactionIcons: boolean = false;
+  selectedPostId: number = 0;
+
+  enableUpdatePost(post: any) {
+    // Implementation pending
+  }
   commentCounts: { [key: number]: number } = {};
   isCommentsVisibleMap: { [key: number]: boolean } = {};
   private platformId = inject(PLATFORM_ID);
@@ -197,6 +202,56 @@ export class PostsComponent implements OnInit {
     });
   }
 
+  hidePost(post: GetAllPostsDTO) {
+    if (!this.AuthService.isLoggedIn()) {
+      this.snackBarService.showError('Please log in to hide posts');
+      return;
+    }
+    this.MasterService.hidePost(this.userId, post.postId).subscribe({
+      next: () => {
+        this.posts = this.posts.filter(p => p.postId !== post.postId);
+        this.snackBarService.showSuccess('Post hidden');
+      },
+      error: () => {
+        this.snackBarService.showError('Failed to hide post');
+      }
+    });
+  }
+
+  toggleSavePost(post: GetAllPostsDTO) {
+    if (!this.AuthService.isLoggedIn()) {
+      this.snackBarService.showError('Please log in to save posts');
+      return;
+    }
+    if (post.isSavedByMe) {
+      this.MasterService.unsavePost(this.userId, post.postId).subscribe({
+        next: () => {
+          post.isSavedByMe = false;
+          this.snackBarService.showSuccess('Post unsaved');
+        },
+        error: () => this.snackBarService.showError('Failed to unsave post')
+      });
+    } else {
+      this.MasterService.savePost(this.userId, post.postId).subscribe({
+        next: () => {
+          post.isSavedByMe = true;
+          this.snackBarService.showSuccess('Post saved');
+        },
+        error: () => this.snackBarService.showError('Failed to save post')
+      });
+    }
+  }
+
+  shareLink: string = '';
+  openShareModal(postId: number) {
+    this.shareLink = window.location.origin + '/post/' + postId;
+  }
+
+  copyShareLink(inputElement: HTMLInputElement) {
+    inputElement.select();
+    document.execCommand('copy');
+    this.snackBarService.showSuccess('Link copied to clipboard!');
+  }
 
    selectedPostImage: string | null = null;
   openFullImageModal(image: string | null = null) {

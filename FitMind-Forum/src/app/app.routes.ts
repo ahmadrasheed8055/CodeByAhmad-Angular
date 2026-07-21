@@ -37,6 +37,11 @@ export const routes: Routes = [
         canActivate: [authGuard],
       },
       {
+        path: 'profile/:id',
+        component: ProfileViewComponent,
+        canActivate: [authGuard],
+      },
+      {
         path: 'add-post',
         component: AddPostComponent,
         canActivate: [authGuard]
@@ -45,6 +50,10 @@ export const routes: Routes = [
         path:'user-posts',
         component:UserPostsComponent,
         canActivate: [authGuard]
+      },
+      {
+        path: 'post/:id',
+        redirectTo: 'home',
       }
     ]
   },
@@ -58,6 +67,10 @@ export const routes: Routes = [
     path: 'forget-password',
     canActivate: [emailTokenGuardGuard],
     component: ForgetPasswordComponent,
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./website/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
   },
   {
     path: 'error',

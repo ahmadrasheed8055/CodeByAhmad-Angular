@@ -215,6 +215,7 @@ export class AuthService {
     return true;
   }
   userIdExists(): number {
+    if (!this.isLoggedIn()) return 0;
     const userId = sessionStorage.getItem('appUserId');
     return userId ? Number(userId) : 0;
   }
