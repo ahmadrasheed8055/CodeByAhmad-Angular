@@ -1,0 +1,133 @@
+<div class="card-header bg-poll-header d-block">
+  <div class="d-flex justify-content-between align-items-center w-100">
+    <div class="media align-items-center">
+      <div class="media-head">
+        <div class="avatar">
+          <a [routerLink]="['/profile', post?.userId]" style="cursor: pointer;">
+            <img [src]="post?.userImage ? 'data:image/jpeg;base64,' + post?.userImage : (post?.profilePhoto ? 'data:image/jpeg;base64,' + post?.profilePhoto : '/img/avatar/default.png')"
+              alt="user" class="avatar-img rounded-circle">
+          </a>
+        </div>
+      </div>
+      <div class="media-body">
+        <div><a [routerLink]="['/profile', post?.userId]" style="cursor: pointer;">{{ post?.userName || post?.username }}</a></div>
+        <div class="fs-7">
+          <span>{{ timeAgo(post?.publishAt || '') }}</span>
+          <span *ngIf="post?.updatedAt && post?.publishAt && post?.updatedAt > post?.publishAt"> (Edited)</span>
+          <a href="javascript:void(0)" class="tag-link ms-1">{{ post?.categoryName }}</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card-action-wrap">
+      <a *ngIf="loggedInUserId === post?.userId" class="dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown">
+        <i class="bi bi-three-dots-vertical"></i>
+      </a>
+      <div class="dropdown-menu dropdown-menu-end shadow-sm">
+        <a class="dropdown-item" href="javascript:void(0)" (click)="togglePin()">
+          <i class="bi me-2 text-dark" [ngClass]="poll.isPinned ? 'bi-pin-angle' : 'bi-pin-fill'"></i> 
+          <span class="text-dark">{{ poll.isPinned ? 'Unpin Poll' : 'Pin Poll' }}</span>
+        </a>
+        <a class="dropdown-item" href="javascript:void(0)" (click)="toggleClose()">
+          <i class="bi me-2 text-dark" [ngClass]="poll.isClosed ? 'bi-door-open' : 'bi-door-closed'"></i> 
+          <span class="text-dark">{{ poll.isClosed ? 'Reopen Poll' : 'Close Poll' }}</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item text-danger" href="javascript:void(0)" (click)="deletePoll()">
+          <i class="bi bi-trash me-2"></i> Delete Poll
+        </a>
+      </div>
+    </div>
+  </div>
+  <h3 class="poll-question-header">{{ poll.question }}</h3>
+</div>
+
+<!-- Inline Delete Confirmation Banner -->
+<div *ngIf="showDeleteConfirm" class="delete-confirm-overlay p-3 d-flex justify-content-between align-items-center">
+  <div class="d-flex align-items-center">
+    <div class="icon-box me-3">
+      <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+    </div>
+    <div>
+      <h6 class="mb-0 fw-bold text-danger">Delete this poll?</h6>
+      <small class="text-muted">This action cannot be undone.</small>
+    </div>
+  </div>
+  <div class="d-flex gap-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" (click)="cancelDelete()">Cancel</button>
+    <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" (click)="confirmDeletePoll()" [disabled]="isDeletingPoll">
+      <span class="spinner-border spinner-border-sm me-1" *ngIf="isDeletingPoll"></span>
+      {{ isDeletingPoll ? 'Deleting...' : 'Delete' }}
+    </button>
+  </div>
+</div>
+
+<div class="poll-container">
+  <div class="poll-badges mb-3" *ngIf="poll.isClosed || poll.isExpired || poll.isPinned || poll.isMultipleChoice">
+    <div class="d-flex gap-2 flex-wrap">
+      <span class="poll-badge badge-closed" *ngIf="poll.isClosed || poll.isExpired">
+        <i class="bi bi-lock-fill me-1"></i> Closed
+      </span>
+      <span class="poll-badge badge-pinned" *ngIf="poll.isPinned">
+        <i class="bi bi-pin-angle-fill me-1"></i> Pinned
+      </span>
+      <span class="poll-badge badge-multi" *ngIf="poll.isMultipleChoice">
+        <i class="bi bi-layers-fill me-1"></i> Multiple Choice
+      </span>
+    </div>
+  </div>
+
+  <div class="poll-options">
+    <div 
+      *ngFor="let opt of poll.options" 
+      class="poll-result-pill"
+      style="cursor: pointer;"
+      (click)="toggleOption(opt.optionId)"
+      [class.selected]="poll.userVotedOptionIds?.includes(opt.optionId)"
+      [class.disabled]="poll.isClosed || poll.isExpired || (!poll.allowVoteEdit && poll.userVotedOptionIds && poll.userVotedOptionIds.length > 0)">
+      
+      <div class="result-progress" [style.width.%]="opt.votePercentage"></div>
+      
+      <div class="result-content d-flex justify-content-between w-100 position-relative z-1">
+        <div class="d-flex align-items-center">
+          <span class="option-letter">{{ opt.optionLetter }}</span>
+          <span class="option-text">{{ opt.optionText }}</span>
+        </div>
+        <div class="d-flex align-items-center">
+          <span class="vote-percentage">{{ opt.votePercentage | number:'1.0-0' }}%</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Custom Option Input (Capsule Type) -->
+    <div *ngIf="poll.allowUserOptions && !poll.isClosed && !poll.isExpired" class="mt-3">
+      <div class="input-pill d-flex align-items-center">
+        <input type="text"
+               class="capsule-input flex-grow-1"
+               placeholder="Add your own option..."
+               [(ngModel)]="customOptionText"
+               (keydown.enter)="addCustomOption()"
+               [disabled]="isAddingOption">
+               
+        <button class="send-icon-btn d-flex align-items-center justify-content-center"
+                type="button"
+                (click)="addCustomOption()"
+                [disabled]="!customOptionText.trim() || isAddingOption"
+                title="Add Option">
+          <i class="bi bi-plus-lg" *ngIf="!isAddingOption"></i>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="isAddingOption"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll-footer mt-3 d-flex justify-content-between align-items-center">
+    <span class="poll-meta-item">
+      <i class="bi bi-bar-chart-line-fill me-1"></i> {{ poll.totalVotes }} {{ poll.totalVotes === 1 ? 'vote' : 'votes' }}
+    </span>
+    <span class="poll-meta-item" *ngIf="poll.expiresAt">
+      <span *ngIf="poll.isExpired" class="text-danger"><i class="bi bi-clock-history me-1"></i> Expired</span>
+      <span *ngIf="!poll.isExpired"><i class="bi bi-clock-history me-1"></i> Ends {{ poll.expiresAt | date:'shortDate' }}</span>
+    </span>
+  </div>
+</div>

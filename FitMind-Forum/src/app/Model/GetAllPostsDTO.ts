@@ -1,3 +1,5 @@
+import { PollDTO } from "./PollDTO";
+
 export interface GetAllPostsDTO {
   postId: number;
   title: string;
@@ -18,4 +20,6 @@ export interface GetAllPostsDTO {
 
   isReactedByMe?: boolean | null;
   isSavedByMe?: boolean;
+  poll?: PollDTO;
+  isDeleted?: boolean;
 }

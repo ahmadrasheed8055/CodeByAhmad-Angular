@@ -26,6 +26,7 @@ import {
   GetPostComment,
   PostComments,
 } from '../Model/commentDTO';
+import { CreatePollDTO, VotePollDTO, PollDTO } from '../Model/PollDTO';
 
 @Injectable({
   providedIn: 'root',
@@ -432,5 +433,30 @@ export class MasterService {
     return this.http.delete(
       `${this.API_URL}comments/removeReaction/${userId}/${commentId}`,
     );
+  }
+
+  //=================Poll API==================
+  createPoll(payload: CreatePollDTO): Observable<any> {
+    return this.http.post(`${this.API_URL}polls/create`, payload);
+  }
+
+  votePoll(payload: VotePollDTO): Observable<PollDTO> {
+    return this.http.post<PollDTO>(`${this.API_URL}polls/vote`, payload);
+  }
+
+  addCustomPollOption(payload: any): Observable<any> {
+    return this.http.post(`${this.API_URL}polls/add-option`, payload);
+  }
+
+  togglePollPin(pollId: number): Observable<any> {
+    return this.http.post(`${this.API_URL}polls/toggle-pin/${pollId}`, {});
+  }
+
+  togglePollClose(pollId: number): Observable<any> {
+    return this.http.post(`${this.API_URL}polls/toggle-close/${pollId}`, {});
+  }
+
+  deletePoll(pollId: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}polls/${pollId}`);
   }
 }

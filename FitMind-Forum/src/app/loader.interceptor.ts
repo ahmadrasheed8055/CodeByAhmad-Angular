@@ -17,7 +17,12 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
     'comments',
     'reactions',
     'react',
-    'removeReaction'
+    'removeReaction',
+    'vote',
+    'poll',
+    'Poll',
+    'Vote',
+    'savePost'
   ];
 
   const isSilent = silentUrls.some(url => req.url.includes(url));

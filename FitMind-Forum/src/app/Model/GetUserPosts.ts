@@ -1,3 +1,5 @@
+import { PollDTO } from "./PollDTO";
+
 export interface GetUserPostsDTO {
   postId: number;
   title: string;
@@ -9,7 +11,7 @@ export interface GetUserPostsDTO {
   userName?: string;
   categoryId: number;
   categoryName?: string;
-postImageUrl?: string;
+  postImageUrl?: string;
   createdAt: Date;
   viewCount: number;
   likeCount?: number;
@@ -17,4 +19,6 @@ postImageUrl?: string;
 
   isReactedByMe?: boolean | null;
   isSavedByMe?: boolean;
+  poll?: PollDTO;
+  isDeleted?: boolean;
 }

@@ -10,10 +10,13 @@ import { AuthService } from '../../Shared/auth.service';
 import { CommentsComponent } from './comments/comments.component';
 
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { PollCardComponent } from './poll-card/poll-card.component';
+import { CreatePollDTO } from '../../Model/PollDTO';
 
 @Component({
   selector: 'app-posts',
-  imports: [CommonModule, CommentsComponent, RouterModule],
+  imports: [CommonModule, CommentsComponent, RouterModule, FormsModule, PollCardComponent],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css'],
 })
@@ -29,6 +32,16 @@ export class PostsComponent implements OnInit {
   reactionIcons: boolean = false;
   selectedPostId: number = 0;
 
+  pollQuestion: string = '';
+  pollOptions: string[] = ['', ''];
+  selectedPollCategory: number = 0;
+  pollExpiresAt: string = '';
+  isSubmittingPoll: boolean = false;
+  categories: any[] = [];
+  pollAllowUserOptions: boolean = false;
+  pollIsMultipleChoice: boolean = false;
+  pollAllowVoteEdit: boolean = false;
+
   enableUpdatePost(post: any) {
     // Implementation pending
   }
@@ -38,6 +51,10 @@ export class PostsComponent implements OnInit {
 
   toggleComments(postId: number) {
     this.isCommentsVisibleMap[postId] = !this.isCommentsVisibleMap[postId];
+  }
+
+  onPollDeleted(pollId: number) {
+    this.posts = this.posts.filter(p => !p.poll || p.poll.pollId !== pollId);
   }
 
   ngOnInit() {
@@ -55,6 +72,13 @@ export class PostsComponent implements OnInit {
     } else {
       this.getAllPosts();
     }
+
+    this.MasterService.getAllCategories().subscribe(res => {
+      this.categories = res;
+      if (this.categories && this.categories.length > 0) {
+        this.selectedPollCategory = this.categories[0].id;
+      }
+    });
   }
 
   getPostReactionsCount(postId: number) {
@@ -283,6 +307,73 @@ export class PostsComponent implements OnInit {
     //     );
     // }
     // this.previewUrl = null;
+  }
+
+  trackByFn(index: any, item: any) {
+    return index;
+  }
+
+  addPollOption() {
+    if (this.pollOptions.length < 10) {
+      this.pollOptions.push('');
+    } else {
+      this.snackBarService.showError('Maximum 10 options allowed.');
+    }
+  }
+
+  removePollOption(index: number) {
+    if (this.pollOptions.length > 2) {
+      this.pollOptions.splice(index, 1);
+    }
+  }
+
+  submitPoll() {
+    if (!this.pollQuestion.trim()) {
+      this.snackBarService.showError('Please enter a poll question.');
+      return;
+    }
+    const validOptions = this.pollOptions.filter(o => o.trim() !== '');
+    if (validOptions.length < 2) {
+      this.snackBarService.showError('Please provide at least 2 options.');
+      return;
+    }
+
+    this.isSubmittingPoll = true;
+    const payload: CreatePollDTO = {
+      title: this.pollQuestion,
+      categoryId: this.selectedPollCategory,
+      options: validOptions,
+      userId: this.userId,
+      expiresAt: this.pollExpiresAt ? new Date(this.pollExpiresAt) : null,
+      allowUserOptions: this.pollAllowUserOptions,
+      isMultipleChoice: this.pollIsMultipleChoice,
+      allowVoteEdit: this.pollAllowVoteEdit
+    };
+
+    this.MasterService.createPoll(payload).subscribe({
+      next: (res) => {
+        this.snackBarService.showSuccess('Poll created successfully!');
+        this.isSubmittingPoll = false;
+        
+        // Reset form
+        this.pollQuestion = '';
+        this.pollOptions = ['', ''];
+        this.pollExpiresAt = '';
+        this.pollAllowUserOptions = false;
+        this.pollIsMultipleChoice = false;
+        this.pollAllowVoteEdit = false;
+        
+        // Close modal
+        document.getElementById('closePollModalBtn')?.click();
+        
+        // Refresh feed
+        this.getAllPosts();
+      },
+      error: (err) => {
+        this.snackBarService.showError('Failed to create poll');
+        this.isSubmittingPoll = false;
+      }
+    });
   }
 }
 

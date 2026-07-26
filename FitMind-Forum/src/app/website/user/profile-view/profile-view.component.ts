@@ -25,11 +25,12 @@ import { GetAllPostsDTO } from '../../../Model/GetAllPostsDTO';
 import { debug } from 'node:console';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommentsComponent } from '../../posts/comments/comments.component';
+import { PollCardComponent } from '../../posts/poll-card/poll-card.component';
 
 @Component({
   selector: 'app-profile-view',
   standalone: true,
-  imports: [DatePipe, CommonModule, ReactiveFormsModule, CommentsComponent, RouterModule],
+  imports: [DatePipe, CommonModule, ReactiveFormsModule, CommentsComponent, RouterModule, PollCardComponent],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.css',
 })
@@ -45,6 +46,10 @@ export class ProfileViewComponent {
 
   toggleComments(postId: number) {
     this.isCommentsVisibleMap[postId] = !this.isCommentsVisibleMap[postId];
+  }
+
+  onPollDeleted(pollId: number) {
+    this.userPosts = this.userPosts.filter(p => !p.poll || p.poll.pollId !== pollId);
   }
   // selectedPostId: number = 0;
   selectedPost!: FormGroup; // the form

@@ -129,12 +129,13 @@
 
 
                                     @for (postsData of userPosts; track $index) {
-                                    <div class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
+                                    <div *ngIf="!postsData.isDeleted" class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
                                         data-aos-easing="linear">
 
                                         <div class="card">
-                                            <div class="card-header card-header-action">
-                                                <div class="media align-items-center">
+                                            <!-- Standard Post Header (Hidden for Polls since poll-card renders its own) -->
+                                            <div class="card-header card-header-action" *ngIf="!postsData.poll">
+                                                <div class="media align-items-center w-100">
                                                     <div class="media-head me-2">
                                                         <div class="avatar">
                                                             <a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"><img
@@ -147,16 +148,11 @@
                                                         <div class="fs-7">
                                                             <span> {{ timeAgo(postsData.publishAt) }} </span>
                                                             <span *ngIf="postsData.updatedAt" > (Edited) </span>
-                                                            
-                                                            <!-- <a href="javascript:void(0)" class="cat">
-                                                                {{postsData.categoryName}} </a> -->
                                                             <a href="javascript:void(0)" class="tag-link"> {{postsData.categoryName}}</a>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="card-action-wrap">
-                                                    <!-- <p class="me-2 text-danger d-flex"><i class="bi bi-pin"></i> <span
-                                                            class="d-none d-sm-block">Pinned</span></p> -->
                                                     <a class="dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i
                                                             class="bi bi-three-dots-vertical"></i></a>
                                                     <div class="dropdown-menu dropdown-menu-end">
@@ -179,7 +175,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="card-body">
+                                            <div class="card-body" [ngClass]="{'p-0': postsData.poll}">
                                                 <!-- Update Form -->
                                                 <div *ngIf="editingPostId === postsData.postId else showContent"
                                                     class="update-form">
@@ -325,10 +321,10 @@
 
 
                                                 <ng-template #showContent>
-                                                    <h3>
+                                                    <h3 *ngIf="!postsData.poll">
                                                         <a href=""> {{postsData.title}} </a>
                                                     </h3>
-                                                    <p>{{postsData.description}}
+                                                    <p *ngIf="postsData.description !== 'Poll'">{{postsData.description}}
                                                     </p>
 
                                                     <!--  Post photo  
@@ -341,10 +337,13 @@
                                                             alt="Post Image" class="img-fluid rounded-3 shadow-sm w-100"
                                                             style="max-height: 300px; object-fit: cover;">
                                                     </div>
+
+                                                    <!-- Standalone Poll Card -->
+                                                    <app-poll-card *ngIf="postsData.poll" [poll]="postsData.poll" [post]="postsData" (pollDeleted)="onPollDeleted($event)" class="w-100"></app-poll-card>
                                                 </ng-template>
                                             </div>
 
-                                            <div *ngIf="editingPostId !== postsData.postId" class="card-footer">
+                                            <div *ngIf="editingPostId !== postsData.postId && !postsData.poll" class="card-footer">
 
                                                 <div class="post-stats d-flex align-items-center flex-wrap gap-2">
                                                     <!-- Like / Dislike Pill -->
@@ -409,7 +408,7 @@
                                             </div>
                                             
                                             <!-- Comments Section -->
-                                            <app-comments [postId]="postsData.postId"
+                                            <app-comments *ngIf="!postsData.poll" [postId]="postsData.postId"
                                                           [showCommentsList]="!!isCommentsVisibleMap[postsData.postId]"
                                                           (commentCountChanged)="commentCounts[postsData.postId] = $event">
                                             </app-comments>
