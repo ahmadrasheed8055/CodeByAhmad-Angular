@@ -1,3 +1,5 @@
+/* CodeByAhmad - FitMind Forum Standard Professional Module */
+
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -8,6 +10,8 @@ import { LoginComponent } from '../auth/login/login.component';
 import { MasterService } from '../../Shared/master.service';
 import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
 import { ForgetPasswordComponent } from '../auth/forget-password/forget-password.component';
+import { NotificationService } from '../../Shared/notification.service';
+import { NotificationItem } from '../../Model/NotificationDTO';
 
 @Component({
   selector: 'app-navbar',
@@ -33,11 +37,22 @@ export class NavbarComponent implements OnInit {
   router = inject(Router);
   masterServices = inject(MasterService);
   snackBarService = inject(SnackBarServiceService);
+  notificationService = inject(NotificationService);
   private platformId = inject(PLATFORM_ID);
 
   isDarkMode: boolean = false;
+  notifications: NotificationItem[] = [];
+  unreadCount: number = 0;
 
   ngOnInit() {
+    this.notificationService.notifications$.subscribe((items) => {
+      this.notifications = items;
+    });
+
+    this.notificationService.unreadCount$.subscribe((count) => {
+      this.unreadCount = count;
+    });
+
     if (isPlatformBrowser(this.platformId)) {
       this.initTheme();
     }
@@ -86,6 +101,28 @@ export class NavbarComponent implements OnInit {
     sessionStorage.clear();
     this.snackBarService.showSuccess('Logout successfully!');
     this.router.navigate(['/']);
+  }
+
+  markNotificationAsRead(id: string) {
+    this.notificationService.markAsRead(id);
+  }
+
+  markAllNotificationsAsRead() {
+    this.notificationService.markAllAsRead();
+  }
+
+  onNotificationClick(notif: NotificationItem) {
+    this.notificationService.markAsRead(notif.id);
+    if (notif.targetId) {
+      this.router.navigate(['/profile-view'], { queryParams: { postId: notif.targetId } });
+    } else {
+      this.router.navigate(['/profile-view']);
+    }
+  }
+
+  deleteNotification(event: Event, id: string) {
+    event.stopPropagation(); // prevent clicking the dropdown item
+    this.notificationService.deleteNotification(id);
   }
 }
 

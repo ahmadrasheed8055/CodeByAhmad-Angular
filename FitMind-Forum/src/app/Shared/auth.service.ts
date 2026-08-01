@@ -221,7 +221,16 @@ export class AuthService {
   }
 
 
-snackBarService = inject(SnackBarServiceService);
+  getUserName(): string {
+    const userObj = this.appUser.value;
+    if (userObj) {
+      const name = (userObj as any).userName || (userObj as any).username;
+      if (name) return name;
+    }
+    return sessionStorage.getItem('username') || 'A member';
+  }
+
+  snackBarService = inject(SnackBarServiceService);
   logout(): void {
     sessionStorage.removeItem('appUserId'); // remove from session storage
     sessionStorage.clear();

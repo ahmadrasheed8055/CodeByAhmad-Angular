@@ -16,10 +16,12 @@ import { HomeComponent } from './website/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NgxUiLoaderHttpModule, NgxUiLoaderModule, NgxUiLoaderRouterModule } from "ngx-ui-loader";
+import { ChatbotWidgetComponent } from './website/chatbot-widget/chatbot-widget.component';
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HttpClientModule,NgxUiLoaderModule,NgxUiLoaderRouterModule, CommonModule],
+  imports: [RouterOutlet, HttpClientModule, NgxUiLoaderModule, NgxUiLoaderRouterModule, CommonModule, ChatbotWidgetComponent],
 
 templateUrl: './app.component.html',
   styleUrl: './app.component.css'

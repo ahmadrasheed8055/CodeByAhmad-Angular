@@ -314,9 +314,10 @@ export class MasterService {
   //=================Calling user posts==================
   GET_ALL_POSTS = 'Post/getAllPosts';
 
-  getAllPosts(userId: any = null): Observable<GetAllPostsDTO[]> {
+  getAllPosts(userId: any = null, skipLoader: boolean = false): Observable<GetAllPostsDTO[]> {
     const url = `${this.API_URL}${this.GET_ALL_POSTS}?userId=${userId}`;
-    return this.http.get<GetAllPostsDTO[]>(url);
+    const options = skipLoader ? { headers: { 'x-skip-loader': 'true' } } : {};
+    return this.http.get<GetAllPostsDTO[]>(url, options);
   }
 
   // ============ Save Post =================
@@ -458,5 +459,23 @@ export class MasterService {
 
   deletePoll(pollId: number): Observable<any> {
     return this.http.delete(`${this.API_URL}polls/${pollId}`);
+  }
+
+  //=================Notifications API==================
+  getMyNotifications(userId: number): Observable<any[]> {
+    const options = { headers: { 'x-skip-loader': 'true' } };
+    return this.http.get<any[]>(`${this.API_URL}Notifications/getMyNotifications/${userId}`, options);
+  }
+
+  markNotificationAsRead(id: number): Observable<any> {
+    return this.http.put(`${this.API_URL}Notifications/markAsRead/${id}`, {});
+  }
+
+  markAllNotificationsAsRead(userId: number): Observable<any> {
+    return this.http.put(`${this.API_URL}Notifications/markAllAsRead/${userId}`, {});
+  }
+
+  deleteNotification(id: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}Notifications/${id}`);
   }
 }

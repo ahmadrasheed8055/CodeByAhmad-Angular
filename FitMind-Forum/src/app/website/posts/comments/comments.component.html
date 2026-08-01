@@ -44,12 +44,12 @@
           <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
              [class.text-success]="comment.isReactedByMe === true"
              (click)="react(comment, true)">
-             <i class="bi bi-hand-thumbs-up me-1"></i> <span class="fw-medium">{{ comment.likeCount || 0 }}</span>
+             <i class="bi bi-arrow-up-circle me-1"></i> <span class="fw-medium">{{ comment.likeCount || 0 }}</span>
           </a>
           <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
              [class.text-danger]="comment.isReactedByMe === false"
              (click)="react(comment, false)">
-             <i class="bi bi-hand-thumbs-down me-1"></i> <span class="fw-medium">{{ comment.dislikeCount || 0 }}</span>
+             <i class="bi bi-arrow-down-circle me-1"></i> <span class="fw-medium">{{ comment.dislikeCount || 0 }}</span>
           </a>
           <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center" (click)="toggleReplies(comment)">
             <i class="bi bi-chat-left-text me-1"></i>
@@ -100,12 +100,12 @@
                 <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
                    [class.text-success]="reply.isReactedByMe === true"
                    (click)="react(reply, true)">
-                   <i class="bi bi-hand-thumbs-up me-1"></i> <span class="fw-medium">{{ reply.likeCount || 0 }}</span>
+                   <i class="bi bi-arrow-up-circle me-1"></i> <span class="fw-medium">{{ reply.likeCount || 0 }}</span>
                 </a>
                 <a href="javascript:void(0)" class="p-0 text-decoration-none d-flex align-items-center"
                    [class.text-danger]="reply.isReactedByMe === false"
                    (click)="react(reply, false)">
-                   <i class="bi bi-hand-thumbs-down me-1"></i> <span class="fw-medium">{{ reply.dislikeCount || 0 }}</span>
+                   <i class="bi bi-arrow-down-circle me-1"></i> <span class="fw-medium">{{ reply.dislikeCount || 0 }}</span>
                 </a>
                 <span class="text-muted d-flex align-items-center"><i class="bi bi-clock-history me-1"></i> {{ timeAgo(reply.createdAt) }}</span>
               </div>

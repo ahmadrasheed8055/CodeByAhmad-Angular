@@ -86,14 +86,14 @@
       [class.selected]="poll.userVotedOptionIds?.includes(opt.optionId)"
       [class.disabled]="poll.isClosed || poll.isExpired || (!poll.allowVoteEdit && poll.userVotedOptionIds && poll.userVotedOptionIds.length > 0)">
       
-      <div class="result-progress" [style.width.%]="opt.votePercentage"></div>
+      <div class="result-progress" [style.width.%]="canShowResults ? opt.votePercentage : 0"></div>
       
       <div class="result-content d-flex justify-content-between w-100 position-relative z-1">
         <div class="d-flex align-items-center">
           <span class="option-letter">{{ opt.optionLetter }}</span>
           <span class="option-text">{{ opt.optionText }}</span>
         </div>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center" *ngIf="canShowResults">
           <span class="vote-percentage">{{ opt.votePercentage | number:'1.0-0' }}%</span>
         </div>
       </div>

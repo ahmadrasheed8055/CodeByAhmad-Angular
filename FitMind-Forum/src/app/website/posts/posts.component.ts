@@ -1,8 +1,11 @@
+/* CodeByAhmad - FitMind Forum Standard Professional Module */
+
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { AddPostComponent } from '../user/add-post/add-post.component';
 import { MasterService } from '../../Shared/master.service';
 import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
+import { NotificationService } from '../../Shared/notification.service';
 import { GetAllPostsDTO } from '../../Model/GetAllPostsDTO';
 import { PostReactionsDTO } from '../../Model/AddPostReaction';
 import { GetPostReactionsCount } from '../../Model/GetPostReactionsCount';
@@ -10,13 +13,13 @@ import { AuthService } from '../../Shared/auth.service';
 import { CommentsComponent } from './comments/comments.component';
 
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PollCardComponent } from './poll-card/poll-card.component';
 import { CreatePollDTO } from '../../Model/PollDTO';
 
 @Component({
   selector: 'app-posts',
-  imports: [CommonModule, CommentsComponent, RouterModule, FormsModule, PollCardComponent],
+  imports: [CommonModule, CommentsComponent, RouterModule, FormsModule, ReactiveFormsModule, PollCardComponent],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css'],
 })
@@ -26,6 +29,7 @@ export class PostsComponent implements OnInit {
   MasterService = inject(MasterService);
   AuthService = inject(AuthService);
   snackBarService = inject(SnackBarServiceService);
+  notificationService = inject(NotificationService);
   userId: number = 0;
   currentUserImage: string = '';
   postReactionsCount: GetPostReactionsCount | null = null;
@@ -41,6 +45,131 @@ export class PostsComponent implements OnInit {
   pollAllowUserOptions: boolean = false;
   pollIsMultipleChoice: boolean = false;
   pollAllowVoteEdit: boolean = false;
+  pollShowResultsBeforeVoting: boolean = false;
+  // Inline Add Post Form state & logic
+  fb = inject(FormBuilder);
+  inlinePostForm: FormGroup = this.fb.group({
+    title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
+    description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
+    category: ['', [Validators.required]],
+    image: [null]
+  });
+
+  isInlineAddPostOpen: boolean = false;
+  inlinePreviewUrl: string | null = null;
+  isSubmittingInlinePost: boolean = false;
+  inlineFormSubmitted: boolean = false;
+
+  toggleInlineAddPost(open: boolean, triggerPhotoPicker: boolean = false) {
+    this.isInlineAddPostOpen = open;
+    this.inlineFormSubmitted = false;
+    if (!open) {
+      this.resetInlineForm();
+    } else {
+      if (this.categories && this.categories.length > 0 && !this.inlinePostForm.get('category')?.value) {
+        this.inlinePostForm.patchValue({ category: this.categories[0].id });
+      }
+      if (triggerPhotoPicker) {
+        setTimeout(() => {
+          const fileInput = document.getElementById('inlineFileInput') as HTMLInputElement;
+          if (fileInput) {
+            fileInput.click();
+          }
+        }, 100);
+      }
+    }
+  }
+
+  resetInlineForm() {
+    this.inlinePostForm.reset({
+      title: '',
+      description: '',
+      category: this.categories && this.categories.length > 0 ? this.categories[0].id : '',
+      image: null
+    });
+    this.inlinePreviewUrl = null;
+    this.inlineFormSubmitted = false;
+  }
+
+  onInlineFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (!file.type.startsWith('image/')) {
+        this.snackBarService.showError('Please select a valid image file (PNG, JPG, WEBP).');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        this.snackBarService.showError('Image size should be less than 5MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.inlinePreviewUrl = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+      this.inlinePostForm.patchValue({ image: file });
+      this.inlinePostForm.get('image')?.markAsDirty();
+    }
+  }
+
+  removeInlineImage() {
+    this.inlinePreviewUrl = null;
+    this.inlinePostForm.patchValue({ image: null });
+  }
+
+  submitInlinePost(type: 'publish' | 'draft') {
+    this.inlineFormSubmitted = true;
+    if (this.inlinePostForm.invalid) {
+      this.snackBarService.showError('Please fill in all required fields accurately.');
+      return;
+    }
+
+    const currentUserId = this.AuthService.userIdExists() || Number(sessionStorage.getItem('appUserId')) || this.userId;
+    if (!currentUserId) {
+      this.snackBarService.showError('Please log in to create a post.');
+      return;
+    }
+
+    this.isSubmittingInlinePost = true;
+    const formData = new FormData();
+    formData.append('Title', this.inlinePostForm.value.title);
+    formData.append('Description', this.inlinePostForm.value.description);
+    formData.append('IsPublished', type === 'publish' ? 'true' : 'false');
+    formData.append('UserId', String(currentUserId));
+    formData.append('CategoryId', String(this.inlinePostForm.value.category));
+
+    const file = this.inlinePostForm.get('image')?.value;
+    if (file) {
+      formData.append('PostImage', file);
+    }
+
+    const postTitle = this.inlinePostForm.value.title;
+    this.MasterService.addPost(formData).subscribe({
+      next: (res) => {
+        this.isSubmittingInlinePost = false;
+        if (type === 'draft') {
+          this.snackBarService.showSuccess('Post saved as draft successfully!');
+        } else {
+          const authorName = (this.AuthService.userIdExists() && this.currentUserImage) ? 'You' : 'Community Member';
+          this.notificationService.notifyNewPost(currentUserId, authorName, postTitle, this.currentUserImage);
+        }
+        this.resetInlineForm();
+        this.isInlineAddPostOpen = false;
+        this.refreshPosts();
+      },
+      error: (error) => {
+        this.isSubmittingInlinePost = false;
+        if (error.status === 400) {
+          this.snackBarService.showError(error.error || 'Invalid post data.');
+        } else if (error.status === 422) {
+          this.snackBarService.showError('Inappropriate content detected.');
+        } else {
+          this.snackBarService.showError('Failed to create post. Please try again.');
+        }
+      }
+    });
+  }
 
   enableUpdatePost(post: any) {
     // Implementation pending
@@ -73,12 +202,23 @@ export class PostsComponent implements OnInit {
       this.getAllPosts();
     }
 
+    this.notificationService.newContentCount$.subscribe(count => {
+      this.newPostsCount = count;
+    });
+
     this.MasterService.getAllCategories().subscribe(res => {
       this.categories = res;
       if (this.categories && this.categories.length > 0) {
         this.selectedPollCategory = this.categories[0].id;
       }
     });
+  }
+
+  newPostsCount: number = 0;
+
+  refreshAndClearPill() {
+    this.notificationService.resetNewContentCount();
+    this.refreshPosts();
   }
 
   getPostReactionsCount(postId: number) {
@@ -94,6 +234,79 @@ export class PostsComponent implements OnInit {
     );
   }
 
+
+  activeFilter: 'latest' | 'popular' | 'polls' | 'myposts' = 'latest';
+  isRefreshing: boolean = false;
+
+  setFilter(filter: 'latest' | 'popular' | 'polls' | 'myposts') {
+    this.activeFilter = filter;
+  }
+
+  get filteredPosts(): GetAllPostsDTO[] {
+    if (!this.posts) return [];
+
+    let result = [...this.posts];
+
+    switch (this.activeFilter) {
+      case 'popular':
+        result.sort((a, b) => {
+          const scoreA = (a.likeCount || 0) * 2 + (a.viewCount || 0);
+          const scoreB = (b.likeCount || 0) * 2 + (b.viewCount || 0);
+          return scoreB - scoreA;
+        });
+        break;
+
+      case 'polls':
+        result = result.filter((p) => !!p.poll);
+        break;
+
+      case 'myposts':
+        result = result.filter((p) => p.userId === this.userId);
+        break;
+
+      case 'latest':
+      default:
+        result.sort((a, b) => {
+          const dateA = new Date(a.publishAt || a.createdAt || 0).getTime();
+          const dateB = new Date(b.publishAt || b.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
+        break;
+    }
+
+    return result;
+  }
+
+  get pollsCount(): number {
+    return this.posts ? this.posts.filter(p => !!p.poll && !p.isDeleted).length : 0;
+  }
+
+  get myPostsCount(): number {
+    return (this.posts && this.userId) ? this.posts.filter(p => p.userId === this.userId && !p.isDeleted).length : 0;
+  }
+
+  refreshPosts() {
+    if (this.isRefreshing) return;
+    this.isRefreshing = true;
+    const userId = this.AuthService.userIdExists();
+    if (userId === 0) {
+      this.userId = 0;
+    }
+    this.MasterService.getAllPosts(this.userId, true).subscribe({
+      next: (posts: GetAllPostsDTO[]) => {
+        this.posts = posts;
+        setTimeout(() => {
+          this.isRefreshing = false;
+        }, 500);
+      },
+      error: (err) => {
+        console.error('Error refreshing posts:', err);
+        setTimeout(() => {
+          this.isRefreshing = false;
+        }, 500);
+      }
+    });
+  }
 
   getAllPosts() {
     // debugger;
@@ -214,7 +427,11 @@ export class PostsComponent implements OnInit {
     // 3. Silent API Dispatch
     this.MasterService.addPostReaction(postReaction).subscribe({
       next: () => {
-        // Optimistic UI updated already, do NOT trigger heavy list refreshes!
+        // Dispatch interaction notification to post author if newly reacted
+        if (post.isReactedByMe !== null) {
+          const currentUserName = this.AuthService.getUserName();
+          this.notificationService.notifyPostReaction(post.userId, currentUserName, post.title, isLike, post.postId);
+        }
       },
       error: () => {
         // Rollback states on sync failure
@@ -347,7 +564,8 @@ export class PostsComponent implements OnInit {
       expiresAt: this.pollExpiresAt ? new Date(this.pollExpiresAt) : null,
       allowUserOptions: this.pollAllowUserOptions,
       isMultipleChoice: this.pollIsMultipleChoice,
-      allowVoteEdit: this.pollAllowVoteEdit
+      allowVoteEdit: this.pollAllowVoteEdit,
+      showResultsBeforeVoting: this.pollShowResultsBeforeVoting
     };
 
     this.MasterService.createPoll(payload).subscribe({
@@ -362,6 +580,7 @@ export class PostsComponent implements OnInit {
         this.pollAllowUserOptions = false;
         this.pollIsMultipleChoice = false;
         this.pollAllowVoteEdit = false;
+        this.pollShowResultsBeforeVoting = false;
         
         // Close modal
         document.getElementById('closePollModalBtn')?.click();

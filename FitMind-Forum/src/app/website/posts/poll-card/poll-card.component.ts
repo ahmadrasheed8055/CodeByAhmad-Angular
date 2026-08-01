@@ -43,6 +43,12 @@ export class PollCardComponent implements OnInit {
     });
   }
 
+  get canShowResults(): boolean {
+    if (!this.poll) return false;
+    const hasVoted = !!(this.poll.userVotedOptionIds && this.poll.userVotedOptionIds.length > 0);
+    return hasVoted || !!this.poll.isClosed || !!this.poll.isExpired || !!this.poll.showResultsBeforeVoting;
+  }
+
   toggleOption(optionId: number) {
     if (!this.loggedInUserId) {
       this.toastr.warning('Please log in to vote');

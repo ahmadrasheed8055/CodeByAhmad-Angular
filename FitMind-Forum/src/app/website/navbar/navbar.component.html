@@ -1,3 +1,4 @@
+<!-- CodeByAhmad - FitMind Forum Standard Professional Module -->
 <!-- ==============================================
 Navbar
 =============================================== -->
@@ -46,6 +47,84 @@ Navbar
         <button class="btn btn-theme-toggle me-2" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
           <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill text-warning' : 'bi-moon-stars-fill'"></i>
         </button>
+
+        <!-- Notification Dropdown -->
+        <div class="nav-item me-2 dropdown h-col">
+          <button 
+            class="btn btn-notification-bell position-relative p-2 rounded-circle d-flex align-items-center justify-content-center"
+            id="notificationDropdown"
+            role="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            title="Notifications">
+            <i class="bi bi-bell-fill fs-5"></i>
+            <span *ngIf="unreadCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-8">
+              {{ unreadCount }}
+              <span class="visually-hidden">unread notifications</span>
+            </span>
+          </button>
+
+          <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow-lg border-0 p-0 overflow-hidden" aria-labelledby="notificationDropdown" style="width: 320px;">
+            <!-- Header -->
+            <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-body-tertiary">
+              <div class="d-flex align-items-center gap-2">
+                <h6 class="fw-bold mb-0 text-body">Notifications</h6>
+                <span *ngIf="unreadCount > 0" class="badge bg-success rounded-pill fs-8">{{ unreadCount }} new</span>
+              </div>
+              <button 
+                *ngIf="unreadCount > 0" 
+                type="button" 
+                class="btn btn-link p-0 text-decoration-none fs-8 text-success fw-semibold" 
+                (click)="markAllNotificationsAsRead()">
+                Mark all as read
+              </button>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="notification-list overflow-auto" style="max-height: 320px;">
+              <div *ngIf="notifications.length === 0" class="text-center p-4 text-muted fs-7">
+                <i class="bi bi-bell-slash fs-3 d-block mb-2 text-secondary"></i>
+                No notifications yet
+              </div>
+
+              <a 
+                *ngFor="let notif of notifications"
+                href="javascript:void(0)"
+                class="dropdown-item p-3 border-bottom d-flex align-items-start gap-3 notif-item"
+                [class.unread-item]="!notif.isRead"
+                (click)="onNotificationClick(notif)">
+                <!-- Icon Badge -->
+                <div class="notif-icon-badge flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center">
+                  <i *ngIf="notif.type === 'post'" class="bi bi-plus-circle-fill text-success fs-5"></i>
+                  <i *ngIf="notif.type === 'poll'" class="bi bi-bar-chart-fill text-warning fs-5"></i>
+                  <i *ngIf="notif.type === 'reaction'" class="bi bi-arrow-up-circle-fill text-primary fs-5"></i>
+                  <i *ngIf="notif.type === 'comment'" class="bi bi-chat-dots-fill text-info fs-5"></i>
+                </div>
+
+                <!-- Content -->
+                <div class="flex-grow-1" style="min-width: 0;">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="fw-bold fs-7 text-body mb-0 text-truncate">{{ notif.title }}</span>
+                    <span class="fs-8 text-muted ms-2 flex-shrink-0">{{ notificationService.timeAgo(notif.timestamp) }}</span>
+                  </div>
+                  <p class="fs-8 text-muted mb-0 text-wrap lh-sm">{{ notif.message }}</p>
+                </div>
+
+                <!-- Actions: Delete and Unread Dot -->
+                <div class="d-flex flex-column align-items-end gap-1 flex-shrink-0">
+                  <button 
+                    type="button" 
+                    class="btn btn-link p-0 text-decoration-none fs-6 text-danger" 
+                    (click)="deleteNotification($event, notif.id)"
+                    title="Delete Notification">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                  <span *ngIf="!notif.isRead" class="unread-dot mt-1"></span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
 
         <!-- Create Post Button -->
         <button class="btn btn-create-post" routerLink="add-post"> <i class="bi bi-plus-lg"></i> Create</button>

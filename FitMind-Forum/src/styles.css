@@ -67,9 +67,9 @@
     --dark: #1f1e22;
     --gen-font-family: 'Karla',sans-serif;
     --blue-color: #0195ff;
-    --green-color: #a2d829;
-    --green-color-hover: #b5e448;
-    --link-color: #a2d829;
+    --green-color: #87bf17;
+    --green-color-hover: #99d41a;
+    --link-color: #87bf17;
     --logo-width: 170px;
     --logo-height: 55px;
 }
@@ -5785,3 +5785,55 @@ select.form-select option,
   border-radius: 50rem !important;
   padding: 10px 20px !important;
 }
+
+/*------------------------------------------------------------------
+* Brand Green (#87bf17) System Overrides
+*-------------------------------------------------------------------*/
+:root {
+  --bs-success: #87bf17 !important;
+  --bs-success-rgb: 135, 191, 23 !important;
+}
+
+.text-success {
+  color: #87bf17 !important;
+}
+
+.bg-success, .text-bg-success {
+  background-color: #87bf17 !important;
+  color: #ffffff !important;
+}
+
+.btn-success {
+  background-color: #87bf17 !important;
+  border-color: #87bf17 !important;
+  color: #ffffff !important;
+}
+
+.btn-success:hover, .btn-success:focus, .btn-success:active {
+  background-color: #76a814 !important;
+  border-color: #76a814 !important;
+  color: #ffffff !important;
+}
+
+.btn-outline-success {
+  color: #87bf17 !important;
+  border-color: #87bf17 !important;
+}
+
+.btn-outline-success:hover, .btn-outline-success:focus, .btn-outline-success:active {
+  background-color: #87bf17 !important;
+  border-color: #87bf17 !important;
+  color: #ffffff !important;
+}
+
+.alert-success {
+  background-color: rgba(135, 191, 23, 0.15) !important;
+  border-color: #87bf17 !important;
+  color: #87bf17 !important;
+}
+
+.form-check-input:checked {
+  background-color: #87bf17 !important;
+  border-color: #87bf17 !important;
+}
+

@@ -25,7 +25,7 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
     'savePost'
   ];
 
-  const isSilent = silentUrls.some(url => req.url.includes(url));
+  const isSilent = silentUrls.some(url => req.url.includes(url)) || req.headers.has('x-skip-loader');
 
   if (isBrowser && !isSilent) {
     const loaderService = inject(NgxLoaderService);

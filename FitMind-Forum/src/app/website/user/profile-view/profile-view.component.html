@@ -5,7 +5,7 @@
     [style.cursor]="userPhotos?.backgroundPhoto ? 'pointer' : 'default'"
     data-bs-toggle="modal" [attr.data-bs-target]="userPhotos?.backgroundPhoto ? '#showFullImageModal' : null">
     <input #bgCoverInput type="file" (change)="onUploadBackgroundPhoto($event)" hidden>
-    <button *ngIf="user && userId === user.id" (click)="bgCoverInput.click()" class="btn btn-edit-banner position-absolute bottom-0 end-0 m-3" title="Edit cover background">
+    <button *ngIf="user && userId === user.id" (click)="$event.stopPropagation(); bgCoverInput.click()" class="btn btn-edit-banner position-absolute bottom-0 end-0 m-3" title="Edit cover background">
         <i class="bi bi-camera-fill me-2"></i> Edit Cover
     </button>
 </div>
@@ -26,7 +26,7 @@
                         <span class="text-white fs-1 fw-bold">{{ (user?.username || 'U').charAt(0) | uppercase }}</span>
                     </div>
                     <input #profilePhotoInput type="file" (change)="onUploadProfilePhoto($event)" hidden>
-                    <button *ngIf="user && userId === user.id" (click)="profilePhotoInput.click()" class="profile-avatar-overlay d-flex align-items-center justify-content-center" title="Change profile photo">
+                    <button *ngIf="user && userId === user.id" (click)="$event.stopPropagation(); profilePhotoInput.click()" class="profile-avatar-overlay d-flex align-items-center justify-content-center" title="Change profile photo">
                         <i class="bi bi-camera-fill"></i>
                     </button>
                 </div>
@@ -86,42 +86,89 @@
 
             <div class="col-12 col-lg-9">
 
-                <div class="row g-4 aos-init aos-animate" data-aos="fade-down" data-aos-easing="linear">
-                    <div class="col-12">
-                        <div class="vine-tabs pb-0 px-2 px-lg-0 rounded-top">
-                            <ul class="nav nav-tabs nav-bottom-line nav-responsive border-0 nav-justified"
-                                role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link mb-0" [class.active]="activeTab === 'posts'" (click)="setActiveTab('posts')" style="cursor: pointer;">
-                                        <i class="bi bi-gear fa-fw me-2"></i>Posts
-                                    </a>
-                                </li>
-                                <li class="nav-item" role="presentation" *ngIf="userId === profileUserId">
-                                    <a class="nav-link mb-0" [class.active]="activeTab === 'saved'" (click)="setActiveTab('saved')" style="cursor: pointer;">
-                                        <i class="bi bi-bookmark fa-fw me-2"></i>Saved
-                                    </a>
-                                </li>
-                                <li class="nav-item" role="presentation" *ngIf="userId === profileUserId">
-                                    <a class="nav-link mb-0" [class.active]="activeTab === 'hidden'" (click)="setActiveTab('hidden')" style="cursor: pointer;">
-                                        <i class="bi bi-eye-slash fa-fw me-2"></i>Hidden
-                                    </a>
-                                </li>
-                            </ul>
+                <!-- Modern Profile Filter Navigation Bar & Refresh Action -->
+                <div class="feed-filter-bar card mb-4 shadow-sm border-0" data-aos="fade-down" data-aos-easing="linear">
+                    <div class="card-body p-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <!-- Filter Tabs Container -->
+                        <div class="d-flex align-items-center flex-wrap gap-1 feed-tabs">
+                            <!-- Posts Tab -->
+                            <button 
+                                type="button" 
+                                class="btn filter-tab-btn d-flex align-items-center gap-2"
+                                [class.active]="activeTab === 'posts'"
+                                (click)="setActiveTab('posts')">
+                                <i class="bi bi-grid-fill fs-6"></i>
+                                <span>Posts</span>
+                            </button>
+
+                            <!-- Saved Posts Tab (Owner Only) -->
+                            <button 
+                                *ngIf="userId === profileUserId"
+                                type="button" 
+                                class="btn filter-tab-btn d-flex align-items-center gap-2"
+                                [class.active]="activeTab === 'saved'"
+                                (click)="setActiveTab('saved')">
+                                <i class="bi bi-bookmark-fill fs-6"></i>
+                                <span>Saved Posts</span>
+                            </button>
+
+                            <!-- Hidden Posts Tab (Owner Only) -->
+                            <button 
+                                *ngIf="userId === profileUserId"
+                                type="button" 
+                                class="btn filter-tab-btn d-flex align-items-center gap-2"
+                                [class.active]="activeTab === 'hidden'"
+                                (click)="setActiveTab('hidden')">
+                                <i class="bi bi-eye-slash-fill fs-6"></i>
+                                <span>Hidden Posts</span>
+                            </button>
+                        </div>
+
+                        <!-- Refresh Action Button -->
+                        <div class="ms-auto d-flex align-items-center">
+                            <button 
+                                type="button" 
+                                class="btn refresh-btn d-flex align-items-center justify-content-center p-2 rounded-circle"
+                                [class.spinning]="isRefreshing"
+                                [disabled]="isRefreshing"
+                                (click)="refreshProfileFeed()"
+                                title="Refresh Profile Posts"
+                                aria-label="Refresh Profile Posts">
+                                <i class="bi bi-arrow-clockwise fs-5"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Single Post View Banner from Notification -->
+                <div *ngIf="filterSinglePostId > 0" class="card border-0 mb-4 shadow-sm p-3 rounded-4 d-flex flex-row align-items-center justify-content-between" style="background-color: rgba(135, 191, 23, 0.1);">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-bell-fill text-success fs-5"></i>
+                    <span class="fw-bold fs-7 text-body">Viewing notification post</span>
+                  </div>
+                  <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" (click)="clearSinglePostFilter()">
+                    <i class="bi bi-grid-fill me-1"></i> Show All Posts
+                  </button>
+                </div>
+
                 <div *ngIf="postsLoader" class="d-flex justify-content-center align-items-center"
                     style="height: 200px;">
                     <div class="spinner-border custom-spinner" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
-                <div *ngIf="postsLoader === false && userPosts.length === 0" class="text-center mt-5">
-                    <p>No posts available.</p>
+                <div *ngIf="postsLoader === false && userPosts.length === 0" class="empty-feed-card card border-0 text-center py-5 px-4 mb-4 shadow-sm" data-aos="fade-up">
+                    <div class="card-body">
+                        <div class="empty-icon-wrap mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle">
+                            <i class="bi bi-folder2-open fs-1 text-success"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">No posts available</h5>
+                        <p class="text-muted fs-7 mb-0">There are no posts to display in this category.</p>
+                    </div>
                 </div>
                 <div *ngIf="userPosts.length !== 0" class="row g-4">
                     <div class="col-12">
-                        <div class="tab-content mt-5">
+                        <div class="tab-content mt-0">
                             <div class="tab-pane active show" id="tab-1" role="tabpanel">
 
 
@@ -351,16 +398,16 @@
                                                         <a [class.disabled]="reactionButton == true" (click)="addPostReaction(true, postsData)" id="upvote"
                                                             class="up-arrow me-2 text-decoration-none">
                                                             <i class="bi fs-5" [ngClass]="{
-                                                                'bi-hand-thumbs-up-fill text-success': postsData.isReactedByMe === true && authService.isLoggedIn(),
-                                                                'bi-hand-thumbs-up': postsData.isReactedByMe !== true || !authService.isLoggedIn()
+                                                                'bi-arrow-up-circle-fill text-success': postsData.isReactedByMe === true && authService.isLoggedIn(),
+                                                                'bi-arrow-up-circle': postsData.isReactedByMe !== true || !authService.isLoggedIn()
                                                                 }"></i>
                                                         </a>
                                                         <span class="me-3 fw-semibold fs-7">{{ postsData.likeCount }}</span>
                                                         <a [class.disabled]="reactionButton == true" (click)="addPostReaction(false, postsData)"
                                                             class="down-arrow me-2 text-decoration-none">
                                                             <i class="bi fs-5" [ngClass]="{
-                                                                'bi-hand-thumbs-down-fill text-danger': postsData.isReactedByMe === false && authService.isLoggedIn(),
-                                                                'bi-hand-thumbs-down': postsData.isReactedByMe !== false || !authService.isLoggedIn()
+                                                                'bi-arrow-down-circle-fill text-danger': postsData.isReactedByMe === false && authService.isLoggedIn(),
+                                                                'bi-arrow-down-circle': postsData.isReactedByMe !== false || !authService.isLoggedIn()
                                                             }"></i>
                                                         </a>
                                                         <span class="fw-semibold fs-7">{{ postsData.dislikeCount }}</span>

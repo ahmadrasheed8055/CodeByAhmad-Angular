@@ -7,6 +7,7 @@ export interface CreatePollDTO {
   allowUserOptions: boolean;
   isMultipleChoice: boolean;
   allowVoteEdit: boolean;
+  showResultsBeforeVoting: boolean;
 }
 
 export interface VotePollDTO {
@@ -34,6 +35,7 @@ export interface PollDTO {
   allowUserOptions: boolean;
   isMultipleChoice: boolean;
   allowVoteEdit: boolean;
+  showResultsBeforeVoting: boolean;
   isPinned: boolean;
   isClosed: boolean;
   options: PollOptionResultDTO[];

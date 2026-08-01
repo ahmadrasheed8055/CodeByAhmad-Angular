@@ -77,7 +77,7 @@ input[type="text"]:focus {
 
 /* Buttons style */
 .btn-mint {
-  background: linear-gradient(135deg, #87bf17 0%, #a2d829 100%) !important;
+  background: linear-gradient(135deg, #87bf17 0%, #87bf17 100%) !important;
   border: none !important;
   color: white !important;
   font-weight: 700 !important;

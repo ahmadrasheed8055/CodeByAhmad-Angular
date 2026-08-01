@@ -1,0 +1,94 @@
+<!-- Floating Chat Trigger Button -->
+<div class="chatbot-trigger-wrap">
+  <button class="chatbot-trigger-btn" 
+          [class.active]="isOpen"
+          (click)="toggleChat()" 
+          title="FitMind AI Assistant">
+    <div class="pulse-ring"></div>
+    <div class="btn-icon-content">
+      <i class="bi bi-robot" *ngIf="!isOpen"></i>
+      <i class="bi bi-x-lg" *ngIf="isOpen"></i>
+    </div>
+    <span class="unread-dot" *ngIf="hasUnread && !isOpen"></span>
+  </button>
+</div>
+
+<!-- Chat Popup Window -->
+<div class="chatbot-window" [class.show]="isOpen">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="d-flex align-items-center">
+      <div class="bot-avatar-wrap me-2">
+        <div class="bot-avatar">
+          <i class="bi bi-robot text-white"></i>
+        </div>
+        <span class="status-indicator"></span>
+      </div>
+      <div>
+        <h6 class="mb-0 fw-bold chat-title">FitJoin AI Assistant</h6>
+        <small class="chat-subtitle"><i class="bi bi-lightning-charge-fill me-1"></i>Always Active</small>
+      </div>
+    </div>
+    
+    <div class="chat-header-actions">
+      <button class="header-btn" (click)="closeChat()" title="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages Body -->
+  <div class="chat-body" #scrollContainer>
+    <div class="messages-list">
+      <div *ngFor="let msg of messages" 
+           class="chat-bubble-wrap" 
+           [class.user-bubble]="msg.sender === 'user'" 
+           [class.bot-bubble]="msg.sender === 'bot'">
+        
+        <div class="chat-bubble">
+          {{ msg.text }}
+        </div>
+        <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="chat-bubble-wrap bot-bubble" *ngIf="isTyping">
+        <div class="chat-bubble typing-bubble">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Prompts Chips -->
+    <div class="quick-prompts-wrap mt-3" *ngIf="messages.length <= 2">
+      <small class="text-muted d-block mb-2 font-weight-semibold">Suggested Questions:</small>
+      <div class="d-flex flex-wrap gap-1">
+        <button *ngFor="let prompt of quickPrompts" 
+                class="prompt-chip" 
+                (click)="sendQuickPrompt(prompt)">
+          {{ prompt }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Input -->
+  <div class="chat-footer">
+    <form (submit)="sendMessage(); $event.preventDefault()" class="d-flex align-items-center gap-2">
+      <input type="text" 
+             class="form-control chat-input" 
+             placeholder="Type your message..." 
+             [(ngModel)]="userMessage" 
+             name="userMessage"
+             autocomplete="off">
+             
+      <button type="submit" 
+              class="send-btn" 
+              [disabled]="!userMessage.trim() || isTyping">
+        <i class="bi bi-send-fill"></i>
+      </button>
+    </form>
+  </div>
+</div>

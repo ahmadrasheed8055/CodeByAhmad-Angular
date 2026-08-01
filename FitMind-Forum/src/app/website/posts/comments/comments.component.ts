@@ -1,3 +1,5 @@
+/* CodeByAhmad - FitMind Forum Standard Professional Module */
+
 import {
   Component,
   Input,
@@ -19,6 +21,7 @@ import { MasterService } from '../../../Shared/master.service';
 import { CommentService } from '../../../Shared/comment.service';
 import { AuthService } from '../../../Shared/auth.service';
 import { SnackBarServiceService } from '../../../Shared/snack-bar-service.service';
+import { NotificationService } from '../../../Shared/notification.service';
 import {
   PostComment,
   AddCommentRequest
@@ -33,12 +36,14 @@ import {
 })
 export class CommentsComponent implements OnInit, OnChanges {
   @Input() postId!: number;
+  @Input() postAuthorUserId?: number;
   @Input() showCommentsList: boolean = false;
   @Output() commentCountChanged = new EventEmitter<number>();
 
   masterService: MasterService = inject(MasterService);
   commentService: CommentService = inject(CommentService);
   authService: AuthService = inject(AuthService);
+  notificationService: NotificationService = inject(NotificationService);
 
   allComments: PostComment[] = [];
   visibleComments: PostComment[] = [];
@@ -248,6 +253,10 @@ export class CommentsComponent implements OnInit, OnChanges {
         this.snakBarService.showSuccess('Comment added successfully.');
         this.commentCountChanged.emit(this.allComments.length);
         this.isSubmitting = false;
+
+        if (this.postAuthorUserId) {
+          this.notificationService.notifyNewComment(this.postAuthorUserId, this.userName || 'A member', text, this.postId);
+        }
       },
       error: (err) => {
         console.error('Comment add fail hua:', err);
@@ -330,6 +339,10 @@ export class CommentsComponent implements OnInit, OnChanges {
         this.replyingToCommentId = null;
         this.snakBarService.showSuccess('Reply added successfully.');
         this.isSubmitting = false;
+
+        if (parentComment.userId) {
+          this.notificationService.notifyCommentReply(parentComment.userId, this.userName || 'A member', text, this.postId);
+        }
       },
       error: (err) => {
         console.error('Reply add fail hua:', err);
@@ -389,6 +402,9 @@ export class CommentsComponent implements OnInit, OnChanges {
                 if (wasDisliked) comment.dislikeCount--;
                 comment.likeCount++;
                 comment.isReactedByMe = true;
+                if (comment.userId) {
+                  this.notificationService.notifyCommentReaction(comment.userId, this.userName || 'A member', true);
+                }
             }
         },
         error: () => this.snakBarService.showError('Failed to like comment.')

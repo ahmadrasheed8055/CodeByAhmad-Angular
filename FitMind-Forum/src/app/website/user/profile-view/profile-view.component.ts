@@ -69,6 +69,16 @@ export class ProfileViewComponent {
 
   profileUserId: number = 0;
   activeTab: 'posts' | 'saved' | 'hidden' = 'posts';
+  isRefreshing: boolean = false;
+
+  refreshProfileFeed() {
+    if (this.isRefreshing) return;
+    this.isRefreshing = true;
+    this.loadPostsForTab(this.activeTab);
+    setTimeout(() => {
+      this.isRefreshing = false;
+    }, 500);
+  }
 
   private subscriptions: Subscription = new Subscription();
 
@@ -128,6 +138,28 @@ export class ProfileViewComponent {
         });
       })
     );
+
+    // Listen to query params for notification deep-link single post view
+    this.subscriptions.add(
+      this.route.queryParams.subscribe(qParams => {
+        if (qParams['postId']) {
+          this.filterSinglePostId = +qParams['postId'];
+        } else {
+          this.filterSinglePostId = 0;
+        }
+        if (this.profileUserId) {
+          this.loadPostsForTab(this.activeTab);
+        }
+      })
+    );
+  }
+
+  filterSinglePostId: number = 0;
+
+  clearSinglePostFilter() {
+    this.filterSinglePostId = 0;
+    this.router.navigate(['/profile-view']);
+    this.loadPostsForTab(this.activeTab);
   }
 
   setActiveTab(tab: 'posts' | 'saved' | 'hidden') {
@@ -150,8 +182,31 @@ export class ProfileViewComponent {
     this.userPosts = [];
     this.masterService.getUserAllPosts(this.profileUserId).subscribe({
       next: (posts: GetUserPostsDTO[]) => {
-        this.userPosts = posts;
-        this.postsLoader = false;
+        if (this.filterSinglePostId > 0) {
+          const matched = posts.filter(p => p.postId === this.filterSinglePostId);
+          if (matched.length > 0) {
+            this.userPosts = matched;
+            this.isCommentsVisibleMap[this.filterSinglePostId] = true;
+            this.postsLoader = false;
+          } else {
+            // Fetch global posts if post belongs to another author
+            this.masterService.getAllPosts(0).subscribe({
+              next: (allPosts: any[]) => {
+                const globalMatch = allPosts.filter(p => p.postId === this.filterSinglePostId);
+                this.userPosts = globalMatch;
+                this.isCommentsVisibleMap[this.filterSinglePostId] = true;
+                this.postsLoader = false;
+              },
+              error: () => {
+                this.userPosts = [];
+                this.postsLoader = false;
+              }
+            });
+          }
+        } else {
+          this.userPosts = posts;
+          this.postsLoader = false;
+        }
       },
       error: (err: any) => {
         console.error('Error fetching user posts:', err);
