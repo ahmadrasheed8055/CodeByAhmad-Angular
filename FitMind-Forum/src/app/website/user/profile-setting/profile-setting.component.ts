@@ -58,7 +58,7 @@ export class ProfileSettingComponent implements OnInit {
   deleteProfileModal = '#deleteProfileModal';
   
 
-  constructor() {this.user = new AppUser();}
+  constructor() {this.user = new PublicAppUserDTO();}
   showSuccess(message: string) { this.snackbar.showSuccess(message);}
 
   showError(error: string) {this.snackbar.showError(error);}

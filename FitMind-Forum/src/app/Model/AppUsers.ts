@@ -126,6 +126,13 @@ export class PublicAppUserDTO{
   location?: string;
   country?: string;
 
+  followersCount: number = 0;
+  followingCount: number = 0;
+  totalPosts: number = 0;
+  totalComments: number = 0;
+  totalLikes: number = 0;
+  isFollowing: boolean = false;
+
   constructor() {
     this.id = 0;
     this.username = '';

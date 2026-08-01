@@ -22,4 +22,5 @@ export interface GetAllPostsDTO {
   isSavedByMe?: boolean;
   poll?: PollDTO;
   isDeleted?: boolean;
+  isFollowingAuthor?: boolean;
 }

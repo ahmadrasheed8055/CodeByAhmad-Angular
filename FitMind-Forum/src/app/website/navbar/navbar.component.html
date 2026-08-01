@@ -51,75 +51,107 @@ Navbar
         <!-- Notification Dropdown -->
         <div class="nav-item me-2 dropdown h-col">
           <button 
-            class="btn btn-notification-bell position-relative p-2 rounded-circle d-flex align-items-center justify-content-center"
+            class="btn btn-notification-bell position-relative rounded-circle d-flex align-items-center justify-content-center"
             id="notificationDropdown"
             role="button" 
             data-bs-toggle="dropdown" 
             aria-expanded="false"
             title="Notifications">
-            <i class="bi bi-bell-fill fs-5"></i>
-            <span *ngIf="unreadCount > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fs-8">
-              {{ unreadCount }}
-              <span class="visually-hidden">unread notifications</span>
+            <i class="bi bi-bell-fill"></i>
+            <span *ngIf="unreadCount > 0" class="notif-badge-count position-absolute top-0 start-100 translate-middle badge rounded-pill">
+              {{ unreadCount > 99 ? '99+' : unreadCount }}
             </span>
           </button>
 
-          <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow-lg border-0 p-0 overflow-hidden" aria-labelledby="notificationDropdown" style="width: 320px;">
+          <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow-lg border-0 p-0 overflow-hidden" aria-labelledby="notificationDropdown">
             <!-- Header -->
-            <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-body-tertiary">
+            <div class="notif-header px-3 py-3 border-bottom d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center gap-2">
-                <h6 class="fw-bold mb-0 text-body">Notifications</h6>
-                <span *ngIf="unreadCount > 0" class="badge bg-success rounded-pill fs-8">{{ unreadCount }} new</span>
+                <h6 class="fw-bold mb-0 notif-title">Notifications</h6>
+                <span *ngIf="unreadCount > 0" class="badge notif-count-pill">{{ unreadCount }} new</span>
               </div>
               <button 
                 *ngIf="unreadCount > 0" 
                 type="button" 
-                class="btn btn-link p-0 text-decoration-none fs-8 text-success fw-semibold" 
+                class="btn btn-link p-0 text-decoration-none notif-mark-all-btn" 
                 (click)="markAllNotificationsAsRead()">
                 Mark all as read
               </button>
             </div>
 
             <!-- Notifications List -->
-            <div class="notification-list overflow-auto" style="max-height: 320px;">
-              <div *ngIf="notifications.length === 0" class="text-center p-4 text-muted fs-7">
-                <i class="bi bi-bell-slash fs-3 d-block mb-2 text-secondary"></i>
-                No notifications yet
+            <div class="notification-list overflow-auto" style="max-height: 380px;">
+              <div *ngIf="notifications.length === 0" class="notif-empty-state text-center p-4">
+                <div class="notif-empty-icon mb-2">
+                  <i class="bi bi-bell-slash"></i>
+                </div>
+                <h6 class="fw-semibold text-body mb-1 fs-7">No notifications yet</h6>
+                <p class="text-muted fs-8 mb-0">We'll notify you when someone interacts with your posts.</p>
               </div>
 
               <a 
                 *ngFor="let notif of notifications"
                 href="javascript:void(0)"
-                class="dropdown-item p-3 border-bottom d-flex align-items-start gap-3 notif-item"
+                class="dropdown-item notif-item px-3 py-2-5 border-bottom d-flex align-items-center gap-3"
                 [class.unread-item]="!notif.isRead"
                 (click)="onNotificationClick(notif)">
-                <!-- Icon Badge -->
-                <div class="notif-icon-badge flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center">
-                  <i *ngIf="notif.type === 'post'" class="bi bi-plus-circle-fill text-success fs-5"></i>
-                  <i *ngIf="notif.type === 'poll'" class="bi bi-bar-chart-fill text-warning fs-5"></i>
-                  <i *ngIf="notif.type === 'reaction'" class="bi bi-arrow-up-circle-fill text-primary fs-5"></i>
-                  <i *ngIf="notif.type === 'comment'" class="bi bi-chat-dots-fill text-info fs-5"></i>
-                </div>
-
-                <!-- Content -->
-                <div class="flex-grow-1" style="min-width: 0;">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <span class="fw-bold fs-7 text-body mb-0 text-truncate">{{ notif.title }}</span>
-                    <span class="fs-8 text-muted ms-2 flex-shrink-0">{{ notificationService.timeAgo(notif.timestamp) }}</span>
+                
+                <!-- User Avatar / Icon Container -->
+                <div class="position-relative flex-shrink-0">
+                  <img 
+                    *ngIf="notif.userImage && notif.userImage !== 'data:image/jpeg;base64,null'" 
+                    [src]="notif.userImage" 
+                    class="notif-avatar rounded-circle object-fit-cover" 
+                    alt="User photo">
+                  <div 
+                    *ngIf="!notif.userImage || notif.userImage === 'data:image/jpeg;base64,null'" 
+                    class="notif-avatar-placeholder rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-7">
+                    {{ (notif.userName || 'M').charAt(0).toUpperCase() }}
                   </div>
-                  <p class="fs-8 text-muted mb-0 text-wrap lh-sm">{{ notif.message }}</p>
+                  <!-- Type Badge Overlay -->
+                  <span class="notif-type-badge position-absolute bottom-0 end-0 rounded-circle d-flex align-items-center justify-content-center"
+                        [ngClass]="{
+                          'bg-success text-white': notif.type === 'post',
+                          'bg-warning text-dark': notif.type === 'poll',
+                          'bg-danger text-white': notif.type === 'reaction',
+                          'bg-primary text-white': notif.type === 'comment'
+                        }">
+                    <i *ngIf="notif.type === 'post'" class="bi bi-plus-lg"></i>
+                    <i *ngIf="notif.type === 'poll'" class="bi bi-bar-chart-fill"></i>
+                    <i *ngIf="notif.type === 'reaction'" class="bi bi-heart-fill"></i>
+                    <i *ngIf="notif.type === 'comment'" class="bi bi-chat-fill"></i>
+                    <i *ngIf="notif.type === 'follow'" class="bi bi-person-plus-fill"></i>
+                  </span>
                 </div>
 
-                <!-- Actions: Delete and Unread Dot -->
-                <div class="d-flex flex-column align-items-end gap-1 flex-shrink-0">
+                <!-- Content Body -->
+                <div class="flex-grow-1 min-w-0">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="fw-semibold notif-user-title text-truncate">{{ notif.title }}</span>
+                    <span class="notif-time text-muted flex-shrink-0 ms-2">{{ notificationService.timeAgo(notif.timestamp) }}</span>
+                  </div>
+                  <p class="notif-message text-muted mb-0 text-truncate-2">{{ notif.message }}</p>
+                    <div *ngIf="notif.type === 'follow'" class="mt-2">
+                      <button class="btn btn-sm rounded-pill px-3 py-1" style="font-size: 0.75rem;" 
+                              [ngClass]="notif.isFollowingActor ? 'btn-outline-secondary disabled' : 'btn-mint'"
+                              [disabled]="notif.isFollowingActor"
+                              (click)="!notif.isFollowingActor && followBack($event, notif)">
+                        <i class="bi" [ngClass]="notif.isFollowingActor ? 'bi-person-check-fill me-1' : 'bi-person-plus-fill me-1'"></i> 
+                        {{ notif.isFollowingActor ? 'Following' : 'Follow Back' }}
+                      </button>
+                    </div>
+                </div>
+
+                <!-- Right Side Actions & Unread Indicator -->
+                <div class="d-flex flex-column align-items-end justify-content-between h-100 flex-shrink-0 notif-actions">
                   <button 
                     type="button" 
-                    class="btn btn-link p-0 text-decoration-none fs-6 text-danger" 
+                    class="btn btn-link p-0 text-decoration-none notif-delete-btn" 
                     (click)="deleteNotification($event, notif.id)"
                     title="Delete Notification">
-                    <i class="bi bi-trash"></i>
+                    <i class="bi bi-trash3"></i>
                   </button>
-                  <span *ngIf="!notif.isRead" class="unread-dot mt-1"></span>
+                  <span *ngIf="!notif.isRead" class="unread-dot"></span>
                 </div>
               </a>
             </div>

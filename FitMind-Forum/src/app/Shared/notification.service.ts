@@ -103,9 +103,12 @@ export class NotificationService {
               userImage: n.actorImage || '',
               timestamp: new Date(n.createdAt),
               isRead: n.isRead,
-              targetId: n.targetId
+              targetId: n.targetId,
+              isFollowingActor: n.isFollowingActor
             };
           });
+
+          mappedItems.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
           this.notificationsSubject.next(mappedItems);
           const unread = mappedItems.filter(i => !i.isRead).length;
@@ -129,6 +132,9 @@ export class NotificationService {
           if (authorUserId !== currentUserId) {
              this.incrementNewContentCount();
           }
+        } else if (event.data.type === 'FORCE_POLL') {
+          // Immediately fetch notifications if instructed
+          this.pollBackendData();
         }
       };
     }
@@ -215,11 +221,24 @@ export class NotificationService {
     const inputDate = new Date(date);
     const now = new Date();
     const seconds = Math.floor((+now - +inputDate) / 1000);
-    if (seconds < 10) return 'Just now';
-    let interval = Math.floor(seconds / 3600);
-    if (interval >= 1) return `${interval}h ago`;
+    
+    if (seconds < 60) return 'Just now';
+
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return interval === 1 ? '1 year ago' : `${interval} years ago`;
+
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval === 1 ? '1 month ago' : `${interval} months ago`;
+
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval === 1 ? '1 day ago' : `${interval} days ago`;
+
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval === 1 ? '1 hour ago' : `${interval} hours ago`;
+
     interval = Math.floor(seconds / 60);
-    if (interval >= 1) return `${interval}m ago`;
-    return `${seconds}s ago`;
+    if (interval >= 1) return interval === 1 ? '1 minute ago' : `${interval} minutes ago`;
+
+    return 'Just now';
   }
 }

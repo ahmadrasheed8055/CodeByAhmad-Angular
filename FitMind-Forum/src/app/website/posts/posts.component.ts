@@ -206,6 +206,30 @@ export class PostsComponent implements OnInit {
       this.newPostsCount = count;
     });
 
+    if (isPlatformBrowser(this.platformId)) {
+      const bc = new BroadcastChannel('fitmind_community_notifications');
+      bc.onmessage = (event) => {
+        if (event.data && event.data.type === 'FOLLOW_UPDATE') {
+          const targetId = event.data.targetUserId;
+          const isFollowing = event.data.isFollowing;
+          if (this.posts) {
+            this.posts.forEach(p => {
+              if (p.userId === targetId) {
+                p.isFollowingAuthor = isFollowing;
+              }
+            });
+          }
+          if (this.filteredPosts) {
+            this.filteredPosts.forEach(p => {
+              if (p.userId === targetId) {
+                p.isFollowingAuthor = isFollowing;
+              }
+            });
+          }
+        }
+      };
+    }
+    
     this.MasterService.getAllCategories().subscribe(res => {
       this.categories = res;
       if (this.categories && this.categories.length > 0) {
@@ -593,6 +617,39 @@ export class PostsComponent implements OnInit {
         this.isSubmittingPoll = false;
       }
     });
+  }
+
+  toggleFollow(post: GetAllPostsDTO) {
+    if (!this.AuthService.isLoggedIn()) {
+      this.snackBarService.showError('Please log in to follow users');
+      return;
+    }
+    
+    if (post.isFollowingAuthor) {
+      // Unfollow
+      this.MasterService.unfollowUser(post.userId).subscribe({
+        next: () => {
+          post.isFollowingAuthor = false;
+          // Broadcast update so other components update
+          const bc = new BroadcastChannel('fitmind_community_notifications');
+          bc.postMessage({ type: 'FOLLOW_UPDATE', targetUserId: post.userId, isFollowing: false });
+          bc.close();
+        },
+        error: () => this.snackBarService.showError('Failed to unfollow user')
+      });
+    } else {
+      // Follow
+      this.MasterService.followUser(post.userId).subscribe({
+        next: () => {
+          post.isFollowingAuthor = true;
+          // Broadcast update
+          const bc = new BroadcastChannel('fitmind_community_notifications');
+          bc.postMessage({ type: 'FOLLOW_UPDATE', targetUserId: post.userId, isFollowing: true });
+          bc.close();
+        },
+        error: () => this.snackBarService.showError('Failed to follow user')
+      });
+    }
   }
 }
 

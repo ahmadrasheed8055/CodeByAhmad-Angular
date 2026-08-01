@@ -170,12 +170,16 @@
    CodeByAhmad - FitMind Forum Standard Professional Module
    Notification Bell & Dropdown Styling
    ============================================== */
+/* ==============================================
+   CodeByAhmad - FitMind Forum Standard Professional Module
+   Notification Bell & Dropdown Styling
+   ============================================== */
 .btn-notification-bell {
   background: var(--form-control, #f0f2f5) !important;
-  border: 1px solid var(--border-color, #e0e0e0) !important;
+  border: 1px solid var(--border-color, #e2e8f0) !important;
   color: var(--text-color, #1f2937) !important;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50% !important;
   padding: 0 !important;
   display: inline-flex;
@@ -187,42 +191,239 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
+.btn-notification-bell i {
+  font-size: 1.15rem;
+  transition: transform 0.2s ease;
+}
+
 :host-context([data-theme="dark"]) .btn-notification-bell,
 :host-context([data-bs-theme="dark"]) .btn-notification-bell {
   background: #1e1e24 !important;
-  border-color: #33333d !important;
+  border-color: #2e303b !important;
   color: #f3f4f6 !important;
 }
 
 .btn-notification-bell:hover {
-  background: rgba(135, 191, 23, 0.15) !important;
+  background: rgba(135, 191, 23, 0.12) !important;
   border-color: var(--green-color, #87bf17) !important;
   color: var(--green-color, #87bf17) !important;
   transform: translateY(-1px);
 }
 
+.btn-notification-bell:hover i {
+  transform: rotate(12deg);
+}
+
+/* Badge Count on Bell */
+.notif-badge-count {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  padding: 0.35em 0.55em !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  border: 2px solid var(--theme-white, #ffffff);
+}
+
+:host-context([data-theme="dark"]) .notif-badge-count,
+:host-context([data-bs-theme="dark"]) .notif-badge-count {
+  border-color: #16171d;
+}
+
+/* Notification Dropdown Container */
 .notification-dropdown {
-  border-radius: 16px !important;
+  width: 370px !important;
+  border-radius: 18px !important;
   background: var(--theme-white, #ffffff) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.15), 0 5px 15px -5px rgba(0, 0, 0, 0.08) !important;
+  margin-top: 10px !important;
+  animation: notifDropdownFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes notifDropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 :host-context([data-theme="dark"]) .notification-dropdown,
 :host-context([data-bs-theme="dark"]) .notification-dropdown {
   background: #16171d !important;
   border: 1px solid #2a2c35 !important;
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 5px 15px -5px rgba(0, 0, 0, 0.3) !important;
 }
 
+/* Header */
+.notif-header {
+  background: rgba(248, 250, 252, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+:host-context([data-theme="dark"]) .notif-header,
+:host-context([data-bs-theme="dark"]) .notif-header {
+  background: rgba(26, 27, 35, 0.8);
+}
+
+.notif-title {
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.notif-count-pill {
+  background: rgba(135, 191, 23, 0.15) !important;
+  color: var(--green-color, #87bf17) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  padding: 4px 8px !important;
+  border-radius: 12px !important;
+}
+
+.notif-mark-all-btn {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  color: var(--green-color, #87bf17) !important;
+  transition: all 0.2s ease !important;
+  border-radius: 6px;
+  padding: 2px 6px !important;
+}
+
+.notif-mark-all-btn:hover {
+  background: rgba(135, 191, 23, 0.1) !important;
+  color: #72a313 !important;
+}
+
+/* Custom Scrollbar (Hidden for a ultra-clean look) */
+.notification-list {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.notification-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Empty State */
+.notif-empty-state {
+  color: #94a3b8;
+}
+
+.notif-empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(135, 191, 23, 0.08);
+  color: var(--green-color, #87bf17);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+/* Notification Item */
 .notif-item {
-  transition: background-color 0.2s ease !important;
+  position: relative;
+  transition: background-color 0.2s ease, transform 0.15s ease !important;
+  white-space: normal !important;
+  cursor: pointer;
 }
 
+.notif-item:hover {
+  background-color: rgba(0, 0, 0, 0.025) !important;
+}
+
+:host-context([data-theme="dark"]) .notif-item:hover,
+:host-context([data-bs-theme="dark"]) .notif-item:hover {
+  background-color: rgba(255, 255, 255, 0.035) !important;
+}
+
+/* Unread Item styling */
 .unread-item {
-  background-color: rgba(135, 191, 23, 0.05) !important;
+  background-color: rgba(135, 191, 23, 0.04) !important;
 }
 
 :host-context([data-theme="dark"]) .unread-item,
 :host-context([data-bs-theme="dark"]) .unread-item {
-  background-color: rgba(135, 191, 23, 0.08) !important;
+  background-color: rgba(135, 191, 23, 0.07) !important;
+}
+
+.unread-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 3px;
+  background-color: var(--green-color, #87bf17);
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+/* Avatars & Badges */
+.notif-avatar {
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(0,0,0,0.05);
+  object-fit: cover;
+}
+
+.notif-avatar-placeholder {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #87bf17 0%, #6b9e0f 100%);
+  font-size: 1.25rem;
+  box-shadow: 0 3px 8px rgba(135, 191, 23, 0.25);
+}
+
+.notif-type-badge {
+  width: 22px;
+  height: 22px;
+  font-size: 0.7rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border: 2px solid var(--theme-white, #ffffff);
+}
+
+:host-context([data-theme="dark"]) .notif-type-badge,
+:host-context([data-bs-theme="dark"]) .notif-type-badge {
+  border-color: #16171d;
+}
+
+/* Content Details */
+.notif-user-title {
+  font-size: 0.85rem;
+  color: var(--text-color, #0f172a);
+}
+
+:host-context([data-theme="dark"]) .notif-user-title,
+:host-context([data-bs-theme="dark"]) .notif-user-title {
+  color: #f1f5f9;
+}
+
+.notif-time {
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.notif-message {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Right Actions & Unread Indicator */
+.notif-actions {
+  min-height: 40px;
 }
 
 .unread-dot {
@@ -230,16 +431,21 @@
   height: 8px;
   border-radius: 50%;
   background-color: var(--green-color, #87bf17);
-  box-shadow: 0 0 6px rgba(135, 191, 23, 0.6);
+  box-shadow: 0 0 8px rgba(135, 191, 23, 0.7);
 }
 
-.notif-icon-badge {
-  width: 36px;
-  height: 36px;
-  background: rgba(0, 0, 0, 0.03);
+.notif-delete-btn {
+  color: #94a3b8 !important;
+  font-size: 0.85rem !important;
+  opacity: 0.6;
+  transition: all 0.2s ease !important;
 }
 
-:host-context([data-theme="dark"]) .notif-icon-badge,
-:host-context([data-bs-theme="dark"]) .notif-icon-badge {
-  background: rgba(255, 255, 255, 0.05);
+.notif-item:hover .notif-delete-btn {
+  opacity: 1;
+}
+
+.notif-delete-btn:hover {
+  color: #ef4444 !important;
+  transform: scale(1.15);
 }

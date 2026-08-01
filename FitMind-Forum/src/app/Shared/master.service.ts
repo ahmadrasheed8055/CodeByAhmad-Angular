@@ -478,4 +478,13 @@ export class MasterService {
   deleteNotification(id: number): Observable<any> {
     return this.http.delete(`${this.API_URL}Notifications/${id}`);
   }
+
+  //=================Follow API==================
+  followUser(userId: number): Observable<any> {
+    return this.http.post(`${this.API_URL}AppUsers/follow/${userId}`, {});
+  }
+
+  unfollowUser(userId: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}AppUsers/unfollow/${userId}`);
+  }
 }

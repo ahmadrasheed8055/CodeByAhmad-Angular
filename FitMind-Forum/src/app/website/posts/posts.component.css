@@ -72,8 +72,9 @@
 }
 
 .tag-link:hover {
-  background: var(--green-color, #87bf17) !important;
-  color: white !important;
+  background: rgba(135, 191, 23, 0.22) !important;
+  color: var(--green-color, #87bf17) !important;
+  border-color: rgba(135, 191, 23, 0.4) !important;
 }
 
 .card-body {

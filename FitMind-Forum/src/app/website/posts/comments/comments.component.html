@@ -127,9 +127,8 @@
                      (focus)="handleInputFocus()"
                      (click)="handleInputFocus()">
               
-              <button class="send-icon-btn border-0 bg-transparent text-primary ms-2 p-0"
+              <button type="submit" class="btn btn-primary btn-sm px-3 rounded-pill shadow-sm" [disabled]="(replyText[comment.commentId] && !replyText[comment.commentId].trim()) || isSubmitting"
                       (click)="submitReply(comment)"
-                      [disabled]="!replyText[comment.commentId]?.trim() || isSubmitting"
                       *ngIf="userId"
                       title="Send Reply">
                 <i class="bi bi-send-fill" *ngIf="!isSubmitting"></i>

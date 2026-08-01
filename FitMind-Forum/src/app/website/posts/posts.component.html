@@ -279,31 +279,59 @@
 
     <div class="card w-100">
       <!-- Standard Post Header (Hidden for Polls since poll-card renders its own) -->
-      <div class="card-header card-header-action" *ngIf="!postsData.poll">
-        <div class="media align-items-center">
-          <div class="media-head me-2">
-            <div class="avatar">
-              <!-- profile picture setting -->
-              <a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"><img [src]="postsData.userImage ? 'data:image/jpeg;base64,' + postsData.userImage : '/img/avatar/default.png'"
-                  alt="postsData" class="avatar-img rounded-circle"></a>
+      <div class="card-header card-header-action bg-white border-bottom-0 pt-3 pb-2" *ngIf="!postsData.poll">
+        <div class="d-flex w-100 justify-content-between align-items-center">
+          
+          <!-- Left side: Avatar + User Info -->
+          <div class="media align-items-center flex-grow-1">
+            <div class="media-head me-3">
+              <div class="avatar">
+                <a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;">
+                  <img [src]="postsData.userImage ? 'data:image/jpeg;base64,' + postsData.userImage : '/img/avatar/default.png'"
+                       alt="User Avatar" class="avatar-img rounded-circle shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
+                </a>
+              </div>
+            </div>
+            <div class="media-body">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <a [routerLink]="['/profile', postsData.userId]" class="fw-bolder text-dark text-decoration-none" style="cursor: pointer; font-size: 1rem;">
+                  {{ postsData.userName }}
+                </a>
+                <span class="text-muted" style="font-size: 0.8rem;">
+                  • {{ timeAgo(postsData.publishAt) }}
+                  <span *ngIf="postsData.updatedAt && postsData.publishAt && postsData.updatedAt > postsData.publishAt"> (Edited) </span>
+                </span>
+              </div>
+              <div class="d-flex align-items-center mt-1">
+                <a href="javascript:void(0)" class="tag-link m-0 text-decoration-none shadow-sm" style="font-size: 0.65rem;">
+                  {{ postsData.categoryName }}
+                </a>
+              </div>
             </div>
           </div>
-          <div class="media-body">
-            <div><a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"> {{ postsData.userName }} </a></div>
-            <div class="fs-7">
-              <span> {{ timeAgo(postsData.publishAt) }} </span>
-              <span *ngIf="postsData.updatedAt && postsData.publishAt && postsData.updatedAt > postsData.publishAt"> (Edited) </span>
 
-              <a href="javascript:void(0)" class="tag-link"> {{postsData.categoryName}}</a>
+          <!-- Right side: Actions -->
+          <div class="d-flex align-items-center gap-2">
+            <button *ngIf="postsData.userId !== userId" 
+                    class="btn btn-sm rounded-pill fw-bold transition-all px-3 py-1"
+                    style="font-size: 0.8rem;"
+                    [ngClass]="postsData.isFollowingAuthor ? 'btn-outline-mint' : 'btn-mint shadow-sm'"
+                    (click)="toggleFollow(postsData)">
+              <i class="bi me-1" [class.bi-person-check-fill]="postsData.isFollowingAuthor" [class.bi-person-plus-fill]="!postsData.isFollowingAuthor"></i>
+              {{ postsData.isFollowingAuthor ? 'Following' : 'Follow' }}
+            </button>
+            
+            <!-- 3 dots dropdown -->
+            <div class="card-action-wrap ms-1">
+              <a *ngIf="userId > 0 && postsData.userId === userId" class="dropdown-toggle text-muted fs-5 text-decoration-none p-1" href="javascript:void(0)" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots"></i>
+              </a>
+              <div class="dropdown-menu dropdown-menu-end shadow border-0">
+                <a *ngIf="userId > 0 && postsData.userId === userId" href="javascript:void(0)" (click)="hidePost(postsData)" class="dropdown-item py-2"><i class="bi bi-eye-slash me-2 text-secondary"></i> Hide Post</a>
+                <div *ngIf="postsData.userId === userId" class="dropdown-divider"></div>
+                <a *ngIf="postsData.userId === userId" class="dropdown-item py-2" href="javascript:void(0)"><i class="bi bi-pin me-2 text-secondary"></i> Pin Post</a>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="card-action-wrap">
-          <a *ngIf="userId > 0 && postsData.userId === userId" class="dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></a>
-          <div class="dropdown-menu dropdown-menu-end">
-            <a *ngIf="userId > 0 && postsData.userId === userId" href="javascript:void(0)" (click)="hidePost(postsData)" class="dropdown-item"><i class="bi bi-eye-slash me-2"></i> Hide Post</a>
-            <div *ngIf="postsData.userId === userId" class="dropdown-divider"></div>
-            <a *ngIf="postsData.userId === userId" class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pin me-2"></i> Pin Post</a>
           </div>
         </div>
       </div>

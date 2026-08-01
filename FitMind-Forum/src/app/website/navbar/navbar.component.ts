@@ -93,7 +93,7 @@ export class NavbarComponent implements OnInit {
   }
 
   constructor() {
-    this.user = new AppUser();
+    this.user = new PublicAppUserDTO();
   }
 
   logout() {
@@ -123,6 +123,33 @@ export class NavbarComponent implements OnInit {
   deleteNotification(event: Event, id: string) {
     event.stopPropagation(); // prevent clicking the dropdown item
     this.notificationService.deleteNotification(id);
+  }
+
+  followBack(event: Event, notif: NotificationItem) {
+    event.stopPropagation();
+    if (!notif.targetId) return;
+
+    this.masterServices.followUser(notif.targetId).subscribe({
+      next: () => {
+        notif.isFollowingActor = true;
+        this.snackBarService.showSuccess('Followed user successfully');
+        // Optionally mark as read
+        this.notificationService.markAsRead(notif.id);
+        try {
+          const bc = new BroadcastChannel('fitmind_community_notifications');
+          bc.postMessage({ type: 'FORCE_POLL' });
+          bc.close();
+        } catch(e) {}
+      },
+      error: (err) => {
+        if (err.status === 400 && (err.error?.message === 'Already following this user.' || err.error === 'Already following this user.')) {
+          notif.isFollowingActor = true;
+          this.snackBarService.showSuccess('Already following this user.');
+        } else {
+          this.snackBarService.showError(err.error?.message || err.error || 'Failed to follow back');
+        }
+      }
+    });
   }
 }
 

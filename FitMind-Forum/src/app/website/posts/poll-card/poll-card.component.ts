@@ -249,4 +249,37 @@ export class PollCardComponent implements OnInit {
     if (interval >= 1) return `${interval} minute${interval > 1 ? 's' : ''} ago`;
     return `${Math.floor(seconds)} seconds ago`;
   }
+
+  toggleFollow(post: any) {
+    if (!this.authService.isLoggedIn()) {
+      this.toastr.error('Please log in to follow users');
+      return;
+    }
+    
+    if (post.isFollowingAuthor) {
+      // Unfollow
+      this.masterService.unfollowUser(post.userId).subscribe({
+        next: () => {
+          post.isFollowingAuthor = false;
+          // Broadcast update so other components update
+          const bc = new BroadcastChannel('fitmind_community_notifications');
+          bc.postMessage({ type: 'FOLLOW_UPDATE', targetUserId: post.userId, isFollowing: false });
+          bc.close();
+        },
+        error: () => this.toastr.error('Failed to unfollow user')
+      });
+    } else {
+      // Follow
+      this.masterService.followUser(post.userId).subscribe({
+        next: () => {
+          post.isFollowingAuthor = true;
+          // Broadcast update
+          const bc = new BroadcastChannel('fitmind_community_notifications');
+          bc.postMessage({ type: 'FOLLOW_UPDATE', targetUserId: post.userId, isFollowing: true });
+          bc.close();
+        },
+        error: () => this.toastr.error('Failed to follow user')
+      });
+    }
+  }
 }

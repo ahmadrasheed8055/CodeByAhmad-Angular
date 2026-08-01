@@ -2,7 +2,7 @@
 
 export interface NotificationItem {
   id: string;
-  type: 'post' | 'poll' | 'reaction' | 'comment';
+  type: 'post' | 'poll' | 'reaction' | 'comment' | 'follow';
   title: string;
   message: string;
   userName: string;
@@ -10,4 +10,5 @@ export interface NotificationItem {
   timestamp: Date;
   isRead: boolean;
   targetId?: number;
+  isFollowingActor?: boolean;
 }

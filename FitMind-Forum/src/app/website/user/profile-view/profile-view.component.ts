@@ -35,7 +35,7 @@ import { PollCardComponent } from '../../posts/poll-card/poll-card.component';
   styleUrl: './profile-view.component.css',
 })
 export class ProfileViewComponent {
-  user!: PublicAppUserDTO;
+  user: PublicAppUserDTO = new PublicAppUserDTO();
   userPhotos!: AppUserPhotos;
   // masterService = Inject(MasterService);
   userPosts: GetUserPostsDTO[] = [];
@@ -89,17 +89,6 @@ export class ProfileViewComponent {
   ) {}
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.authService.appUserData$.subscribe((user: any) => {
-        this.user = user;
-      })
-    );
-
-    this.subscriptions.add(
-      this.authService.appUserPhotos$.subscribe((photos: any) => {
-        this.userPhotos = photos;
-      })
-    );
     if(!this.authService.isLoggedIn()) {
       this.router.navigate(['/']);
     }
@@ -687,5 +676,47 @@ export class ProfileViewComponent {
         this.snackBar.showError('Error uploading background cover');
       }
     });
+  }
+
+  toggleFollowUser() {
+    if (!this.authService.isLoggedIn()) {
+      this.snackBar.showError('Please log in to follow users');
+      return;
+    }
+
+    if (this.user.isFollowing) {
+      // Unfollow
+      this.masterService.unfollowUser(this.user.id).subscribe({
+        next: () => {
+          this.user.isFollowing = false;
+          this.user.followersCount = Math.max(0, this.user.followersCount - 1);
+          this.snackBar.showSuccess('Unfollowed user successfully');
+        },
+        error: () => this.snackBar.showError('Failed to unfollow user')
+      });
+    } else {
+      // Follow
+      this.masterService.followUser(this.user.id).subscribe({
+        next: () => {
+          this.user.isFollowing = true;
+          this.user.followersCount += 1;
+          this.snackBar.showSuccess('Followed user successfully');
+          // Trigger a global force poll if we had SignalR or broadcast, but let's notify the service
+          // We can use a broadcast channel to tell other tabs to poll now
+          try {
+            const bc = new BroadcastChannel('fitmind_community_notifications');
+            bc.postMessage({ type: 'FORCE_POLL' });
+            bc.close();
+          } catch(e) {}
+        },
+        error: (err) => {
+          if (err.status === 400 && err.error === 'Already following this user.') {
+             this.user.isFollowing = true;
+          } else {
+             this.snackBar.showError(err.error || 'Failed to follow user');
+          }
+        }
+      });
+    }
   }
 }
