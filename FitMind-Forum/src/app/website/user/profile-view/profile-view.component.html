@@ -1,9 +1,9 @@
 <div class="profile-banner position-relative"
-    [ngClass]="{'default-banner-gradient': !userPhotos?.backgroundPhoto || userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null'}"
-    [style.backgroundImage]="(userPhotos?.backgroundPhoto && userPhotos.backgroundPhoto !== 'data:image/jpeg;base64,null') ? 'url(' + userPhotos.backgroundPhoto + ')' : null"
-    (click)="userPhotos?.backgroundPhoto ? openFullImageModal(userPhotos.backgroundPhoto) : null" 
-    [style.cursor]="userPhotos?.backgroundPhoto ? 'pointer' : 'default'"
-    data-bs-toggle="modal" [attr.data-bs-target]="userPhotos?.backgroundPhoto ? '#showFullImageModal' : null">
+    [ngClass]="{'default-banner-gradient': !userPhotos.backgroundPhoto || userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null'}"
+    [style.backgroundImage]="(userPhotos.backgroundPhoto && userPhotos.backgroundPhoto !== 'data:image/jpeg;base64,null') ? 'url(' + userPhotos.backgroundPhoto + ')' : null"
+    (click)="userPhotos.backgroundPhoto ? openFullImageModal(userPhotos.backgroundPhoto) : null" 
+    [style.cursor]="userPhotos.backgroundPhoto ? 'pointer' : 'default'"
+    data-bs-toggle="modal" [attr.data-bs-target]="userPhotos.backgroundPhoto ? '#showFullImageModal' : null">
     <input #bgCoverInput type="file" (change)="onUploadBackgroundPhoto($event)" hidden>
     <button *ngIf="user && userId === user.id" (click)="$event.stopPropagation(); bgCoverInput.click()" class="btn btn-edit-banner position-absolute bottom-0 end-0 m-3" title="Edit cover background">
         <i class="bi bi-camera-fill me-2"></i> Edit Cover
@@ -18,12 +18,12 @@
             <div class="col-lg-3 aos-init aos-animate" data-aos="fade-right" data-aos-easing="linear">
 
                 <div class="user-profile-img position-relative" 
-                     (click)="userPhotos?.profilePhoto ? openFullImageModal(userPhotos.profilePhoto) : null"
-                     [style.cursor]="userPhotos?.profilePhoto ? 'pointer' : 'default'"
-                     data-bs-toggle="modal" [attr.data-bs-target]="userPhotos?.profilePhoto ? '#showFullImageModal' : null">
-                    <img *ngIf="userPhotos?.profilePhoto && userPhotos.profilePhoto !== 'data:image/jpeg;base64,null'" [src]="userPhotos.profilePhoto" alt="Avatar">
-                    <div *ngIf="!userPhotos?.profilePhoto || userPhotos.profilePhoto === 'data:image/jpeg;base64,null'" class="default-avatar d-flex align-items-center justify-content-center">
-                        <span class="text-white fs-1 fw-bold">{{ (user?.username || 'U').charAt(0) | uppercase }}</span>
+                     (click)="userPhotos.profilePhoto ? openFullImageModal(userPhotos.profilePhoto) : null"
+                     [style.cursor]="userPhotos.profilePhoto ? 'pointer' : 'default'"
+                     data-bs-toggle="modal" [attr.data-bs-target]="userPhotos.profilePhoto ? '#showFullImageModal' : null">
+                    <img *ngIf="userPhotos.profilePhoto && userPhotos.profilePhoto !== 'data:image/jpeg;base64,null'" [src]="userPhotos.profilePhoto" alt="Avatar">
+                    <div *ngIf="!userPhotos.profilePhoto || userPhotos.profilePhoto === 'data:image/jpeg;base64,null'" class="default-avatar d-flex align-items-center justify-content-center">
+                        <span class="text-white fs-1 fw-bold">{{ (user.username || 'U').charAt(0) | uppercase }}</span>
                     </div>
                     <input #profilePhotoInput type="file" (change)="onUploadProfilePhoto($event)" hidden>
                     <button *ngIf="user && userId === user.id" (click)="$event.stopPropagation(); profilePhotoInput.click()" class="profile-avatar-overlay d-flex align-items-center justify-content-center" title="Change profile photo">

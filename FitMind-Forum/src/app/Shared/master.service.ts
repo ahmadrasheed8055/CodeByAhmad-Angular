@@ -1,4 +1,6 @@
 import { ICategories } from './../Model/categories';
+import { SearchResultDTO } from '../Model/SearchDTO';
+import { HttpParams } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -57,6 +59,16 @@ export class MasterService {
           }
         }),
       );
+  }
+
+  //=====Search API=====
+  globalSearch(q: string, type?: string, page: number = 1, pageSize: number = 5): Observable<SearchResultDTO> {
+    let params = new HttpParams()
+      .set('q', q)
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+    if (type) { params = params.set('type', type); }
+    return this.http.get<SearchResultDTO>(this.API_URL + 'Search', { params }).pipe(catchError((error) => { return throwError('Search failed'); }));
   }
 
   //=====Email Varification API=====
@@ -488,3 +500,5 @@ export class MasterService {
     return this.http.delete(`${this.API_URL}AppUsers/unfollow/${userId}`);
   }
 }
+
+

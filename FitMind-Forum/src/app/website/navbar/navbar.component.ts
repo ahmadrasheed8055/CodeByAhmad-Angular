@@ -3,6 +3,9 @@
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, switchMap, filter, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { AuthService } from '../../Shared/auth.service';
 import { AppUser, AppUserPhotos, PublicAppUserDTO } from '../../Model/AppUsers';
 import { EmailVarificationComponent } from '../auth/emailVarification/emailVarification.component';
@@ -12,12 +15,15 @@ import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
 import { ForgetPasswordComponent } from '../auth/forget-password/forget-password.component';
 import { NotificationService } from '../../Shared/notification.service';
 import { NotificationItem } from '../../Model/NotificationDTO';
+import { SearchResultDTO } from '../../Model/SearchDTO';
 
 @Component({
   selector: 'app-navbar',
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
     EmailVarificationComponent,
     LoginComponent,
     ForgetPasswordComponent
@@ -44,6 +50,11 @@ export class NavbarComponent implements OnInit {
   notifications: NotificationItem[] = [];
   unreadCount: number = 0;
 
+  searchControl = new FormControl('');
+  searchResults: SearchResultDTO | null = null;
+  showDropdown: boolean = false;
+  searchLoading: boolean = false;
+
   ngOnInit() {
     this.notificationService.notifications$.subscribe((items) => {
       this.notifications = items;
@@ -66,6 +77,52 @@ export class NavbarComponent implements OnInit {
       if (!photos) return;
       this.userPhotos = photos;
     });
+
+    this.searchControl.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      filter(val => val !== null)
+    ).subscribe((query) => {
+      if (query && query.trim().length >= 2) {
+        this.searchLoading = true;
+        this.showDropdown = true;
+        this.masterServices.globalSearch(query.trim(), 'all', 1, 3).subscribe({
+           next: (res) => {
+             this.searchResults = res;
+             this.searchLoading = false;
+           },
+           error: () => {
+             // Create an empty SearchResultDTO so the "No results found" message shows
+             this.searchResults = { users: { items: [], totalCount: 0 }, posts: { items: [], totalCount: 0 }, categories: { items: [], totalCount: 0 }, polls: { items: [], totalCount: 0 } };
+             this.searchLoading = false;
+           }
+        });
+      } else {
+        this.searchResults = null;
+        this.showDropdown = false;
+      }
+    });
+  }
+
+  showSearchDropdown() {
+    if (this.searchControl.value && this.searchControl.value.trim().length >= 2) {
+      this.showDropdown = true;
+    }
+  }
+
+  hideSearchDropdown() {
+    setTimeout(() => {
+      this.showDropdown = false;
+    }, 400);
+  }
+
+  onSearchSubmit(event: Event) {
+    event.preventDefault();
+    const query = this.searchControl.value?.trim();
+    if (query && query.length >= 2) {
+      this.showDropdown = false;
+      this.router.navigate(['/search'], { queryParams: { q: query, type: 'all' } });
+    }
   }
 
   initTheme() {
@@ -161,3 +218,4 @@ export class NavbarComponent implements OnInit {
 
 //   }
 // }
+

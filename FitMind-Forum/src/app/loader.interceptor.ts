@@ -22,7 +22,9 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
     'poll',
     'Poll',
     'Vote',
-    'savePost'
+    'savePost',
+    'Search',
+    'Chatbot'
   ];
 
   const isSilent = silentUrls.some(url => req.url.includes(url)) || req.headers.has('x-skip-loader');

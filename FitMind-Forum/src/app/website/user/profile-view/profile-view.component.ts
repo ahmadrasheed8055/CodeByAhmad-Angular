@@ -36,7 +36,7 @@ import { PollCardComponent } from '../../posts/poll-card/poll-card.component';
 })
 export class ProfileViewComponent {
   user: PublicAppUserDTO = new PublicAppUserDTO();
-  userPhotos!: AppUserPhotos;
+  userPhotos: AppUserPhotos = new AppUserPhotos();
   // masterService = Inject(MasterService);
   userPosts: GetUserPostsDTO[] = [];
   postsLoader: boolean = false;

@@ -1,0 +1,113 @@
+﻿<div class="container mt-5 pt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h2 class="mb-4">Search Results for "{{ query }}"</h2>
+      
+      <!-- Tabs -->
+      <ul class="nav nav-tabs nav-bottom-line mb-4">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="type === 'all'" (click)="changeTab('all')" style="cursor: pointer;">All</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="type === 'users'" (click)="changeTab('users')" style="cursor: pointer;">People</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="type === 'posts'" (click)="changeTab('posts')" style="cursor: pointer;">Posts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="type === 'categories'" (click)="changeTab('categories')" style="cursor: pointer;">Categories</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="type === 'polls'" (click)="changeTab('polls')" style="cursor: pointer;">Polls</a>
+        </li>
+      </ul>
+
+
+
+      <!-- Error State -->
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+
+      <!-- Results Content -->
+      <div *ngIf="!loading || page > 1">
+        <ng-container *ngIf="searchResults">
+          
+          <!-- Users Section -->
+          <div *ngIf="(type === 'all' || type === 'users') && searchResults.users?.items?.length">
+            <h4 class="mb-3 mt-4" *ngIf="type === 'all'">People</h4>
+            <div class="card mb-3" *ngFor="let user of searchResults.users!.items" style="cursor: pointer;" (click)="router.navigate(['/profile-view'], {queryParams: {userId: user.id}})">
+              <div class="card-body d-flex align-items-center">
+                <div class="avatar avatar-story me-3">
+                  <a [routerLink]="['/profile-view']" [queryParams]="{userId: user.id}">
+                    <img class="avatar-img rounded-circle" [src]="user.profilePhoto ? 'data:image/jpeg;base64,' + user.profilePhoto : 'img/avatar/default.png'" alt="">
+                  </a>
+                </div>
+                <div>
+                  <h6 class="card-title mb-0"><a [routerLink]="['/profile-view']" [queryParams]="{userId: user.id}">{{ user.username }}</a></h6>
+                  <p class="mb-0 small text-muted">{{ user.email }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Posts Section -->
+          <div *ngIf="(type === 'all' || type === 'posts') && searchResults.posts?.items?.length">
+            <h4 class="mb-3 mt-4" *ngIf="type === 'all'">Posts</h4>
+            <div class="card mb-3" *ngFor="let post of searchResults.posts!.items" style="cursor: pointer;" (click)="router.navigate(['/profile-view'], {queryParams: {postId: post.postId}})">
+              <div class="card-body d-flex">
+                <div *ngIf="post.postImage" class="me-3" style="width: 80px; height: 80px;">
+                   <img [src]="'data:image/jpeg;base64,' + post.postImage" class="rounded w-100 h-100 object-fit-cover" alt="Post image">
+                </div>
+                <div>
+                  <h6 class="card-title mb-1"><a [routerLink]="['/profile-view']" [queryParams]="{postId: post.postId}">{{ post.title }}</a></h6>
+                  <p class="mb-1 small text-muted text-truncate-2">{{ post.description }}</p>
+                  <small class="text-secondary">By {{ post.userName }} in {{ post.categoryName }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categories Section -->
+          <div *ngIf="(type === 'all' || type === 'categories') && searchResults.categories?.items?.length">
+            <h4 class="mb-3 mt-4" *ngIf="type === 'all'">Categories</h4>
+            <div class="card mb-3" *ngFor="let cat of searchResults.categories!.items" style="cursor: pointer;" (click)="router.navigate(['/home'], {queryParams: {category: cat.id}})">
+              <div class="card-body">
+                <h6 class="card-title mb-1"><a [routerLink]="['/home']" [queryParams]="{category: cat.id}">{{ cat.name }}</a></h6>
+                <p class="mb-0 small text-muted">{{ cat.description }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Polls Section -->
+          <div *ngIf="(type === 'all' || type === 'polls') && searchResults.polls?.items?.length">
+            <h4 class="mb-3 mt-4" *ngIf="type === 'all'">Polls</h4>
+            <div class="card mb-3" *ngFor="let poll of searchResults.polls!.items" style="cursor: pointer;" (click)="router.navigate(['/profile-view'], {queryParams: {postId: poll.postId}})">
+              <div class="card-body">
+                <h6 class="card-title mb-1"><a [routerLink]="['/profile-view']" [queryParams]="{postId: poll.postId}">{{ poll.question }}</a></h6>
+                <p class="mb-0 small text-muted">{{ poll.totalVotes }} votes</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!searchResults.users?.items?.length && !searchResults.posts?.items?.length && !searchResults.categories?.items?.length && !searchResults.polls?.items?.length" class="text-center py-5">
+             <h5 class="text-muted">No results found for "{{ query }}"</h5>
+          </div>
+
+        </ng-container>
+
+        <!-- Load More -->
+        <div class="text-center mt-4 mb-4" *ngIf="hasMore">
+           <button class="btn btn-mint text-white" (click)="loadMore()" [disabled]="loading">
+             <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+             Load More
+           </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+

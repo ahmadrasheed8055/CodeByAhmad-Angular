@@ -14,7 +14,7 @@
 </div>
 
 <!-- Chat Popup Window -->
-<div class="chatbot-window" [class.show]="isOpen">
+<div class="chatbot-window" [class.show]="isOpen" [class.expanded]="isExpanded">
   <!-- Header -->
   <div class="chat-header">
     <div class="d-flex align-items-center">
@@ -30,7 +30,13 @@
       </div>
     </div>
     
-    <div class="chat-header-actions">
+    <div class="chat-header-actions d-flex align-items-center gap-1">
+      <button class="header-btn" (click)="toggleInfoNotice()" title="Chat Privacy Info">
+        <i class="bi bi-info-circle"></i>
+      </button>
+      <button class="header-btn" (click)="toggleExpand()" [title]="isExpanded ? 'Minimize Window' : 'Expand Window'">
+        <i class="bi" [ngClass]="isExpanded ? 'bi-arrows-angle-contract' : 'bi-arrows-angle-expand'"></i>
+      </button>
       <button class="header-btn" (click)="closeChat()" title="Close">
         <i class="bi bi-x-lg"></i>
       </button>
@@ -39,6 +45,15 @@
 
   <!-- Messages Body -->
   <div class="chat-body" #scrollContainer>
+    <!-- Compact Privacy Info Notice Banner -->
+    <div class="chat-info-alert d-flex align-items-center justify-content-between p-2 rounded mb-2" *ngIf="showInfoNotice">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-info-circle-fill text-info fs-6 flex-shrink-0"></i>
+        <span class="small-text text-light"><strong>Note:</strong> Chat temporary hai. Page refresh par clear ho jayegi kyun ke db mein save nahi hoti.</span>
+      </div>
+      <button type="button" class="btn-close btn-close-white btn-sm ms-2" (click)="toggleInfoNotice()"></button>
+    </div>
+
     <div class="messages-list">
       <div *ngFor="let msg of messages" 
            class="chat-bubble-wrap" 
@@ -46,7 +61,8 @@
            [class.bot-bubble]="msg.sender === 'bot'">
         
         <div class="chat-bubble">
-          {{ msg.text }}
+          <img *ngIf="msg.imagePreview" [src]="msg.imagePreview" class="chat-img-thumb mb-2" alt="Attachment" />
+          <div [innerHTML]="msg.text | markdown"></div>
         </div>
         <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
       </div>
@@ -62,7 +78,7 @@
     </div>
 
     <!-- Quick Prompts Chips -->
-    <div class="quick-prompts-wrap mt-3" *ngIf="messages.length <= 2">
+    <div class="quick-prompts-wrap mt-3" *ngIf="messages.length <= 2 && !isLocked">
       <small class="text-muted d-block mb-2 font-weight-semibold">Suggested Questions:</small>
       <div class="d-flex flex-wrap gap-1">
         <button *ngFor="let prompt of quickPrompts" 
@@ -74,21 +90,62 @@
     </div>
   </div>
 
-  <!-- Footer Input -->
+  <!-- Footer Input / Lock Bar -->
   <div class="chat-footer">
-    <form (submit)="sendMessage(); $event.preventDefault()" class="d-flex align-items-center gap-2">
-      <input type="text" 
-             class="form-control chat-input" 
-             placeholder="Type your message..." 
-             [(ngModel)]="userMessage" 
-             name="userMessage"
-             autocomplete="off">
-             
-      <button type="submit" 
-              class="send-btn" 
-              [disabled]="!userMessage.trim() || isTyping">
-        <i class="bi bi-send-fill"></i>
-      </button>
-    </form>
+    <!-- INLINE LOCKED BAR (Replaces input box cleanly when guest limit reached) -->
+    <div class="locked-inline-bar d-flex align-items-center justify-content-between p-2 rounded" *ngIf="isLocked">
+      <div class="d-flex align-items-center gap-2 text-warning small ms-1">
+        <i class="bi bi-lock-fill fs-6"></i>
+        <span class="fw-semibold">Guest Limit Reached (2/2 Used)</span>
+      </div>
+      <div class="d-flex gap-1 me-1">
+        <button class="btn btn-sm btn-success fw-bold py-1 px-2" style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#loginModal">Log In</button>
+        <button class="btn btn-sm btn-outline-light fw-bold py-1 px-2" style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#emailVarificationModal">Register</button>
+      </div>
+    </div>
+
+    <!-- UNLOCKED INPUT FORM -->
+    <ng-container *ngIf="!isLocked">
+      <!-- Selected File Preview Badge -->
+      <div class="file-preview-badge d-flex align-items-center justify-content-between mb-2 p-2 rounded" *ngIf="selectedFile">
+        <div class="d-flex align-items-center gap-2 overflow-hidden me-2">
+          <img *ngIf="selectedFile.previewUrl" [src]="selectedFile.previewUrl" class="thumb-mini" />
+          <i *ngIf="!selectedFile.previewUrl" class="bi bi-file-earmark-text text-success fs-5"></i>
+          <small class="text-truncate text-light">{{ selectedFile.fileName }}</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white btn-sm" (click)="removeSelectedFile()"></button>
+      </div>
+
+      <form (submit)="sendMessage(); $event.preventDefault()" class="d-flex align-items-center gap-2">
+        <!-- Hidden File Input -->
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,.pdf" class="d-none">
+
+        <!-- Attachment Button -->
+        <div class="position-relative" 
+             [title]="isLoggedIn ? 'Attach image or PDF document' : 'Log in to share files & images with bot'">
+          <button type="button" 
+                  class="attachment-btn" 
+                  [class.disabled-guest]="!isLoggedIn"
+                  [disabled]="!isLoggedIn"
+                  (click)="isLoggedIn && fileInput.click()">
+            <i class="bi bi-paperclip"></i>
+            <i class="bi bi-lock-fill guest-lock-icon" *ngIf="!isLoggedIn"></i>
+          </button>
+        </div>
+
+        <input type="text" 
+               class="form-control chat-input" 
+               [placeholder]="isLoggedIn ? 'Type message or attach image...' : 'Type message... (Guest mode: 2 free prompts)'" 
+               [(ngModel)]="userMessage" 
+               name="userMessage"
+               autocomplete="off">
+               
+        <button type="submit" 
+                class="send-btn" 
+                [disabled]="(!userMessage.trim() && !selectedFile) || isTyping">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </form>
+    </ng-container>
   </div>
 </div>

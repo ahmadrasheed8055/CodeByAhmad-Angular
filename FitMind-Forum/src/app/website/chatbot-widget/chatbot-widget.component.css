@@ -94,13 +94,30 @@
   opacity: 0;
   visibility: hidden;
   transform: translateY(20px) scale(0.95);
-  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), width 0.3s ease, height 0.3s ease;
 }
 
 .chatbot-window.show {
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
+}
+
+/* Expanded Full-Size Mode */
+.chatbot-window.expanded {
+  width: 720px;
+  height: 620px;
+  max-width: calc(100vw - 30px);
+  max-height: calc(100vh - 110px);
+}
+
+@media (max-width: 768px) {
+  .chatbot-window.expanded {
+    width: calc(100vw - 20px);
+    height: calc(100vh - 90px);
+    bottom: 75px;
+    right: 10px;
+  }
 }
 
 /* Header */
@@ -325,4 +342,107 @@
 .send-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Markdown Styles inside Chat Bubble */
+.chat-bubble strong {
+  font-weight: 700;
+  color: inherit;
+}
+
+.chat-bubble em {
+  font-style: italic;
+}
+
+.chat-bubble ul {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  padding-left: 20px;
+}
+
+.chat-bubble li {
+  margin-bottom: 4px;
+}
+
+.chat-bubble p {
+  margin-bottom: 8px;
+}
+
+.chat-bubble hr {
+  margin: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Attachment & Image Styles */
+.attachment-btn {
+  background: transparent;
+  border: none;
+  color: #87bf17;
+  font-size: 1.25rem;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attachment-btn:hover {
+  background: rgba(135, 191, 23, 0.15);
+  transform: scale(1.1);
+}
+
+.file-preview-badge {
+  background: rgba(135, 191, 23, 0.12);
+  border: 1px dashed rgba(135, 191, 23, 0.4);
+}
+
+.thumb-mini {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.chat-img-thumb {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 12px;
+  display: block;
+  object-fit: cover;
+}
+
+/* Compact Info Alert Banner */
+.chat-info-alert {
+  background: rgba(13, 110, 253, 0.15);
+  border: 1px solid rgba(13, 110, 253, 0.35);
+  font-size: 0.76rem;
+  line-height: 1.3;
+}
+
+/* Single-Row Locked Inline Bar */
+.locked-inline-bar {
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.35);
+}
+
+/* Disabled Attachment for Guests */
+.attachment-btn.disabled-guest {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  color: #6c757d;
+}
+
+.attachment-btn.disabled-guest:hover {
+  background: transparent;
+  transform: none;
+}
+
+.guest-lock-icon {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  font-size: 0.6rem;
+  color: #ffc107;
 }

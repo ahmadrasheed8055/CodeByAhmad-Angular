@@ -16,10 +16,14 @@ import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PollCardComponent } from './poll-card/poll-card.component';
 import { CreatePollDTO } from '../../Model/PollDTO';
+import { CategoryFilterService } from '../../Shared/category-filter.service';
+import { ICategories } from '../../Model/categories';
+import { ChatbotService, ChatMessage } from '../../Shared/chatbot.service';
+import { MarkdownPipe } from '../../Shared/markdown.pipe';
 
 @Component({
   selector: 'app-posts',
-  imports: [CommonModule, CommentsComponent, RouterModule, FormsModule, ReactiveFormsModule, PollCardComponent],
+  imports: [CommonModule, CommentsComponent, RouterModule, FormsModule, ReactiveFormsModule, PollCardComponent, MarkdownPipe],
   templateUrl: './posts.component.html',
   styleUrls: ['./posts.component.css'],
 })
@@ -30,6 +34,19 @@ export class PostsComponent implements OnInit {
   AuthService = inject(AuthService);
   snackBarService = inject(SnackBarServiceService);
   notificationService = inject(NotificationService);
+  categoryFilterService = inject(CategoryFilterService);
+  chatbotService = inject(ChatbotService);
+
+  // Post AI Assistant State
+  selectedAiPost: GetAllPostsDTO | null = null;
+  isAiAnalyzing: boolean = false;
+  aiAnalysisResult: string = '';
+  aiFollowUpQuestion: string = '';
+  aiChatHistory: ChatMessage[] = [];
+  activeAiPromptType: 'summary' | 'action' | 'science' | 'custom' = 'summary';
+
+  selectedCategory: ICategories | null = null;
+  selectedCategoryId: number | null = null;
   userId: number = 0;
   currentUserImage: string = '';
   postReactionsCount: GetPostReactionsCount | null = null;
@@ -187,6 +204,19 @@ export class PostsComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Subscribe to selected category state from CategoryFilterService
+    this.categoryFilterService.selectedCategory$.subscribe((cat) => {
+      this.selectedCategory = cat;
+    });
+
+    this.categoryFilterService.selectedCategoryId$.subscribe((catId) => {
+      this.selectedCategoryId = catId;
+      if (catId && this.categories && this.categories.length > 0) {
+        this.selectedPollCategory = catId;
+        this.inlinePostForm.patchValue({ category: catId });
+      }
+    });
+
     if (isPlatformBrowser(this.platformId)) {
       this.AuthService.appUserId$.subscribe((userId) => {
         this.userId = userId || 0;
@@ -231,9 +261,10 @@ export class PostsComponent implements OnInit {
     }
     
     this.MasterService.getAllCategories().subscribe(res => {
-      this.categories = res;
+      this.categories = res || [];
+      this.categoryFilterService.setCategories(this.categories);
       if (this.categories && this.categories.length > 0) {
-        this.selectedPollCategory = this.categories[0].id;
+        this.selectedPollCategory = this.selectedCategoryId || this.categories[0].id;
       }
     });
   }
@@ -249,15 +280,12 @@ export class PostsComponent implements OnInit {
     this.MasterService.getPostReactionsCount(postId).subscribe(
       (response) => {
         console.log('Post reactions count:', response);
-      //  return response;
       },
       (error) => {
         console.error('Error fetching post reactions count:', error);
-        // this.snackBarService.showError('Error fetching post reactions count');
       }
     );
   }
-
 
   activeFilter: 'latest' | 'popular' | 'polls' | 'myposts' = 'latest';
   isRefreshing: boolean = false;
@@ -271,6 +299,12 @@ export class PostsComponent implements OnInit {
 
     let result = [...this.posts];
 
+    // 1. Filter by Selected Category
+    if (this.selectedCategoryId !== null && this.selectedCategoryId > 0) {
+      result = result.filter((p) => p.categoryId === this.selectedCategoryId);
+    }
+
+    // 2. Filter by Active Tab Filter
     switch (this.activeFilter) {
       case 'popular':
         result.sort((a, b) => {
@@ -301,12 +335,165 @@ export class PostsComponent implements OnInit {
     return result;
   }
 
+  get currentCategoryItems(): GetAllPostsDTO[] {
+    if (!this.posts) return [];
+    if (this.selectedCategoryId) {
+      return this.posts.filter(p => p.categoryId === this.selectedCategoryId && !p.isDeleted);
+    }
+    return this.posts.filter(p => !p.isDeleted);
+  }
+
+  get currentCategoryPostsCount(): number {
+    return this.currentCategoryItems.filter(p => !p.poll).length;
+  }
+
+  get currentCategoryPollsCount(): number {
+    return this.currentCategoryItems.filter(p => !!p.poll).length;
+  }
+
   get pollsCount(): number {
-    return this.posts ? this.posts.filter(p => !!p.poll && !p.isDeleted).length : 0;
+    return this.currentCategoryItems.filter(p => !!p.poll).length;
   }
 
   get myPostsCount(): number {
-    return (this.posts && this.userId) ? this.posts.filter(p => p.userId === this.userId && !p.isDeleted).length : 0;
+    return (this.currentCategoryItems && this.userId) ? this.currentCategoryItems.filter(p => p.userId === this.userId).length : 0;
+  }
+
+  clearCategoryFilter() {
+    this.categoryFilterService.clearFilter(true);
+  }
+
+  selectCategory(cat: ICategories | null) {
+    this.categoryFilterService.selectCategory(cat, true);
+  }
+
+  selectCategoryId(id: number | null) {
+    this.categoryFilterService.selectCategoryId(id, true);
+  }
+
+  openCreatePostForActiveCategory() {
+    this.toggleInlineAddPost(true);
+    if (this.selectedCategoryId) {
+      this.inlinePostForm.patchValue({ category: this.selectedCategoryId });
+    }
+  }
+
+  openCreatePollForActiveCategory() {
+    if (this.selectedCategoryId) {
+      this.selectedPollCategory = this.selectedCategoryId;
+    }
+  }
+
+  openPostAiModal(post: GetAllPostsDTO) {
+    this.selectedAiPost = post;
+    this.aiAnalysisResult = '';
+    this.aiFollowUpQuestion = '';
+    this.aiChatHistory = [];
+    this.activeAiPromptType = 'summary';
+
+    // Auto-generate initial breakdown/summary
+    this.generatePostAiInsight('summary');
+  }
+
+  generatePostAiInsight(promptType: 'summary' | 'action' | 'science') {
+    if (!this.selectedAiPost) return;
+    this.activeAiPromptType = promptType;
+    this.isAiAnalyzing = true;
+    this.aiAnalysisResult = '';
+
+    let promptGoal = '';
+    if (promptType === 'summary') {
+      promptGoal = 'Provide a structured summary of this post with key takeaways, main points, and conclusions in bullet points.';
+    } else if (promptType === 'action') {
+      promptGoal = 'Provide practical, actionable fitness and nutrition advice, workout tips, or step-by-step guidance based on this post.';
+    } else if (promptType === 'science') {
+      promptGoal = 'Fact-check this post from an exercise physiology, sports science, and clinical nutrition perspective with evidence-based insights.';
+    }
+
+    const postContext = `[POST TITLE]: ${this.selectedAiPost.title}
+[AUTHOR]: ${this.selectedAiPost.userName || 'Community Member'}
+[CATEGORY]: ${this.selectedAiPost.categoryName || 'General'}
+[CONTENT]: ${this.selectedAiPost.description || 'No description'}
+${this.selectedAiPost.poll ? `[POLL QUESTION]: ${this.selectedAiPost.poll.question}, [OPTIONS]: ${this.selectedAiPost.poll.options?.map((o: any) => o.text).join(', ')}` : ''}
+
+[REQUEST]: ${promptGoal}`;
+
+    this.chatbotService.askChatbot(postContext, []).subscribe({
+      next: (res) => {
+        this.aiAnalysisResult = res.response || 'No response generated.';
+        this.isAiAnalyzing = false;
+        this.aiChatHistory = [
+          { id: '1', sender: 'user', text: promptGoal, timestamp: new Date() },
+          { id: '2', sender: 'bot', text: this.aiAnalysisResult, timestamp: new Date() }
+        ];
+      },
+      error: () => {
+        this.aiAnalysisResult = '⚠️ Unable to connect to FitMind AI right now. Please check if the backend server is running and try again.';
+        this.isAiAnalyzing = false;
+      }
+    });
+  }
+
+  submitAiFollowUp() {
+    if (!this.aiFollowUpQuestion.trim() || !this.selectedAiPost || this.isAiAnalyzing) return;
+    const userQ = this.aiFollowUpQuestion.trim();
+    this.aiFollowUpQuestion = '';
+    this.activeAiPromptType = 'custom';
+    this.isAiAnalyzing = true;
+
+    this.aiChatHistory.push({
+      id: Date.now().toString(),
+      sender: 'user',
+      text: userQ,
+      timestamp: new Date()
+    });
+
+    const followUpPrompt = `Context: Post titled "${this.selectedAiPost.title}".
+User Question: ${userQ}`;
+
+    this.chatbotService.askChatbot(followUpPrompt, this.aiChatHistory).subscribe({
+      next: (res) => {
+        this.aiAnalysisResult = res.response;
+        this.isAiAnalyzing = false;
+        this.aiChatHistory.push({
+          id: (Date.now() + 1).toString(),
+          sender: 'bot',
+          text: res.response,
+          timestamp: new Date()
+        });
+      },
+      error: () => {
+        this.isAiAnalyzing = false;
+        this.snackBarService.showError('Failed to get AI response. Please try again.');
+      }
+    });
+  }
+
+  copyAiInsight() {
+    if (!this.aiAnalysisResult) return;
+    navigator.clipboard.writeText(this.aiAnalysisResult);
+    this.snackBarService.showSuccess('AI insights copied to clipboard!');
+  }
+
+  getCategoryFallbackIcon(name?: string): string {
+    if (!name) return 'bi-grid-fill';
+    const lower = name.toLowerCase();
+    if (lower.includes('fitness') || lower.includes('workout') || lower.includes('gym')) return 'bi-lightning-charge-fill';
+    if (lower.includes('nutrition') || lower.includes('diet') || lower.includes('food')) return 'bi-egg-fried';
+    if (lower.includes('mind') || lower.includes('mental') || lower.includes('meditation')) return 'bi-heart-pulse-fill';
+    if (lower.includes('running') || lower.includes('cardio')) return 'bi-speedometer2';
+    if (lower.includes('strength') || lower.includes('muscle')) return 'bi-trophy-fill';
+    return 'bi-bookmark-star-fill';
+  }
+
+  getCategoryGradient(name?: string): string {
+    if (!name) return 'linear-gradient(135deg, #87bf17 0%, #4a8505 100%)';
+    const lower = name.toLowerCase();
+    if (lower.includes('fitness') || lower.includes('workout')) return 'linear-gradient(135deg, #87bf17 0%, #4a8505 100%)';
+    if (lower.includes('nutrition') || lower.includes('diet')) return 'linear-gradient(135deg, #f2994a 0%, #e27d22 100%)';
+    if (lower.includes('mind') || lower.includes('mental')) return 'linear-gradient(135deg, #9b51e0 0%, #6f2dbd 100%)';
+    if (lower.includes('running') || lower.includes('cardio')) return 'linear-gradient(135deg, #0195ff 0%, #0066cc 100%)';
+    return 'linear-gradient(135deg, #ec595a 0%, #c43839 100%)';
   }
 
   refreshPosts() {
@@ -319,6 +506,7 @@ export class PostsComponent implements OnInit {
     this.MasterService.getAllPosts(this.userId, true).subscribe({
       next: (posts: GetAllPostsDTO[]) => {
         this.posts = posts;
+        this.categoryFilterService.updateCounts(this.posts);
         setTimeout(() => {
           this.isRefreshing = false;
         }, 500);
@@ -333,16 +521,14 @@ export class PostsComponent implements OnInit {
   }
 
   getAllPosts() {
-    // debugger;
      const userId = this.AuthService.userIdExists();
      if (userId === 0) {
       this.userId = 0;
      }
-    //  debugger;
 
     this.MasterService.getAllPosts(this.userId).subscribe((posts: GetAllPostsDTO[]) => {
-
       this.posts = posts;
+      this.categoryFilterService.updateCounts(this.posts);
       console.log('Posts fetched:', this.posts);
     });
   }

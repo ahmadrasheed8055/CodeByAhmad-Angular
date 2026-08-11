@@ -1,21 +1,11 @@
 import { Routes } from '@angular/router';
-import { RegisterComponent } from './website/auth/register/register.component';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './website/home/home.component';
 import { authGuard } from './Shared/auth.guard';
 import { emailTokenGuardGuard } from './Shared/email-token-guard.guard';
-import { ErrorComponent } from './website/error/error.component';
-import { ProfileSettingComponent } from './website/user/profile-setting/profile-setting.component';
-import { NavbarComponent } from './website/navbar/navbar.component';
-import { ProfileViewComponent } from './website/user/profile-view/profile-view.component';
-import { AddPostComponent } from './website/user/add-post/add-post.component';
-import { UserPostsComponent } from './website/user/user-posts/user-posts.component';
-import { ForgetPasswordComponent } from './website/auth/forget-password/forget-password.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: NavbarComponent,
+    loadComponent: () => import('./website/navbar/navbar.component').then(m => m.NavbarComponent),
     children: [
       {
         path: '',
@@ -24,31 +14,35 @@ export const routes: Routes = [
       },
       {
         path: 'home',
-        component: HomeComponent,
+        loadComponent: () => import('./website/home/home.component').then(m => m.HomeComponent),
+      },
+      {
+        path: 'search',
+        loadComponent: () => import('./website/search-results/search-results.component').then(m => m.SearchResultsComponent),
       },
       {
         path: 'profile-setting',
-        component: ProfileSettingComponent,
+        loadComponent: () => import('./website/user/profile-setting/profile-setting.component').then(m => m.ProfileSettingComponent),
         canActivate: [authGuard],
       },
       {
         path: 'profile-view',
-        component: ProfileViewComponent,
+        loadComponent: () => import('./website/user/profile-view/profile-view.component').then(m => m.ProfileViewComponent),
         canActivate: [authGuard],
       },
       {
         path: 'profile/:id',
-        component: ProfileViewComponent,
+        loadComponent: () => import('./website/user/profile-view/profile-view.component').then(m => m.ProfileViewComponent),
         canActivate: [authGuard],
       },
       {
         path: 'add-post',
-        component: AddPostComponent,
+        loadComponent: () => import('./website/user/add-post/add-post.component').then(m => m.AddPostComponent),
         canActivate: [authGuard]
       },
       {
-        path:'user-posts',
-        component:UserPostsComponent,
+        path: 'user-posts',
+        loadComponent: () => import('./website/user/user-posts/user-posts.component').then(m => m.UserPostsComponent),
         canActivate: [authGuard]
       },
       {
@@ -57,16 +51,15 @@ export const routes: Routes = [
       }
     ]
   },
- 
   {
     path: 'register',
     canActivate: [emailTokenGuardGuard],
-    component: RegisterComponent,
+    loadComponent: () => import('./website/auth/register/register.component').then(m => m.RegisterComponent),
   },
   {
     path: 'forget-password',
     canActivate: [emailTokenGuardGuard],
-    component: ForgetPasswordComponent,
+    loadComponent: () => import('./website/auth/forget-password/forget-password.component').then(m => m.ForgetPasswordComponent),
   },
   {
     path: 'reset-password',
@@ -74,10 +67,10 @@ export const routes: Routes = [
   },
   {
     path: 'error',
-    component: ErrorComponent,
+    loadComponent: () => import('./website/error/error.component').then(m => m.ErrorComponent),
   },
   {
-    path: '**', //unknow page link or url
+    path: '**',
     redirectTo: '/error?status=404'
   }
 ];

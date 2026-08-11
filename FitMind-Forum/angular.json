@@ -31,7 +31,18 @@
               "src/styles.css"
             ],
             "scripts": [],
+            "allowedCommonJsDependencies": [
+              "crypto-js",
+              "google-libphonenumber",
+              "libphonenumber-js",
+              "@auth0/angular-jwt"
+            ],
             "optimization": {
+              "scripts": false,
+              "styles": {
+                "minify": false,
+                "inlineCritical": false
+              },
               "fonts": {
                 "inline": false
               }
@@ -39,6 +50,7 @@
           },
           "configurations": {
             "production": {
+              "optimization": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -56,13 +68,21 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": {
+                "scripts": true,
+                "styles": false,
+                "vendor": false
+              },
+              "namedChunks": true
             }
           },
           "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "prebundle": true
+          },
           "configurations": {
             "production": {
               "buildTarget": "FitMind-Forum:build:production"
@@ -100,6 +120,11 @@
     }
   },
   "cli": {
-    "analytics": "bd968c8a-25cf-49fb-88a8-0a810365aad8"
+    "analytics": "bd968c8a-25cf-49fb-88a8-0a810365aad8",
+    "cache": {
+      "enabled": true,
+      "environment": "all",
+      "path": ".angular/cache"
+    }
   }
 }

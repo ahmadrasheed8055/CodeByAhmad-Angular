@@ -1,4 +1,4 @@
-/* Glassmorphism Navbar */
+﻿/* Glassmorphism Navbar */
 .vine-navbar {
   backdrop-filter: blur(12px) !important;
   background: rgba(255, 255, 255, 0.85) !important;
@@ -343,76 +343,6 @@
 }
 
 /* Unread Item styling */
-.unread-item {
-  background-color: rgba(135, 191, 23, 0.04) !important;
-}
-
-:host-context([data-theme="dark"]) .unread-item,
-:host-context([data-bs-theme="dark"]) .unread-item {
-  background-color: rgba(135, 191, 23, 0.07) !important;
-}
-
-.unread-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 15%;
-  bottom: 15%;
-  width: 3px;
-  background-color: var(--green-color, #87bf17);
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
-}
-
-/* Avatars & Badges */
-.notif-avatar {
-  width: 52px;
-  height: 52px;
-  border: 1px solid rgba(0,0,0,0.05);
-  object-fit: cover;
-}
-
-.notif-avatar-placeholder {
-  width: 52px;
-  height: 52px;
-  background: linear-gradient(135deg, #87bf17 0%, #6b9e0f 100%);
-  font-size: 1.25rem;
-  box-shadow: 0 3px 8px rgba(135, 191, 23, 0.25);
-}
-
-.notif-type-badge {
-  width: 22px;
-  height: 22px;
-  font-size: 0.7rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  border: 2px solid var(--theme-white, #ffffff);
-}
-
-:host-context([data-theme="dark"]) .notif-type-badge,
-:host-context([data-bs-theme="dark"]) .notif-type-badge {
-  border-color: #16171d;
-}
-
-/* Content Details */
-.notif-user-title {
-  font-size: 0.85rem;
-  color: var(--text-color, #0f172a);
-}
-
-:host-context([data-theme="dark"]) .notif-user-title,
-:host-context([data-bs-theme="dark"]) .notif-user-title {
-  color: #f1f5f9;
-}
-
-.notif-time {
-  font-size: 0.72rem;
-  font-weight: 500;
-}
-
-.notif-message {
-  font-size: 0.78rem;
-  line-height: 1.35;
-}
 
 .text-truncate-2 {
   display: -webkit-box;
@@ -449,3 +379,17 @@
   color: #ef4444 !important;
   transform: scale(1.15);
 }
+
+
+/* Custom Search Cancel Button Color */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2387bf17'><path d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/></svg>") no-repeat 50% 50%;
+  cursor: pointer;
+}
+
+
+
+

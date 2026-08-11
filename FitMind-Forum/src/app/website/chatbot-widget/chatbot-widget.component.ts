@@ -1,26 +1,52 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface ChatMessage {
-  id: string;
-  sender: 'user' | 'bot';
-  text: string;
-  timestamp: Date;
-}
+import { ChatbotService, ChatMessage } from '../../Shared/chatbot.service';
+import { MarkdownPipe } from '../../Shared/markdown.pipe';
+import { AuthService } from '../../Shared/auth.service';
 
 @Component({
   selector: 'app-chatbot-widget',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MarkdownPipe],
   templateUrl: './chatbot-widget.component.html',
   styleUrl: './chatbot-widget.component.css'
 })
 export class ChatbotWidgetComponent implements AfterViewChecked {
   isOpen: boolean = false;
+  isExpanded: boolean = true;
   isTyping: boolean = false;
   userMessage: string = '';
   hasUnread: boolean = true;
+  showInfoNotice: boolean = false;
+  private shouldScrollToBottom: boolean = false;
+  
+  selectedFile: { base64: string, mimeType: string, previewUrl: string, fileName: string } | null = null;
+
+  private authService = inject(AuthService);
+  private chatbotService = inject(ChatbotService);
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  get guestPromptCount(): number {
+    if (this.isLoggedIn) return 0;
+    const count = sessionStorage.getItem('fitmind_guest_prompts');
+    return count ? parseInt(count, 10) : 0;
+  }
+
+  get guestPromptsRemaining(): number {
+    return Math.max(0, 2 - this.guestPromptCount);
+  }
+
+  get isLocked(): boolean {
+    return !this.isLoggedIn && this.guestPromptCount >= 2;
+  }
+
+  toggleInfoNotice() {
+    this.showInfoNotice = !this.showInfoNotice;
+  }
 
   messages: ChatMessage[] = [
     {
@@ -41,69 +67,123 @@ export class ChatbotWidgetComponent implements AfterViewChecked {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   ngAfterViewChecked() {
-    this.scrollToBottom();
+    if (this.shouldScrollToBottom) {
+      this.scrollToBottom();
+      this.shouldScrollToBottom = false;
+    }
   }
 
   toggleChat() {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       this.hasUnread = false;
+      this.shouldScrollToBottom = true;
     }
+  }
+
+  toggleExpand() {
+    this.isExpanded = !this.isExpanded;
+    this.shouldScrollToBottom = true;
   }
 
   closeChat() {
     this.isOpen = false;
   }
 
+  onFileSelected(event: Event) {
+    if (!this.isLoggedIn) return; // Disable file selection for guests
+
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        const parts = dataUrl.split(';base64,');
+        const mimeType = parts[0].replace('data:', '');
+        const base64 = parts[1];
+
+        this.selectedFile = {
+          base64: base64,
+          mimeType: mimeType,
+          previewUrl: mimeType.startsWith('image/') ? dataUrl : '',
+          fileName: file.name
+        };
+      };
+
+      reader.readAsDataURL(file);
+      // Reset input value so same file can be selected again
+      input.value = '';
+    }
+  }
+
+  removeSelectedFile() {
+    this.selectedFile = null;
+  }
+
   sendQuickPrompt(promptText: string) {
+    if (this.isLocked) return;
     this.userMessage = promptText;
     this.sendMessage();
   }
 
   sendMessage() {
+    if (this.isLocked) return;
     const text = this.userMessage.trim();
-    if (!text) return;
+    if (!text && !this.selectedFile) return;
+
+    // Increment guest prompt counter if user is not logged in
+    if (!this.isLoggedIn) {
+      const nextCount = this.guestPromptCount + 1;
+      sessionStorage.setItem('fitmind_guest_prompts', nextCount.toString());
+    }
+
+    const fileBase64 = this.isLoggedIn ? this.selectedFile?.base64 : undefined;
+    const fileMimeType = this.isLoggedIn ? this.selectedFile?.mimeType : undefined;
+    const filePreview = this.isLoggedIn ? this.selectedFile?.previewUrl : undefined;
+    const fileName = this.isLoggedIn ? this.selectedFile?.fileName : undefined;
 
     // Add user message
     this.messages.push({
       id: Date.now().toString(),
       sender: 'user',
-      text: text,
-      timestamp: new Date()
+      text: text || (fileName ? `[Attached: ${fileName}]` : ''),
+      timestamp: new Date(),
+      imagePreview: filePreview
     });
 
     this.userMessage = '';
+    this.selectedFile = null;
     this.isTyping = true;
+    this.shouldScrollToBottom = true;
+    
+    // Copy history excluding the latest message we just added
+    const history = [...this.messages];
+    history.pop();
 
-    // Simulate AI response after short delay
-    setTimeout(() => {
-      this.isTyping = false;
-      this.messages.push({
-        id: (Date.now() + 1).toString(),
-        sender: 'bot',
-        text: this.getDummyResponse(text),
-        timestamp: new Date()
-      });
-    }, 1200);
-  }
-
-  private getDummyResponse(input: string): string {
-    const lower = input.toLowerCase();
-
-    if (lower.includes('workout') || lower.includes('exercise')) {
-      return "For effective workouts, consistency is key! Make sure to combine strength training with proper recovery and hydration. Check out our Fitness category for member routines! 🏋️‍♂️";
-    }
-    if (lower.includes('diet') || lower.includes('nutrition') || lower.includes('food')) {
-      return "Balanced nutrition fuels your body! Focus on whole foods, lean proteins, complex carbs, and plenty of water to maximize your gains. 🥗";
-    }
-    if (lower.includes('poll')) {
-      return "To create a poll, click on 'Add Post', toggle the 'Create Poll' tab, add your question and options, and customize settings like 'Show Results Before Voting'! 📊";
-    }
-    if (lower.includes('guideline') || lower.includes('rule')) {
-      return "Our community thrives on respect and support! Keep discussions constructive, encourage fellow fitness enthusiasts, and avoid spam or offensive language. 💙";
-    }
-
-    return "Thanks for reaching out! I'm currently operating in preview mode. Tomorrow we'll be connecting full AI smarts to answer all your health & fitness queries in real time! ⚡";
+    this.chatbotService.askChatbot(text, history, fileBase64, fileMimeType).subscribe({
+      next: (res) => {
+        this.isTyping = false;
+        this.messages.push({
+          id: Date.now().toString(),
+          sender: 'bot',
+          text: res.response,
+          timestamp: new Date()
+        });
+        this.shouldScrollToBottom = true;
+      },
+      error: (err) => {
+        this.isTyping = false;
+        this.messages.push({
+          id: Date.now().toString(),
+          sender: 'bot',
+          text: 'Oops! I am having trouble connecting to the server. Please try again later.',
+          timestamp: new Date()
+        });
+        this.shouldScrollToBottom = true;
+      }
+    });
   }
 
   private scrollToBottom(): void {

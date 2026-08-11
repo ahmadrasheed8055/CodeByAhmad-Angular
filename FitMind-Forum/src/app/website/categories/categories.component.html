@@ -1,31 +1,118 @@
- <div class="vine-categories mb-4">
-   <h4 class="section-title">Categories</h4>
+<!-- FitMind Forum - Clean Professional Categories Sidebar -->
+<div class="vine-categories-widget card border-0 mb-4 shadow-sm" data-aos="fade-right" data-aos-easing="linear">
+  <div class="card-body p-3">
 
-   <!-- Loading State -->
-   @if(loading){
-     <div class="d-flex justify-content-center p-3">
-       <div class="spinner-border text-secondary" role="status">
-         <span class="visually-hidden">Loading...</span>
-       </div>
-     </div>
-   }
- 
-   <!-- Error Handling -->
-   @else if (this.errorMessage) {
-     <div class="alert alert-warning p-2 small"> {{this.errorMessage}} </div>
-   }
- 
-   <!-- Categories List -->
-   <ul class="list-unstyled m-0">
-     @for (item of this.categories; track $index) {
-       @if (item.isActive) {
-         <li data-aos="fade-up" data-aos-easing="linear">
-           <a class="category-item" href="#">
-             <img [src]="item.imageUrl" class="category-icon" alt="{{item.name}}">
-             <span class="category-name"> {{item.name}} </span>
-           </a>
-         </li>
-       }
-     }
-   </ul>
- </div>
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between pb-2 mb-2 border-bottom">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-grid-fill text-mint fs-6"></i>
+        <h6 class="widget-title mb-0">Topics</h6>
+      </div>
+      @if (selectedCategoryId !== null) {
+        <button type="button" class="btn btn-link btn-sm text-mint p-0 text-decoration-none fs-8 fw-semibold" (click)="onSelectCategory(null)">
+          Show All
+        </button>
+      } @else {
+        <span class="badge category-count-pill">{{ categories.length }}</span>
+      }
+    </div>
+
+    <!-- Quick Search Input (if more than 4 categories) -->
+    @if (categories.length > 4) {
+      <div class="category-search-box mb-2">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text border-0 bg-transparent ps-2 pe-1 text-muted">
+            <i class="bi bi-search fs-8"></i>
+          </span>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            placeholder="Search topics..." 
+            class="form-control form-control-sm border-0 bg-transparent shadow-none fs-8"
+          />
+          @if (searchQuery) {
+            <button class="btn btn-sm btn-link text-muted p-0 pe-2 border-0" (click)="searchQuery = ''">
+              <i class="bi bi-x-circle-fill fs-8"></i>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (loading) {
+      <div class="text-center py-3">
+        <div class="spinner-border spinner-border-sm text-mint" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    }
+
+    <!-- Error State -->
+    @else if (errorMessage) {
+      <div class="alert alert-warning p-2 small mb-0 rounded-2 fs-8 d-flex align-items-center justify-content-between">
+        <span>{{ errorMessage }}</span>
+        <button class="btn btn-xs btn-outline-dark" (click)="getAllCategories()">Retry</button>
+      </div>
+    }
+
+    <!-- Categories Navigation List -->
+    @else {
+      <nav class="categories-nav d-flex flex-column gap-1">
+
+        <!-- All Topics Master Link -->
+        <a 
+          class="category-nav-link d-flex align-items-center justify-content-between text-decoration-none"
+          [class.active]="selectedCategoryId === null"
+          (click)="onSelectCategory(null)"
+          role="button"
+          tabindex="0">
+          <div class="d-flex align-items-center gap-2 overflow-hidden">
+            <div class="cat-icon-wrap d-flex align-items-center justify-content-center flex-shrink-0">
+              <i class="bi bi-collection-fill"></i>
+            </div>
+            <span class="cat-title text-truncate">All Topics</span>
+          </div>
+
+          <span class="badge cat-num-badge" [class.badge-active]="selectedCategoryId === null">
+            {{ totalDiscussionsCount }}
+          </span>
+        </a>
+
+        <!-- Category Items -->
+        @for (item of filteredCategories; track item.id) {
+          <a 
+            class="category-nav-link d-flex align-items-center justify-content-between text-decoration-none"
+            [class.active]="selectedCategoryId === item.id"
+            (click)="onSelectCategory(item)"
+            role="button"
+            tabindex="0">
+            <div class="d-flex align-items-center gap-2 overflow-hidden">
+              @if (item.imageUrl && item.imageUrl !== 'null' && item.imageUrl !== '') {
+                <img [src]="item.imageUrl" class="cat-thumb flex-shrink-0" alt="{{ item.name }}" />
+              } @else {
+                <div class="cat-icon-wrap d-flex align-items-center justify-content-center flex-shrink-0">
+                  <i class="bi {{ getCategoryIcon(item.name) }}"></i>
+                </div>
+              }
+              <span class="cat-title text-truncate">{{ item.name }}</span>
+            </div>
+
+            <span class="badge cat-num-badge" [class.badge-active]="selectedCategoryId === item.id">
+              {{ getCategoryCount(item.id) }}
+            </span>
+          </a>
+        }
+
+        <!-- Empty Search Result -->
+        @if (filteredCategories.length === 0 && searchQuery) {
+          <div class="text-center py-2 text-muted fs-8">
+            No topics matching "{{ searchQuery }}"
+          </div>
+        }
+
+      </nav>
+    }
+
+  </div>
+</div>

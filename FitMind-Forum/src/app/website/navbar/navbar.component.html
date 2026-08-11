@@ -1,4 +1,4 @@
-<!-- CodeByAhmad - FitMind Forum Standard Professional Module -->
+﻿<!-- CodeByAhmad - FitMind Forum Standard Professional Module -->
 <!-- ==============================================
 Navbar
 =============================================== -->
@@ -27,12 +27,70 @@ Navbar
           <!-- Nav Search START -->
           <div class="col-xl-12">
             <div class="nav mt-3 mt-lg-0 px-lg-4 flex-nowrap align-items-center">
-              <div class="search-form nav-item w-100">
-                <form class="rounded position-relative">
-                  <input class="ps-5 bg-opacity-10 border-0" type="search" placeholder="Search" aria-label="Search">
+              <div class="search-form nav-item w-100 position-relative">
+                <form class="rounded position-relative" (submit)="onSearchSubmit($event)">
+                  <input class="ps-5 bg-opacity-10 border-0 form-control pe-5" type="search" placeholder="Search" aria-label="Search" [formControl]="searchControl" (focus)="showSearchDropdown()" (blur)="hideSearchDropdown()">
                   <button class="btn bg-transparent px-3 position-absolute top-50 start-0 translate-middle-y"
                     type="submit"><i class="bi bi-search fs-6 text-green pe-2"></i></button>
+                  <span *ngIf="searchLoading" class="spinner-border spinner-border-sm text-green position-absolute top-50 end-0 translate-middle-y me-3" role="status" aria-hidden="true"></span>
                 </form>
+
+                <!-- Dropdown Panel -->
+                <div *ngIf="showDropdown && searchControl.value && searchControl.value.trim().length >= 2" 
+                     class="search-dropdown-panel position-absolute w-100 bg-body shadow-lg rounded mt-1 border overflow-auto"
+                     style="max-height: 400px; z-index: 1050; left: 0;">
+                  
+                  <div *ngIf="!searchLoading && searchResults">
+                     
+                     <div *ngIf="searchResults.users?.items?.length" class="search-group p-2 border-bottom">
+                       <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">People</small>
+                       <a *ngFor="let user of searchResults.users!.items" [routerLink]="['/profile-view']" [queryParams]="{userId: user.id}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
+                         <img [src]="user.profilePhoto ? 'data:image/jpeg;base64,' + user.profilePhoto : 'img/avatar/default.png'" class="avatar-sm rounded-circle me-2" style="width: 45px; height: 45px; object-fit: cover;">
+                         <div class="text-truncate">
+                           <div class="fw-semibold">{{ user.username }}</div>
+                           <small class="text-muted">{{ user.email }}</small>
+                         </div>
+                       </a>
+                     </div>
+
+                     <div *ngIf="searchResults.posts?.items?.length" class="search-group p-2 border-bottom">
+                       <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Posts</small>
+                       <a *ngFor="let post of searchResults.posts!.items" [routerLink]="['/profile-view']" [queryParams]="{postId: post.postId}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
+                         <div class="text-truncate w-100">
+                           <div class="fw-semibold text-truncate">{{ post.title }}</div>
+                           <small class="text-muted text-truncate d-block">{{ post.description }}</small>
+                         </div>
+                       </a>
+                     </div>
+
+                     <div *ngIf="searchResults.categories?.items?.length" class="search-group p-2 border-bottom">
+                       <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Categories</small>
+                       <a *ngFor="let cat of searchResults.categories!.items" [routerLink]="['/home']" [queryParams]="{category: cat.id}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
+                         <div class="text-truncate">
+                           <div class="fw-semibold">{{ cat.name }}</div>
+                         </div>
+                       </a>
+                     </div>
+
+                     <div *ngIf="searchResults.polls?.items?.length" class="search-group p-2 border-bottom">
+                       <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Polls</small>
+                       <a *ngFor="let poll of searchResults.polls!.items" [routerLink]="['/profile-view']" [queryParams]="{postId: poll.postId}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
+                         <div class="text-truncate w-100">
+                           <div class="fw-semibold text-truncate">{{ poll.question }}</div>
+                         </div>
+                       </a>
+                     </div>
+
+                     <div *ngIf="!searchResults.users?.items?.length && !searchResults.posts?.items?.length && !searchResults.categories?.items?.length && !searchResults.polls?.items?.length" class="p-3 text-center text-muted">
+                        No results found for "{{ searchControl.value }}"
+                     </div>
+
+                     <a [routerLink]="['/search']" [queryParams]="{ q: searchControl.value, type: 'all' }" class="dropdown-item text-center text-green py-2 fw-semibold bg-body-tertiary">
+                       See all results for "{{ searchControl.value }}"
+                     </a>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -101,20 +159,23 @@ Navbar
                   <img 
                     *ngIf="notif.userImage && notif.userImage !== 'data:image/jpeg;base64,null'" 
                     [src]="notif.userImage" 
+                    style="width: 50px !important; height: 50px !important; min-width: 50px !important; min-height: 50px !important;"
                     class="notif-avatar rounded-circle object-fit-cover" 
                     alt="User photo">
                   <div 
                     *ngIf="!notif.userImage || notif.userImage === 'data:image/jpeg;base64,null'" 
+                    style="width: 50px !important; height: 50px !important; min-width: 50px !important; min-height: 50px !important;"
                     class="notif-avatar-placeholder rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-7">
                     {{ (notif.userName || 'M').charAt(0).toUpperCase() }}
                   </div>
                   <!-- Type Badge Overlay -->
-                  <span class="notif-type-badge position-absolute bottom-0 end-0 rounded-circle d-flex align-items-center justify-content-center"
+                  <span class="notif-type-badge position-absolute rounded-circle"
                         [ngClass]="{
-                          'bg-success text-white': notif.type === 'post',
-                          'bg-warning text-dark': notif.type === 'poll',
-                          'bg-danger text-white': notif.type === 'reaction',
-                          'bg-primary text-white': notif.type === 'comment'
+                          'badge-post': notif.type === 'post',
+                          'badge-poll': notif.type === 'poll',
+                          'badge-reaction': notif.type === 'reaction',
+                          'badge-comment': notif.type === 'comment',
+                          'badge-follow': notif.type === 'follow'
                         }">
                     <i *ngIf="notif.type === 'post'" class="bi bi-plus-lg"></i>
                     <i *ngIf="notif.type === 'poll'" class="bi bi-bar-chart-fill"></i>
@@ -276,3 +337,9 @@ Navbar
 <app-login></app-login>
 <app-forget-password></app-forget-password>
 <router-outlet></router-outlet>
+
+
+
+
+
+
