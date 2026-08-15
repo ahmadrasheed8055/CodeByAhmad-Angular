@@ -9,6 +9,7 @@ import {
 import { AuthService } from '../../../Shared/auth.service';
 import { MasterService } from '../../../Shared/master.service';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -23,13 +24,12 @@ import {
 import { error } from 'jquery';
 import { SnackBarServiceService } from '../../../Shared/snack-bar-service.service';
 import { debounceTime, distinctUntilChanged, filter, skip, switchMap } from 'rxjs';
-import bootstrap from '../../../../main.server';
-
 
 @Component({
   selector: 'app-profile-setting',
   imports: [
     CommonModule,
+    RouterModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -56,6 +56,19 @@ export class ProfileSettingComponent implements OnInit {
   isTaken: any = false;
   isCheckingUniqueName: boolean = false;
   deleteProfileModal = '#deleteProfileModal';
+  activeTab: 'profile' | 'password' | 'notifications' | 'account' = 'profile';
+  isSavingUser: boolean = false;
+  isChangingPassword: boolean = false;
+
+  countriesList: string[] = [
+    'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France',
+    'Pakistan', 'India', 'Bulgaria', 'United Arab Emirates', 'Saudi Arabia',
+    'Italy', 'Spain', 'Netherlands', 'Brazil', 'Turkey', 'Mexico', 'South Africa',
+    'Singapore', 'New Zealand', 'Sweden', 'Norway', 'Denmark', 'Switzerland',
+    'Austria', 'Belgium', 'Ireland', 'Poland', 'Portugal', 'Greece', 'Czech Republic',
+    'Romania', 'Hungary', 'Egypt', 'Malaysia', 'Indonesia', 'Philippines', 'Vietnam',
+    'Thailand', 'Argentina', 'Chile', 'Colombia', 'Peru', 'South Korea', 'Japan', 'China'
+  ];
   
 
   constructor() {this.user = new PublicAppUserDTO();}

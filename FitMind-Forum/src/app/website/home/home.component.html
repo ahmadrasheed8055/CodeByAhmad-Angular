@@ -1,50 +1,55 @@
-<!-- ==============================================
-  Navbar
-  =============================================== -->
-  <!-- <ngx-ui-loader></ngx-ui-loader> -->
-<!-- <app-navbar></app-navbar> -->
+<!-- FitJoin Redesign - Main 2-Column Layout (Center Feed + Right Widgets) -->
+<section class="fitjoin-main-section pt-0 pb-4">
+  <div class="container-fluid px-1 px-md-2 max-width-wrapper">
+    <div class="row g-4">
 
-
-<!-- ==============================================
-  Hero
-  =============================================== -->
-<app-hero></app-hero>
-<!-- <app-login></app-login> -->
-
-
-<!-- <button (click)="ngxLoader.startLoading()">Start Loader</button> -->
-
-
-<!-- ==============================================
-  Main
-  =============================================== -->
-
-<section class="vine-main">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-3 pe-lg-3">
-        <!-- <router-outlet></router-outlet> -->
-        <!-- CATEGORIES SECTION -->
-
-        <app-categories></app-categories>
-        <app-footer></app-footer>
-      </div><!--/col-lg-3-->
-
-
-
-
-
-      <div class="col-lg-9 ps-lg-5">
-        <!-- POSTS SECTION -->
+      <!-- ==============================================
+           1. MAIN FEED COLUMN (Center, Widest)
+           =============================================== -->
+      <div class="col-12 col-lg-8 col-xl-8">
         <app-posts></app-posts>
-
-
-      </div><!--/col-lg-9-->
-      <div class="col-12 col-lg-9">
-
       </div>
-      <!--User Profile setting -->
-      <!-- <app-profile-setting></app-profile-setting> -->
+
+      <!-- ==============================================
+           2. RIGHT SIDEBAR COLUMN (Two Stacked Widgets)
+           =============================================== -->
+      <div class="col-12 col-lg-4 col-xl-4">
+        <div #rightSidebar class="fitjoin-right-sidebar d-flex flex-column gap-4">
+
+          <!-- WIDGET 1: Following / Active Community Members -->
+          <div class="fitjoin-widget-card card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <!-- Header -->
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="widget-title fw-bold mb-0">
+                  I'm following <span class="widget-accent-count">{{ followingCount }}</span>
+                </h5>
+              </div>
+
+              <!-- Avatar Grid (Shows all followed members at once) -->
+              <div class="following-avatar-grid">
+                @for (member of communityMembers; track member.id) {
+                  <a [routerLink]="['/profile', member.id]" 
+                     class="member-avatar-wrap" 
+                     [title]="member.username">
+                    <img [src]="member.avatarUrl" 
+                         [alt]="member.username" 
+                         class="member-avatar rounded-circle shadow-sm" />
+                  </a>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- WIDGET 2: Topics / Groups / Categories -->
+          <app-categories></app-categories>
+
+          <!-- Footer Navigation / Credits -->
+          <app-footer></app-footer>
+
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

@@ -29,8 +29,19 @@ export class CategoriesComponent implements OnInit, OnDestroy {
   selectedCategoryId: number | null = null;
   categoryCounts: { [categoryId: number]: CategoryStats } = {};
   totalDiscussionsCount: number = 0;
+  activeTab: 'newest' | 'active' | 'popular' = 'newest';
+  showAll: boolean = false;
 
   private subscriptions: Subscription = new Subscription();
+
+  setActiveTab(tab: 'newest' | 'active' | 'popular') {
+    this.activeTab = tab;
+  }
+
+  toggleShowAll() {
+    this.showAll = !this.showAll;
+  }
+
 
   ngOnInit() {
     this.getAllCategories();
@@ -112,9 +123,18 @@ export class CategoriesComponent implements OnInit, OnDestroy {
         c.name.toLowerCase().includes(q) || 
         (c.description && c.description.toLowerCase().includes(q))
       );
+      return list;
     }
+
+    if (this.activeTab === 'popular' || this.activeTab === 'active') {
+      list = [...list].sort((a, b) => (this.getCategoryCount(b.id) || 0) - (this.getCategoryCount(a.id) || 0));
+    } else {
+      list = [...list].sort((a, b) => b.id - a.id);
+    }
+
     return list;
   }
+
 
   onSelectCategory(category: ICategories | null) {
     if (category === null) {

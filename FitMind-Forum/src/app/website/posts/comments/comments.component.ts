@@ -22,6 +22,7 @@ import { CommentService } from '../../../Shared/comment.service';
 import { AuthService } from '../../../Shared/auth.service';
 import { SnackBarServiceService } from '../../../Shared/snack-bar-service.service';
 import { NotificationService } from '../../../Shared/notification.service';
+import { PendingActionService } from '../../../Shared/pending-action.service';
 import {
   PostComment,
   AddCommentRequest
@@ -44,6 +45,7 @@ export class CommentsComponent implements OnInit, OnChanges {
   commentService: CommentService = inject(CommentService);
   authService: AuthService = inject(AuthService);
   notificationService: NotificationService = inject(NotificationService);
+  pendingActionService: PendingActionService = inject(PendingActionService);
 
   allComments: PostComment[] = [];
   visibleComments: PostComment[] = [];
@@ -91,12 +93,46 @@ export class CommentsComponent implements OnInit, OnChanges {
           this.userName = '';
         }
       });
+
+      // Subscribe to pending action replay after login
+      this.pendingActionService.actionReady$.subscribe(({ action, userId }) => {
+        switch (action.type) {
+          case 'SUBMIT_COMMENT': {
+            if (action.postId === this.postId && action.text) {
+              this.newCommentText = action.text;
+              // Small delay to ensure userId is set
+              setTimeout(() => this.submitComment(), 100);
+            }
+            break;
+          }
+          case 'REPLY_COMMENT': {
+            if (action.postId === this.postId) {
+              this.replyingToCommentId = action.parentCommentId;
+              if (action.text) {
+                this.replyText[action.parentCommentId] = action.text;
+                const parent = this.allComments.find(c => c.commentId === action.parentCommentId);
+                if (parent) {
+                  setTimeout(() => this.submitReply(parent), 100);
+                }
+              }
+            }
+            break;
+          }
+          case 'REACT_COMMENT': {
+            const comment = this.allComments.find(c => c.commentId === action.commentId);
+            if (comment) {
+              setTimeout(() => this.react(comment, action.isLike), 100);
+            }
+            break;
+          }
+        }
+      });
     }
   }
 
   handleInputFocus(): void {
     if (!this.userId) {
-      this.snakBarService.showError('Please log in to add a comment.');
+      this.pendingActionService.setPendingAction({ type: 'SUBMIT_COMMENT', postId: this.postId, text: this.newCommentText || '' });
     }
   }
 
@@ -213,7 +249,12 @@ export class CommentsComponent implements OnInit, OnChanges {
 
   submitComment(): void {
     if (!this.userId) {
-      this.snakBarService.showError('Please log in to add a comment.');
+      const text = this.newCommentText.trim();
+      if (text) {
+        this.pendingActionService.setPendingAction({ type: 'SUBMIT_COMMENT', postId: this.postId, text });
+      } else {
+        this.pendingActionService.setPendingAction({ type: 'SUBMIT_COMMENT', postId: this.postId, text: '' });
+      }
       return;
     }
     if (this.isSubmitting) return;
@@ -270,7 +311,7 @@ export class CommentsComponent implements OnInit, OnChanges {
   
   startReply(commentId: number): void {
     if (!this.userId) {
-      this.snakBarService.showError('Please log in to reply.');
+      this.pendingActionService.setPendingAction({ type: 'REPLY_COMMENT', postId: this.postId, parentCommentId: commentId, text: '' });
       return;
     }
     this.replyingToCommentId = commentId;
@@ -293,7 +334,8 @@ export class CommentsComponent implements OnInit, OnChanges {
   
   submitReply(parentComment: PostComment): void {
     if (!this.userId) {
-      this.snakBarService.showError('Please log in to reply.');
+      const text = (this.replyText[parentComment.commentId] || '').trim();
+      this.pendingActionService.setPendingAction({ type: 'REPLY_COMMENT', postId: this.postId, parentCommentId: parentComment.commentId, text });
       return;
     }
     if (this.isSubmitting) return;
@@ -384,7 +426,7 @@ export class CommentsComponent implements OnInit, OnChanges {
 
   react(comment: PostComment, isLike: boolean): void {
     if (!this.userId) {
-      this.snakBarService.showError('Login to react on the comment');
+      this.pendingActionService.setPendingAction({ type: 'REACT_COMMENT', commentId: comment.commentId, isLike });
       return;
     }
 

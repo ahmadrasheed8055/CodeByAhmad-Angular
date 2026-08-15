@@ -1,566 +1,637 @@
-<div class="profile-banner position-relative"
-    [ngClass]="{'default-banner-gradient': !userPhotos.backgroundPhoto || userPhotos.backgroundPhoto == 'data:image/jpeg;base64,null'}"
-    [style.backgroundImage]="(userPhotos.backgroundPhoto && userPhotos.backgroundPhoto !== 'data:image/jpeg;base64,null') ? 'url(' + userPhotos.backgroundPhoto + ')' : null"
-    (click)="userPhotos.backgroundPhoto ? openFullImageModal(userPhotos.backgroundPhoto) : null" 
-    [style.cursor]="userPhotos.backgroundPhoto ? 'pointer' : 'default'"
-    data-bs-toggle="modal" [attr.data-bs-target]="userPhotos.backgroundPhoto ? '#showFullImageModal' : null">
-    <input #bgCoverInput type="file" (change)="onUploadBackgroundPhoto($event)" hidden>
-    <button *ngIf="user && userId === user.id" (click)="$event.stopPropagation(); bgCoverInput.click()" class="btn btn-edit-banner position-absolute bottom-0 end-0 m-3" title="Edit cover background">
-        <i class="bi bi-camera-fill me-2"></i> Edit Cover
-    </button>
-</div>
+<!-- FitJoin Redesign - Profile View Component -->
 
+<section class="profile-main-section py-4">
+  <div class="container max-width-profile">
 
-<section class="vine-main">
-    <div class="container">
-        <div class="row">
+    <!-- ==============================================
+         TOP CARD: UNIFIED PROFILE CARD WITH ATTACHED COVER BANNER
+         ============================================== -->
+    <div class="profile-card card border-0 shadow-sm mb-4 overflow-hidden">
+      
+      <!-- Attached Cover Banner Header -->
+      <div class="profile-banner position-relative w-100"
+           [ngClass]="{'default-banner-gradient': !userPhotos.backgroundPhoto || userPhotos.backgroundPhoto === 'data:image/jpeg;base64,null'}"
+           [style.backgroundImage]="(userPhotos.backgroundPhoto && userPhotos.backgroundPhoto !== 'data:image/jpeg;base64,null') ? 'url(' + userPhotos.backgroundPhoto + ')' : null"
+           (click)="userPhotos.backgroundPhoto ? openFullImageModal(userPhotos.backgroundPhoto) : null" 
+           [style.cursor]="userPhotos.backgroundPhoto ? 'pointer' : 'default'"
+           data-bs-toggle="modal" [attr.data-bs-target]="userPhotos.backgroundPhoto ? '#showFullImageModal' : null">
+        
+        <input #bgCoverInput type="file" (change)="onUploadBackgroundPhoto($event)" hidden>
+        <button *ngIf="user && userId === user.id" 
+                (click)="$event.stopPropagation(); bgCoverInput.click()" 
+                class="btn btn-edit-banner position-absolute bottom-0 end-0 m-3 shadow" 
+                title="Edit Cover Photo">
+          <i class="bi bi-camera-fill me-1"></i> Edit Cover
+        </button>
+      </div>
 
-            <div class="col-lg-3 aos-init aos-animate" data-aos="fade-right" data-aos-easing="linear">
+      <!-- Profile Card Body -->
+      <div class="card-body p-4 p-md-5 pt-3">
+        
+        <!-- A. VIEW MODE -->
+        <div *ngIf="!isEditingProfile" class="row align-items-center g-4">
+          
+          <!-- Left: Large Circular Avatar -->
+          <div class="col-12 col-md-auto text-center text-md-start">
+            <div class="profile-avatar-wrapper position-relative mx-auto mx-md-0"
+                 (click)="userPhotos.profilePhoto ? openFullImageModal(userPhotos.profilePhoto) : null"
+                 [style.cursor]="userPhotos.profilePhoto ? 'pointer' : 'default'"
+                 data-bs-toggle="modal" [attr.data-bs-target]="userPhotos.profilePhoto ? '#showFullImageModal' : null">
+              
+              <img *ngIf="userPhotos.profilePhoto && userPhotos.profilePhoto !== 'data:image/jpeg;base64,null'" 
+                   [src]="userPhotos.profilePhoto" 
+                   alt="User Profile Photo" 
+                   class="profile-avatar-img rounded-circle shadow">
+              
+              <div *ngIf="!userPhotos.profilePhoto || userPhotos.profilePhoto === 'data:image/jpeg;base64,null'" 
+                   class="profile-avatar-default d-flex align-items-center justify-content-center rounded-circle shadow">
+                <span class="text-white fs-1 fw-bold">{{ (user.username || 'U').charAt(0) | uppercase }}</span>
+              </div>
 
-                <div class="user-profile-img position-relative" 
-                     (click)="userPhotos.profilePhoto ? openFullImageModal(userPhotos.profilePhoto) : null"
-                     [style.cursor]="userPhotos.profilePhoto ? 'pointer' : 'default'"
-                     data-bs-toggle="modal" [attr.data-bs-target]="userPhotos.profilePhoto ? '#showFullImageModal' : null">
-                    <img *ngIf="userPhotos.profilePhoto && userPhotos.profilePhoto !== 'data:image/jpeg;base64,null'" [src]="userPhotos.profilePhoto" alt="Avatar">
-                    <div *ngIf="!userPhotos.profilePhoto || userPhotos.profilePhoto === 'data:image/jpeg;base64,null'" class="default-avatar d-flex align-items-center justify-content-center">
-                        <span class="text-white fs-1 fw-bold">{{ (user.username || 'U').charAt(0) | uppercase }}</span>
-                    </div>
-                    <input #profilePhotoInput type="file" (change)="onUploadProfilePhoto($event)" hidden>
-                    <button *ngIf="user && userId === user.id" (click)="$event.stopPropagation(); profilePhotoInput.click()" class="profile-avatar-overlay d-flex align-items-center justify-content-center" title="Change profile photo">
-                        <i class="bi bi-camera-fill"></i>
-                    </button>
+              <!-- Upload Overlay for Profile Owner -->
+              <input #profilePhotoInput type="file" (change)="onUploadProfilePhoto($event)" hidden>
+              <button *ngIf="user && userId === user.id" 
+                      (click)="$event.stopPropagation(); profilePhotoInput.click()" 
+                      class="profile-avatar-upload-btn d-flex align-items-center justify-content-center" 
+                      title="Change Profile Photo">
+                <i class="bi bi-camera-fill"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: User Information & Details -->
+          <div class="col-12 col-md">
+            
+            <!-- Name & Action Header Row -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+              <div>
+                <h3 class="profile-fullname fw-bold mb-1">{{ user.username }}</h3>
+                <span *ngIf="user.uniqueName" class="profile-unique-handle text-muted fs-7">&#64;{{ user.uniqueName }}</span>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <!-- Owner: Edit Profile Button (Converts card into Inline Edit Form) -->
+                <button *ngIf="user && userId === user.id" 
+                        type="button"
+                        (click)="toggleEditProfile()" 
+                        class="btn btn-edit-profile d-flex align-items-center gap-1 rounded-pill"
+                        title="Edit Profile Details">
+                  <i class="bi bi-pencil-square fs-6"></i>
+                  <span class="fs-7 fw-bold d-none d-sm-inline">Edit Profile</span>
+                </button>
+
+                <!-- Visitor: Follow / Unfollow & Message Actions -->
+                <div class="d-flex align-items-center gap-2" *ngIf="userId !== profileUserId">
+                  <button (click)="toggleFollowUser()" 
+                          class="btn btn-sm rounded-pill px-4 py-2 fw-bold" 
+                          [ngClass]="user.isFollowing ? 'btn-outline-secondary' : 'btn-mint shadow-sm'">
+                    <i class="bi me-1" [ngClass]="user.isFollowing ? 'bi-person-check-fill' : 'bi-person-plus-fill'"></i> 
+                    {{ user.isFollowing ? 'Following' : 'Follow' }}
+                  </button> 
+                  <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2 fw-semibold" (click)="refreshProfileFeed()">
+                    <i class="bi bi-chat-left-text-fill me-1"></i> Message
+                  </button>
                 </div>
-
-                <div class="user-profile-details text-center">
-                    <div class="user-profile-name">
-                        <h4>{{user.username}}</h4>
-                        <p> {{user.uniqueName}} </p>
-                        <p class="fs-7 mt-3">Joined {{user.joinedDate | date:'MMM yyyy'}}</p>
-                    </div>
-                    <div class="user-profile-stats">
-                        <div class="d-flex align-items-center justify-content-center gap-4 text-center">
-                            <div>
-                                <span class="item-number fs-4 fw-bold">{{ user.followersCount || 0 }}</span> 
-                                <div class="item-text text-muted fs-7">Followers</div>
-                            </div>
-                            <div>
-                                <span class="item-number fs-4 fw-bold">{{ user.followingCount || 0 }}</span> 
-                                <div class="item-text text-muted fs-7">Following</div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-center gap-2 mt-3" *ngIf="userId !== profileUserId">
-                            <button (click)="toggleFollowUser()" class="btn btn-sm rounded-pill px-3" [ngClass]="user.isFollowing ? 'btn-outline-secondary' : 'btn-mint'">
-                                <i class="bi me-1" [ngClass]="user.isFollowing ? 'bi-person-check-fill' : 'bi-person-plus-fill'"></i> 
-                                {{ user.isFollowing ? 'Unfollow' : 'Follow' }}
-                            </button> 
-                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-                                <i class="bi bi-chat-left-text-fill me-1"></i> Message
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <ul class="achivement-fact">
-                        <li>
-                            <div class="icon"><i class="bi bi-layers"></i></div>
-                            <h5 class="counter">{{ user.totalPosts || 0 }}</h5>
-                            <p>Posts</p>
-                        </li>
-                        <li>
-                            <div class="icon"><i class="bi bi-chat-dots"></i></div>
-                            <h5 class="counter">{{ user.totalComments || 0 }}</h5>
-                            <p>Comments</p>
-                        </li>
-                        <li>
-                            <div class="icon"><i class="bi bi-heart"></i></div>
-                            <h5 class="counter">{{ user.totalLikes || 0 }}</h5>
-                            <p>Likes</p>
-                        </li>
-                    </ul>
-
-                    <div class="user-profile-bio">
-                        <h6 class="mb-3">About</h6>
-                        <p> {{user.bio}} </p>
-                    </div>
-
-                </div>
+              </div>
             </div>
 
-            <div class="col-12 col-lg-9">
+            <!-- Structured Metadata Information Grid (Matching Reference) -->
+            <div class="profile-meta-grid mb-3">
+              <div class="meta-item" *ngIf="user.joinedDate">
+                <span class="meta-label text-muted">Date registered:</span>
+                <span class="meta-value">{{ user.joinedDate | date:'d MMMM yyyy' }}</span>
+              </div>
 
-                <!-- Modern Profile Filter Navigation Bar & Refresh Action -->
-                <div class="feed-filter-bar card mb-4 shadow-sm border-0" data-aos="fade-down" data-aos-easing="linear">
-                    <div class="card-body p-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <!-- Filter Tabs Container -->
-                        <div class="d-flex align-items-center flex-wrap gap-1 feed-tabs">
-                            <!-- Posts Tab -->
-                            <button 
-                                type="button" 
-                                class="btn filter-tab-btn d-flex align-items-center gap-2"
-                                [class.active]="activeTab === 'posts'"
-                                (click)="setActiveTab('posts')">
-                                <i class="bi bi-grid-fill fs-6"></i>
-                                <span>Posts</span>
-                            </button>
+              <div class="meta-item" *ngIf="user.country || user.location">
+                <span class="meta-label text-muted">Country, city:</span>
+                <span class="meta-value">{{ user.country ? (user.country + (user.location ? ', ' + user.location : '')) : user.location }}</span>
+              </div>
 
-                            <!-- Saved Posts Tab (Owner Only) -->
-                            <button 
-                                *ngIf="userId === profileUserId"
-                                type="button" 
-                                class="btn filter-tab-btn d-flex align-items-center gap-2"
-                                [class.active]="activeTab === 'saved'"
-                                (click)="setActiveTab('saved')">
-                                <i class="bi bi-bookmark-fill fs-6"></i>
-                                <span>Saved Posts</span>
-                            </button>
+              <div class="meta-item" *ngIf="user.email">
+                <span class="meta-label text-muted">E-mail:</span>
+                <span class="meta-value">{{ user.email }}</span>
+              </div>
 
-                            <!-- Hidden Posts Tab (Owner Only) -->
-                            <button 
-                                *ngIf="userId === profileUserId"
-                                type="button" 
-                                class="btn filter-tab-btn d-flex align-items-center gap-2"
-                                [class.active]="activeTab === 'hidden'"
-                                (click)="setActiveTab('hidden')">
-                                <i class="bi bi-eye-slash-fill fs-6"></i>
-                                <span>Hidden Posts</span>
-                            </button>
-                        </div>
+              <div class="meta-item" *ngIf="user.phone">
+                <span class="meta-label text-muted">Phone:</span>
+                <span class="meta-value">{{ user.phone }}</span>
+              </div>
 
-                        <!-- Refresh Action Button -->
-                        <div class="ms-auto d-flex align-items-center">
-                            <button 
-                                type="button" 
-                                class="btn refresh-btn d-flex align-items-center justify-content-center p-2 rounded-circle"
-                                [class.spinning]="isRefreshing"
-                                [disabled]="isRefreshing"
-                                (click)="refreshProfileFeed()"
-                                title="Refresh Profile Posts"
-                                aria-label="Refresh Profile Posts">
-                                <i class="bi bi-arrow-clockwise fs-5"></i>
-                            </button>
-                        </div>
+              <div class="meta-item w-100" *ngIf="user.bio">
+                <span class="meta-label text-muted">About:</span>
+                <span class="meta-value">{{ user.bio }}</span>
+              </div>
+            </div>
+
+            <!-- Social Links & Stat Badges Row -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 pt-3 border-top">
+              
+              <!-- Social Icons (Reference Style Circular Badges) -->
+              <div class="d-flex align-items-center gap-2">
+                <a [href]="user.instagramLink || 'https://instagram.com'" target="_blank" class="social-circle-btn" title="Instagram">
+                  <i class="bi bi-instagram"></i>
+                </a>
+                <a [href]="user.facebookLink || 'https://facebook.com'" target="_blank" class="social-circle-btn" title="Facebook">
+                  <i class="bi bi-facebook"></i>
+                </a>
+                <a href="https://twitter.com" target="_blank" class="social-circle-btn" title="Twitter / X">
+                  <i class="bi bi-twitter-x"></i>
+                </a>
+                <a href="https://telegram.org" target="_blank" class="social-circle-btn" title="Telegram">
+                  <i class="bi bi-send-fill"></i>
+                </a>
+              </div>
+
+              <!-- Stats Badges -->
+              <div class="d-flex align-items-center gap-3">
+                <div class="profile-stat-badge">
+                  <span class="stat-num fw-bold">{{ user.followersCount || 0 }}</span>
+                  <span class="stat-text text-muted fs-8">Followers</span>
+                </div>
+                <div class="profile-stat-badge">
+                  <span class="stat-num fw-bold">{{ user.followingCount || 0 }}</span>
+                  <span class="stat-text text-muted fs-8">Following</span>
+                </div>
+                <div class="profile-stat-badge">
+                  <span class="stat-num fw-bold">{{ user.totalPosts || userPosts.length || 0 }}</span>
+                  <span class="stat-text text-muted fs-8">Posts</span>
+                </div>
+                <div class="profile-stat-badge">
+                  <span class="stat-num fw-bold">{{ user.totalLikes || 0 }}</span>
+                  <span class="stat-text text-muted fs-8">Likes</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- B. INLINE EDIT PROFILE FORM (Replaces card smoothly on Edit click) -->
+        <div *ngIf="isEditingProfile" class="inline-edit-profile-wrap">
+          <div class="d-flex align-items-center justify-content-between pb-3 mb-4 border-bottom">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-pencil-square fs-5 text-mint"></i>
+              <h4 class="fw-bold mb-0">Edit Profile Details</h4>
+            </div>
+            <button type="button" class="btn-close shadow-none" (click)="cancelEditProfile()" aria-label="Close"></button>
+          </div>
+
+          <form [formGroup]="editProfileForm" (ngSubmit)="saveProfile()" class="row g-3">
+            <!-- Full Name / Username -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Full Name <span class="text-danger">*</span></label>
+              <input type="text" formControlName="username" class="form-control profile-edit-input" placeholder="Your full name">
+            </div>
+
+            <!-- Unique Handle with Live API Status (Just like Instagram) -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">
+                Unique Handle (&#64;username) <span class="text-danger">*</span>
+              </label>
+              <div class="position-relative">
+                <input type="text" 
+                       formControlName="uniqueName" 
+                       class="form-control profile-edit-input pe-5" 
+                       [class.is-invalid]="!isCheckingUniqueName && (isUniqueNameTaken || (editProfileForm.get('uniqueName')?.invalid && editProfileForm.get('uniqueName')?.touched))"
+                       placeholder="e.g. ahmadrasheed202628">
+
+                <!-- Live Status Indicator on the right edge -->
+                <div class="position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center">
+                  <!-- Checking Spinner -->
+                  <span *ngIf="isCheckingUniqueName" class="spinner-border spinner-border-sm text-mint" role="status" aria-hidden="true"></span>
+                  
+                  <!-- Green Checkmark (Available & Valid) -->
+                  <i *ngIf="!isCheckingUniqueName && !isUniqueNameTaken && editProfileForm.get('uniqueName')?.valid && editProfileForm.get('uniqueName')?.dirty" 
+                     class="bi bi-check-circle-fill text-success fs-5"></i>
+                  
+                  <!-- Red Cross (Taken) -->
+                  <i *ngIf="!isCheckingUniqueName && isUniqueNameTaken" 
+                     class="bi bi-x-circle-fill text-danger fs-5"></i>
+                </div>
+              </div>
+
+              <!-- Feedback Messages -->
+              <small class="text-danger fs-8 d-block mt-1" *ngIf="!isCheckingUniqueName && isUniqueNameTaken">
+                &#64;{{ editProfileForm.get('uniqueName')?.value }} is already taken. Please choose another.
+              </small>
+              <small class="text-success fs-8 d-block mt-1" *ngIf="!isCheckingUniqueName && !isUniqueNameTaken && editProfileForm.get('uniqueName')?.valid && editProfileForm.get('uniqueName')?.dirty">
+                &#64;{{ editProfileForm.get('uniqueName')?.value }} is available!
+              </small>
+            </div>
+
+            <!-- Country Dropdown Selection -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Country</label>
+              <select formControlName="country" class="form-select profile-edit-input">
+                <option value="" disabled>Select your country...</option>
+                <option *ngFor="let c of countriesList" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">City / Location</label>
+              <input type="text" formControlName="location" class="form-control profile-edit-input" placeholder="e.g. New York">
+            </div>
+
+            <!-- Phone -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Phone</label>
+              <input type="text" formControlName="phone" class="form-control profile-edit-input" placeholder="e.g. +1 555 123 4567">
+            </div>
+
+            <!-- Social Links -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Instagram Link</label>
+              <input type="text" formControlName="instagramLink" class="form-control profile-edit-input" placeholder="https://instagram.com/yourhandle">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Facebook Link</label>
+              <input type="text" formControlName="facebookLink" class="form-control profile-edit-input" placeholder="https://facebook.com/yourhandle">
+            </div>
+
+            <!-- Bio / About -->
+            <div class="col-12">
+              <label class="form-label fs-7 fw-bold text-muted">Bio / About Me</label>
+              <textarea formControlName="bio" rows="3" class="form-control profile-edit-input" placeholder="Tell the FitJoin community about yourself..."></textarea>
+            </div>
+
+            <!-- Form Action Buttons -->
+            <div class="col-12 d-flex align-items-center justify-content-end gap-2 pt-3 border-top mt-4">
+              <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="cancelEditProfile()" [disabled]="isSavingProfile">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-mint rounded-pill px-4 fw-bold shadow-sm" [disabled]="isSavingProfile || editProfileForm.invalid">
+                <span *ngIf="isSavingProfile" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                {{ isSavingProfile ? 'Saving...' : 'Save Changes' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ==============================================
+         CLEAN POSTS FEED SECTION (No Nested "Box in Box")
+         ============================================== -->
+    <div class="posts-feed-section">
+
+      <!-- Section Header Bar (Title & Filter Pills) -->
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 pb-3 mb-4 border-bottom">
+        <h4 class="fw-bold mb-0">My Updates</h4>
+
+        <!-- Feed Navigation Tabs & Reload Button -->
+        <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center gap-1 feed-tabs">
+            <!-- Posts Tab -->
+            <button type="button" 
+                    class="btn filter-tab-btn" 
+                    [class.active]="activeTab === 'posts'" 
+                    (click)="setActiveTab('posts')">
+              <i class="bi bi-grid-fill me-1"></i> Posts
+            </button>
+
+            <!-- Saved Posts Tab (Owner Only) -->
+            <button *ngIf="userId === profileUserId" 
+                    type="button" 
+                    class="btn filter-tab-btn" 
+                    [class.active]="activeTab === 'saved'" 
+                    (click)="setActiveTab('saved')">
+              <i class="bi bi-bookmark-fill me-1"></i> Saved
+            </button>
+
+            <!-- Hidden Posts Tab (Owner Only) -->
+            <button *ngIf="userId === profileUserId" 
+                    type="button" 
+                    class="btn filter-tab-btn" 
+                    [class.active]="activeTab === 'hidden'" 
+                    (click)="setActiveTab('hidden')">
+              <i class="bi bi-eye-slash-fill me-1"></i> Hidden
+            </button>
+          </div>
+
+          <!-- Reload Feed Button -->
+          <button type="button" 
+                  class="btn refresh-btn rounded-circle d-flex align-items-center justify-content-center"
+                  [class.spinning]="isRefreshing"
+                  [disabled]="isRefreshing"
+                  (click)="refreshProfileFeed()"
+                  title="Reload Profile Feed">
+            <i class="bi bi-arrow-clockwise fs-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Single Post View Banner from Notification -->
+      <div *ngIf="filterSinglePostId > 0" class="card border-0 mb-4 shadow-sm p-3 rounded-4 d-flex flex-row align-items-center justify-content-between" style="background-color: rgba(135, 191, 23, 0.1);">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-bell-fill text-success fs-5"></i>
+          <span class="fw-bold fs-7 text-body">Viewing notification post</span>
+        </div>
+        <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" (click)="clearSinglePostFilter()">
+          <i class="bi bi-grid-fill me-1"></i> Show All Posts
+        </button>
+      </div>
+
+      <!-- Posts Loader -->
+      <div *ngIf="postsLoader" class="d-flex justify-content-center align-items-center py-5">
+        <div class="spinner-border text-mint" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!postsLoader && userPosts.length === 0" class="empty-feed-card text-center py-5">
+        <div class="empty-icon-wrap mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle">
+          <i class="bi bi-folder2-open fs-1 text-mint"></i>
+        </div>
+        <h5 class="fw-bold mb-1" *ngIf="activeTab === 'posts'">No posts available</h5>
+        <h5 class="fw-bold mb-1" *ngIf="activeTab === 'saved'">No saved posts found</h5>
+        <h5 class="fw-bold mb-1" *ngIf="activeTab === 'hidden'">No hidden posts found</h5>
+        <p class="text-muted fs-7 mb-0">Updates published by this profile will appear here.</p>
+      </div>
+
+      <!-- Standalone Clean Post Cards Feed (No Double Container Box) -->
+      <div *ngIf="!postsLoader && userPosts.length > 0" class="d-flex flex-column gap-3">
+        @for (postsData of userPosts; track $index) {
+          <div *ngIf="!postsData.isDeleted" class="fitjoin-post-item card border-0 shadow-sm overflow-hidden">
+            
+            <!-- Standard Post Header -->
+            <div class="card-header border-bottom-0 pt-4 pb-2 px-4 bg-transparent" *ngIf="!postsData.poll">
+              <div class="d-flex w-100 justify-content-between align-items-center">
+                
+                <!-- Left: Avatar + Author Info + Category Tag -->
+                <div class="d-flex align-items-center gap-3">
+                  <a [routerLink]="['/profile', postsData.userId]">
+                    <img [src]="userPhotos.profilePhoto || '/img/avatar/default.png'" 
+                         alt="Author Avatar" 
+                         class="post-author-avatar rounded-circle shadow-sm">
+                  </a>
+                  <div>
+                    <div class="fw-bold fs-6">{{ postsData.userName || user.username }}</div>
+                    <div class="d-flex align-items-center gap-1 text-muted fs-8 mt-1">
+                      <span>{{ timeAgo(postsData.publishAt) }}</span>
+                      <span *ngIf="postsData.updatedAt">• (Edited)</span>
+                      <span>•</span>
+                      <span *ngIf="postsData.categoryName" class="badge post-cat-badge">{{ postsData.categoryName }}</span>
                     </div>
+                  </div>
                 </div>
 
-                <!-- Single Post View Banner from Notification -->
-                <div *ngIf="filterSinglePostId > 0" class="card border-0 mb-4 shadow-sm p-3 rounded-4 d-flex flex-row align-items-center justify-content-between" style="background-color: rgba(135, 191, 23, 0.1);">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-bell-fill text-success fs-5"></i>
-                    <span class="fw-bold fs-7 text-body">Viewing notification post</span>
+                <!-- Right: 3-Dots Action Menu -->
+                <div class="dropdown" *ngIf="postsData.userId === userId">
+                  <a class="text-muted fs-5 text-decoration-none p-1" href="javascript:void(0)" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="border-radius: 12px;">
+                    <a class="dropdown-item py-2" (click)="enableUpdatePost(postsData)" style="cursor: pointer;">
+                      <i class="bi bi-pencil me-2 text-secondary"></i> Edit Post
+                    </a>
+                    <a class="dropdown-item py-2" href="javascript:void(0)" (click)="hidePost(postsData)">
+                      <i class="bi me-2 text-secondary" [ngClass]="activeTab === 'hidden' ? 'bi-eye' : 'bi-eye-slash'"></i>
+                      {{ activeTab === 'hidden' ? 'Unhide Post' : 'Hide Post' }}
+                    </a>
+                    <a class="dropdown-item py-2 text-danger" href="javascript:void(0)" 
+                       data-bs-toggle="modal" data-bs-target="#draftDeleteModal" 
+                       (click)="selectedPostId = postsData.postId">
+                      <i class="bi bi-trash3 me-2"></i> Delete Post
+                    </a>
                   </div>
-                  <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" (click)="clearSinglePostFilter()">
-                    <i class="bi bi-grid-fill me-1"></i> Show All Posts
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Post Body -->
+            <div class="card-body px-4 py-2" [ngClass]="{'p-0': postsData.poll}">
+              
+              <!-- Inline Update Form -->
+              <div *ngIf="editingPostId === postsData.postId; else showContent" class="p-3 bg-body-tertiary rounded-3 my-2">
+                <form [formGroup]="updatePostForm" class="d-flex flex-column gap-3">
+                  <div>
+                    <label class="form-label fs-7 fw-bold text-muted">Title <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control fs-7" formControlName="title" placeholder="Post title">
+                  </div>
+                  <div>
+                    <label class="form-label fs-7 fw-bold text-muted">Category <span class="text-danger">*</span></label>
+                    <select class="form-select fs-7" formControlName="category">
+                      <option value="" disabled>Select category</option>
+                      <option *ngFor="let cat of categoriesObj" [value]="cat.id">{{ cat.name }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label fs-7 fw-bold text-muted">Description <span class="text-danger">*</span></label>
+                    <textarea formControlName="description" class="form-control fs-7" rows="3" placeholder="Post description"></textarea>
+                  </div>
+
+                  <!-- Image Preview -->
+                  <div *ngIf="previewUrl" class="position-relative rounded-3 overflow-hidden shadow-sm my-2">
+                    <img [src]="previewUrl" alt="Post Image" class="w-100 object-fit-cover" style="max-height: 250px;">
+                    <div class="position-absolute top-0 end-0 m-2 d-flex gap-1">
+                      <button type="button" (click)="postPhoto.click()" class="btn btn-dark btn-sm rounded-circle" title="Change Image">
+                        <i class="bi bi-upload"></i>
+                      </button>
+                      <button type="button" 
+                              (click)="isDbImage(updatePostForm.get('image')?.value) ? openModal(updatePostForm, postsData.postId) : removeImage()" 
+                              data-bs-toggle="modal" 
+                              [attr.data-bs-target]="isDbImage(updatePostForm.get('image')?.value) ? '#userPostImageDeleteModal' : null" 
+                              class="btn btn-danger btn-sm rounded-circle" 
+                              title="Delete Image">
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <input #postPhoto type="file" (change)="openFileInput($event)" hidden>
+                  <div *ngIf="!previewUrl">
+                    <button (click)="postPhoto.click()" class="btn btn-sm btn-outline-secondary rounded-pill" type="button">
+                      <i class="bi bi-image me-1"></i> Attach Image
+                    </button>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 pt-2 border-top">
+                    <button type="button" class="btn btn-mint btn-sm rounded-pill px-4 fw-bold" 
+                            [disabled]="updatePostButtonLoading || !updatePostForm.dirty || updatePostForm.invalid" 
+                            (click)="updateUserPost(postsData)">
+                      {{ updatePostButtonLoading ? 'Updating...' : 'Update Post' }}
+                    </button>
+                    <button type="button" (click)="cancelUpdatePost()" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Display Post Content -->
+              <ng-template #showContent>
+                <ng-container *ngIf="!postsData.poll">
+                  <h5 class="post-title fw-bold mb-2">{{ postsData.title }}</h5>
+                  <p class="post-description mb-3" *ngIf="postsData.description !== 'Poll'">{{ postsData.description }}</p>
+                  
+                  <div *ngIf="postsData.postImageUrl" 
+                       (click)="openFullImageModal(postsData.postImageUrl)" 
+                       class="post-media-wrap mb-3 rounded-3 overflow-hidden shadow-sm"
+                       style="cursor: pointer;" 
+                       data-bs-toggle="modal" 
+                       data-bs-target="#showFullImageModal">
+                    <img [src]="'data:image/jpeg;base64,' + postsData.postImageUrl" 
+                         alt="Post Media" 
+                         class="w-100 post-media-img object-fit-cover" 
+                         style="max-height: 400px;">
+                  </div>
+                </ng-container>
+
+                <!-- Standalone Poll Card -->
+                <app-poll-card *ngIf="postsData.poll" 
+                               [poll]="postsData.poll" 
+                               [post]="postsData" 
+                               (pollDeleted)="onPollDeleted($event)" 
+                               class="w-100">
+                </app-poll-card>
+              </ng-template>
+
+            </div>
+
+            <!-- Post Footer: Actions & Reactions -->
+            <div *ngIf="editingPostId !== postsData.postId && !postsData.poll" class="card-footer px-4 py-3 bg-transparent border-top">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                
+                <!-- Left: Reactions & Comments Actions -->
+                <div class="d-flex align-items-center gap-2">
+                  <!-- Like Button -->
+                  <button type="button" 
+                          class="btn post-footer-action-btn d-flex align-items-center gap-2 px-3 py-1 rounded-pill"
+                          [class.active-reaction]="postsData.isReactedByMe === true && authService.isLoggedIn()"
+                          (click)="addPostReaction(true, postsData)">
+                    <i class="bi fs-5" [ngClass]="(postsData.isReactedByMe === true && authService.isLoggedIn()) ? 'bi-hand-thumbs-up-fill text-success' : 'bi-hand-thumbs-up'"></i>
+                    <span class="fw-semibold fs-7">{{ postsData.likeCount || 0 }}</span>
+                  </button>
+
+                  <!-- Dislike Button -->
+                  <button type="button" 
+                          class="btn post-footer-action-btn d-flex align-items-center gap-2 px-3 py-1 rounded-pill"
+                          [class.active-reaction]="postsData.isReactedByMe === false && authService.isLoggedIn()"
+                          (click)="addPostReaction(false, postsData)">
+                    <i class="bi fs-5" [ngClass]="(postsData.isReactedByMe === false && authService.isLoggedIn()) ? 'bi-hand-thumbs-down-fill text-danger' : 'bi-hand-thumbs-down'"></i>
+                    <span class="fw-semibold fs-7">{{ postsData.dislikeCount || 0 }}</span>
+                  </button>
+
+                  <!-- Comments Button -->
+                  <button type="button" 
+                          class="btn post-footer-action-btn d-flex align-items-center gap-2 px-3 py-1 rounded-pill"
+                          (click)="toggleComments(postsData.postId)">
+                    <i class="bi bi-chat-text fs-5"></i>
+                    <span class="fw-semibold fs-7">{{ commentCounts[postsData.postId] || 0 }}</span>
                   </button>
                 </div>
 
-                <div *ngIf="postsLoader" class="d-flex justify-content-center align-items-center"
-                    style="height: 200px;">
-                    <div class="spinner-border custom-spinner" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+                <!-- Right: Views, Save & Share -->
+                <div class="d-flex align-items-center gap-3 text-muted fs-8">
+                  <span *ngIf="postsData.viewCount !== undefined">
+                    <i class="bi bi-eye me-1"></i> {{ postsData.viewCount }} views
+                  </span>
+
+                  <!-- Save / Bookmark -->
+                  <button type="button" 
+                          class="btn btn-link p-0 text-decoration-none text-muted" 
+                          (click)="toggleSavePost(postsData)" 
+                          [title]="postsData.isSavedByMe ? 'Unsave' : 'Save'">
+                    <i class="bi fs-6" [ngClass]="postsData.isSavedByMe ? 'bi-bookmark-fill text-mint' : 'bi-bookmark'"></i>
+                  </button>
+
+                  <!-- Share Link -->
+                  <button type="button" 
+                          class="btn btn-link p-0 text-decoration-none text-muted" 
+                          (click)="openShareModal(postsData.postId)" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#sharePostModalProfile" 
+                          title="Share Post">
+                    <i class="bi bi-share fs-6"></i>
+                  </button>
                 </div>
-                <div *ngIf="postsLoader === false && userPosts.length === 0" class="empty-feed-card card border-0 text-center py-5 px-4 mb-4 shadow-sm" data-aos="fade-up">
-                    <div class="card-body">
-                        <div class="empty-icon-wrap mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle">
-                            <i class="bi bi-folder2-open fs-1 text-success"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">No posts available</h5>
-                        <p class="text-muted fs-7 mb-0">There are no posts to display in this category.</p>
-                    </div>
-                </div>
-                <div *ngIf="userPosts.length !== 0" class="row g-4">
-                    <div class="col-12">
-                        <div class="tab-content mt-0">
-                            <div class="tab-pane active show" id="tab-1" role="tabpanel">
 
+              </div>
+            </div>
 
-                                <div class="discussions">
+            <!-- Comments Section Accordion -->
+            <app-comments *ngIf="!postsData.poll" 
+                          [postId]="postsData.postId"
+                          [showCommentsList]="!!isCommentsVisibleMap[postsData.postId]"
+                          (commentCountChanged)="commentCounts[postsData.postId] = $event">
+            </app-comments>
 
+          </div>
+        }
+      </div>
 
-                                    @for (postsData of userPosts; track $index) {
-                                    <div *ngIf="!postsData.isDeleted" class="post-box d-flex mx-0 aos-init aos-animate" data-aos="fade-up"
-                                        data-aos-easing="linear">
-
-                                        <div class="card">
-                                            <!-- Standard Post Header (Hidden for Polls since poll-card renders its own) -->
-                                            <div class="card-header card-header-action" *ngIf="!postsData.poll">
-                                                <div class="media align-items-center w-100">
-                                                    <div class="media-head me-2">
-                                                        <div class="avatar">
-                                                            <a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"><img
-                                                                    [src]="userPhotos.profilePhoto || '/img/avatar/default.png'"
-                                                                    alt="user" class="avatar-img rounded-circle"></a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="media-body">
-                                                        <div><a [routerLink]="['/profile', postsData.userId]" style="cursor: pointer;"> {{ postsData.userName || user.username }} </a></div>
-                                                        <div class="fs-7">
-                                                            <span> {{ timeAgo(postsData.publishAt) }} </span>
-                                                            <span *ngIf="postsData.updatedAt" > (Edited) </span>
-                                                            <a href="javascript:void(0)" class="tag-link"> {{postsData.categoryName}}</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="card-action-wrap">
-                                                    <a class="dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"><i
-                                                            class="bi bi-three-dots-vertical"></i></a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <a *ngIf="postsData.userId === userId" class="dropdown-item" (click)="enableUpdatePost(postsData)"
-                                                            style="cursor: pointer;"><i class="bi bi-pencil me-2"></i>
-                                                            Edit Post</a>
-
-                                                        <a *ngIf="userId > 0 && postsData.userId === userId" href="javascript:void(0)" (click)="hidePost(postsData)" class="dropdown-item"><i
-                                                                class="bi me-2" [ngClass]="activeTab === 'hidden' ? 'bi-eye' : 'bi-eye-slash'"></i>
-                                                            {{ activeTab === 'hidden' ? 'Unhide Post' : 'Hide Post' }}</a>
-
-                                                        <a *ngIf="postsData.userId === userId" class="dropdown-item" data-bs-toggle="modal"
-                                                            data-bs-target="#draftDeleteModal"
-                                                            (click)="selectedPostId = postsData.postId" href=""><i
-                                                                class="bi bi-trash3 me-2"></i> Delete Post</a>
-
-                                                        <div *ngIf="postsData.userId === userId" class="dropdown-divider"></div>
-                                                        <a *ngIf="postsData.userId === userId" class="dropdown-item" href="javascript:void(0)"><i class="bi bi-pin me-2"></i>
-                                                            Pin Post</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card-body" [ngClass]="{'p-0': postsData.poll}">
-                                                <!-- Update Form -->
-                                                <div *ngIf="editingPostId === postsData.postId else showContent"
-                                                    class="update-form">
-                                                    <form [formGroup]="updatePostForm">
-                                                        <div class="row g-3">
-
-                                                            <!-- Title -->
-                                                            <div class="col-sm-12">
-                                                                <label class="form-label">Title <span *ngIf="updatePostForm.controls['title'].hasError('required') && 
-                                                                updatePostForm.controls['title'].touched"
-                                                                        class="text-danger">*</span></label>
-                                                                <input type="text" placeholder="Add a title"
-                                                                    class="form-control" formControlName="title">
-
-
-                                                                <small class="text-danger"
-                                                                    *ngIf="updatePostForm.controls['title'].hasError('minlength') && updatePostForm.controls['title'].touched">
-                                                                    Minimum 5 characters required.
-                                                                </small>
-                                                                <small class="text-danger"
-                                                                    *ngIf="updatePostForm.controls['title'].hasError('maxlength') && updatePostForm.controls['title'].touched">
-                                                                    Maximum 255 characters allowed.
-                                                                </small>
-                                                            </div>
-
-                                                            <!-- Category -->
-                                                            <div class="col-sm-12">
-                                                                <label class="form-label">Categories <span *ngIf="updatePostForm.controls['category'].hasError('required')
-                                                                      && updatePostForm.controls['category'].touched"
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select" formControlName="category">
-                                                                    <option value="" disabled selected>Select Category
-                                                                    </option>
-                                                                    <option *ngIf="!categoriesObj" value="" disabled
-                                                                        selected>Wait...</option>
-
-                                                                    <ng-container
-                                                                        *ngFor="let category of categoriesObj">
-                                                                        <option [value]="category.id">
-                                                                            {{ category.name }}</option>
-                                                                    </ng-container>
-                                                                </select>
-
-
-                                                            </div>
-
-                                                            <!-- Description -->
-                                                            <div class="col-sm-12">
-                                                                <label class="form-label">Description <span
-                                                                        *ngIf="updatePostForm.controls['description'].hasError('required') && updatePostForm.controls['description'].touched"
-                                                                        class="text-danger">*</span></label>
-                                                                <textarea formControlName="description"
-                                                                    class="form-control" placeholder="Add post" rows="3"
-                                                                    spellcheck="false"></textarea>
-
-
-                                                                <small class="text-danger"
-                                                                    *ngIf="updatePostForm.controls['description'].hasError('minlength') && updatePostForm.controls['description'].touched">
-                                                                    Minimum 10 characters required.
-                                                                </small>
-                                                                <small class="text-danger"
-                                                                    *ngIf="updatePostForm.controls['description'].hasError('maxlength') && updatePostForm.controls['description'].touched">
-                                                                    Maximum 1000 characters allowed.
-                                                                </small>
-                                                            </div>
-
-                                                            <!-- Image Preview -->
-                                                            <div *ngIf="previewUrl"
-                                                                class="dashboard-bg-box rounded-2 d-flex align-items-start p-4 justify-content-end d-flex position-relative"
-                                                                [ngStyle]="{'background-image': 'url(' + previewUrl + ')'}">
-
-                                                                <div class="btn-group" role="group"
-                                                                    aria-label="Background Image Button Group">
-                                                                    <!-- Upload Button -->
-                                                                    <button (click)="postPhoto.click()"
-                                                                        class="btn btn-light"><i
-                                                                            class="bi-upload btn-icon"></i>
-                                                                        Change
-                                                                    </button>
-                                                                    <!-- Delete button -->
-                                                                    <button
-                                                                        (click)="
-                                                                            isDbImage(updatePostForm.get('image')?.value)
-                                                                            ? openModal(updatePostForm, postsData.postId)
-                                                                            : removeImage()
-                                                                        "
-                                                                        data-bs-toggle="modal"
-                                                                        [attr.data-bs-target]="isDbImage(updatePostForm.get('image')?.value) ? '#userPostImageDeleteModal' : null"
-                                                                        class="btn btn-danger"
-                                                                        >
-                                                                        <i class="bi bi-trash-fill"></i>
-                                                                    </button>
-
-                                                                </div>
-                                                            </div>
-                                                            <!-- File Upload -->
-                                                            <div class="col-sm-10">
-                                                                <div class="comment-form-2 d-flex flex-column my-2">
-                                                                    <div
-                                                                        class="form-toolbar form-toolbar-bottom row justify-content-between g-2 p-2">
-                                                                        <div class="col">
-
-                                                                            <input #postPhoto type="file"
-                                                                                (change)="openFileInput($event)" hidden>
-
-                                                                            <button *ngIf="!previewUrl"
-                                                                                (click)="postPhoto.click()"
-                                                                                class="btn btn-sm btn-base btn-icon"
-                                                                                type="button" title="Image"><i
-                                                                                    class="bi bi-image"></i></button>
-
-
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Action Buttons -->
-                                                            <div class="col-sm-12">
-
-                                                               <button
-                                                                    type="button"
-                                                                    class="btn btn-mint me-2"
-                                                                    [disabled]="updatePostButtonLoading || !updatePostForm.dirty || updatePostForm.invalid"
-                                                                    (click)="updateUserPost(postsData)"
-                                                                    >
-                                                                    {{ updatePostButtonLoading ? 'Updating...' : 'Update Post' }}
-                                                                </button>
-
-                                                                <!-- <button type="button" class="btn btn-secondary">Save as
-                                                                    Draft</button> -->
-                                                                <!-- <button [disabled]="updatePostButtonLoading" type="button" (click)="clearUpdatePostForm()"
-                                                                    class="btn btn-outline-secondary ms-2">Clear</button> -->
-                                                                <button [disabled]="updatePostButtonLoading" type="button" (click)="cancelUpdatePost()"
-                                                                    class="btn btn-secondary ms-2">Cancel</button>
-                                                            </div>
-
-                                                        </div>
-                                                    </form>
-
-                                                </div>
-                                                <!-- End Update Form -->
-
-
-                                                <ng-template #showContent>
-                                                    <h3 *ngIf="!postsData.poll">
-                                                        <a href=""> {{postsData.title}} </a>
-                                                    </h3>
-                                                    <p *ngIf="postsData.description !== 'Poll'">{{postsData.description}}
-                                                    </p>
-
-                                                    <!--  Post photo  
-                                                      !!!! turn this into modal to show full image -->
-                                                    <div (click)="openFullImageModal(postsData.postImageUrl)" style="cursor:pointer;" *ngIf="postsData.postImageUrl" class="my-3"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#showFullImageModal"
-                                                    >
-                                                        <img [src]="'data:image/jpeg;base64,' + postsData.postImageUrl"
-                                                            alt="Post Image" class="img-fluid rounded-3 shadow-sm w-100"
-                                                            style="max-height: 300px; object-fit: cover;">
-                                                    </div>
-
-                                                    <!-- Standalone Poll Card -->
-                                                    <app-poll-card *ngIf="postsData.poll" [poll]="postsData.poll" [post]="postsData" (pollDeleted)="onPollDeleted($event)" class="w-100"></app-poll-card>
-                                                </ng-template>
-                                            </div>
-
-                                            <div *ngIf="editingPostId !== postsData.postId && !postsData.poll" class="card-footer">
-
-                                                <div class="post-stats d-flex align-items-center flex-wrap gap-2">
-                                                    <!-- Like / Dislike Pill -->
-                                                    <div class="post-action-pill">
-                                                        <a [class.disabled]="reactionButton == true" (click)="addPostReaction(true, postsData)" id="upvote"
-                                                            class="up-arrow me-2 text-decoration-none">
-                                                            <i class="bi fs-5" [ngClass]="{
-                                                                'bi-arrow-up-circle-fill text-success': postsData.isReactedByMe === true && authService.isLoggedIn(),
-                                                                'bi-arrow-up-circle': postsData.isReactedByMe !== true || !authService.isLoggedIn()
-                                                                }"></i>
-                                                        </a>
-                                                        <span class="me-3 fw-semibold fs-7">{{ postsData.likeCount }}</span>
-                                                        <a [class.disabled]="reactionButton == true" (click)="addPostReaction(false, postsData)"
-                                                            class="down-arrow me-2 text-decoration-none">
-                                                            <i class="bi fs-5" [ngClass]="{
-                                                                'bi-arrow-down-circle-fill text-danger': postsData.isReactedByMe === false && authService.isLoggedIn(),
-                                                                'bi-arrow-down-circle': postsData.isReactedByMe !== false || !authService.isLoggedIn()
-                                                            }"></i>
-                                                        </a>
-                                                        <span class="fw-semibold fs-7">{{ postsData.dislikeCount }}</span>
-                                                    </div>
-
-                                                    <!-- Views Pill -->
-                                                    <div class="post-action-pill">
-                                                        <i class="bi bi-eye fs-5 text-muted me-2"></i>
-                                                        <span class="fw-semibold fs-7">{{postsData.viewCount}} Views</span>
-                                                    </div>
-
-                                                    <!-- Comments Pill -->
-                                                    <div class="post-action-pill">
-                                                        <a href="javascript:void(0)" (click)="toggleComments(postsData.postId)" class="d-flex align-items-center text-decoration-none w-100">
-                                                            <i class="bi bi-chat-left-text fs-5 text-muted me-2"></i>
-                                                            <span class="fw-semibold fs-7">{{ commentCounts[postsData.postId] || 0 }}</span>
-                                                        </a>
-                                                    </div>
-
-                                                    <!-- Bookmark Pill -->
-                                                    <div class="post-action-pill">
-                                                        <a href="javascript:void(0)" (click)="toggleSavePost(postsData)" class="d-flex align-items-center text-decoration-none w-100">
-                                                            <i class="bi fs-5 me-2" [ngClass]="{'bi-bookmark-fill text-primary': postsData.isSavedByMe, 'bi-bookmark text-muted': !postsData.isSavedByMe}"></i>
-                                                            <span class="fw-semibold fs-7">{{ postsData.isSavedByMe ? 'Saved' : 'Save' }}</span>
-                                                        </a>
-                                                    </div>
-
-                                                    <!-- Share Pill -->
-                                                    <div class="post-action-pill">
-                                                        <a href="javascript:void(0)" (click)="openShareModal(postsData.postId)" data-bs-toggle="modal" data-bs-target="#sharePostModalProfile" class="d-flex align-items-center text-decoration-none w-100">
-                                                            <i class="bi bi-share fs-5 text-muted me-2"></i>
-                                                            <span class="fw-semibold fs-7">Share</span>
-                                                        </a>
-                                                    </div>
-
-                                                    <!-- Report Pill -->
-                                                    <!-- <div class="post-action-pill">
-                                                        <a href="#" class="d-flex align-items-center text-decoration-none w-100">
-                                                            <i class="bi bi-flag fs-5 text-muted me-2"></i>
-                                                            <span class="fw-semibold fs-7">Report</span>
-                                                        </a>
-                                                    </div> -->
-                                                </div>
-
-                                            </div>
-                                            
-                                            <!-- Comments Section -->
-                                            <app-comments *ngIf="!postsData.poll" [postId]="postsData.postId"
-                                                          [showCommentsList]="!!isCommentsVisibleMap[postsData.postId]"
-                                                          (commentCountChanged)="commentCounts[postsData.postId] = $event">
-                                            </app-comments>
-
-                                        </div>
-                                    </div><!--/post-box-->
-                                    } @empty {
-                                        <div *ngIf="!postsLoader" class="text-center py-5">
-                                            <h5 class="text-muted fw-normal" *ngIf="activeTab === 'posts'">No posts found</h5>
-                                            <h5 class="text-muted fw-normal" *ngIf="activeTab === 'saved'">No saved posts found</h5>
-                                            <h5 class="text-muted fw-normal" *ngIf="activeTab === 'hidden'">No hidden posts found</h5>
-                                        </div>
-                                    }
-
-
-
-                                </div>
-
-                            </div><!-- Tab content 1 END -->
-
-
-                        </div>
-                    </div>
-                </div>
-            </div><!--/col-lg-9-->
-
-
-
-        </div>
     </div>
+
+  </div>
 </section>
 
 
+<!-- ==============================================
+     MODALS
+     ============================================== -->
 
-
-<!-- Confirmation modal -->
+<!-- 1. Delete Post Confirmation Modal -->
 <div class="modal fade" id="draftDeleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Delete Post?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body">
-                Are you sure you want to delete this Post? This action cannot be undone.
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cancel
-                </button>
-                <button id="deleteBtnId" type="button" class="btn btn-danger"
-                    (click)="confirmDraftDelete(selectedPostId)" data-bs-dismiss="modal">
-                    Delete
-                </button>
-            </div>
-
-        </div>
-    </div>
-</div>
-<!-- User Post Image deletion -->
-<div class="modal fade" id="userPostImageDeleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Delete User Post Image?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <div class="modal-body">
-                Are you sure you want to delete this User Post Image? This action cannot be undone.
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cancel
-                </button>
-                <button (click)="deleteUserPostImage()" id="deleteBtnId" type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                    Delete
-                </button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<!-- Share Modal (Profile View) -->
-<div class="modal fade" id="sharePostModalProfile" tabindex="-1" aria-labelledby="sharePostModalProfileLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 18px;">
       <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title" id="sharePostModalProfileLabel">Share Post</h5>
+        <h5 class="modal-title fw-bold text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Post?</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <p class="text-muted mb-3">Copy the link below to share this post:</p>
+      <div class="modal-body py-4">
+        Are you sure you want to delete this post? This action cannot be undone.
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+        <button id="deleteBtnId" type="button" class="btn btn-danger rounded-pill px-4 fw-bold" (click)="confirmDraftDelete(selectedPostId)" data-bs-dismiss="modal">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Delete User Post Image Modal -->
+<div class="modal fade" id="userPostImageDeleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 18px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold text-danger">Delete Attached Image?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4">
+        Are you sure you want to remove the image from this post?
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+        <button (click)="deleteUserPostImage()" id="deleteBtnId" type="button" class="btn btn-danger rounded-pill px-4 fw-bold" data-bs-dismiss="modal">
+          Delete Image
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Share Modal (Profile View) -->
+<div class="modal fade" id="sharePostModalProfile" tabindex="-1" aria-labelledby="sharePostModalProfileLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 18px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="sharePostModalProfileLabel">Share Post</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-4">
+        <p class="text-muted mb-3 fs-7">Copy the link below to share this post:</p>
         <div class="input-group mb-3">
-          <input type="text" class="form-control" [value]="shareLink" readonly #shareInputProfile>
-          <button class="btn btn-primary" type="button" (click)="copyShareLink(shareInputProfile)">
-            <i class="bi bi-clipboard"></i> Copy
+          <input type="text" class="form-control form-control-lg fs-7" [value]="shareLink" readonly #shareInputProfile>
+          <button class="btn btn-mint px-4 fw-bold" type="button" (click)="copyShareLink(shareInputProfile)">
+            <i class="bi bi-clipboard me-1"></i> Copy
           </button>
         </div>
       </div>
@@ -568,16 +639,13 @@
   </div>
 </div>
 
-<style>
-    
-</style>
-<!--  full image of post modal -->
+<!-- 4. Full Image View Modal -->
 <div class="modal fade" id="showFullImageModal" tabindex="-1" aria-hidden="true" (hidden.bs.modal)="closeFullImageModal()">
-    <div class="modal-dialog modal-dialog-centered modal-xl p-2">
-        <div class="modal-content post-image-modal-content">
-            <div class="modal-body p-2 d-flex justify-content-center align-items-center">
-                <img [src]="selectedPostImage" alt="Post image" class="post-modal-img">
-            </div>
-        </div>
+  <div class="modal-dialog modal-dialog-centered modal-xl p-2">
+    <div class="modal-content post-image-modal-content border-0">
+      <div class="modal-body p-2 d-flex justify-content-center align-items-center">
+        <img [src]="selectedPostImage" alt="Full Image" class="post-modal-img rounded-3">
+      </div>
     </div>
+  </div>
 </div>

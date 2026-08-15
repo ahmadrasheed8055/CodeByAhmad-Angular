@@ -20,6 +20,7 @@ import { CategoryFilterService } from '../../Shared/category-filter.service';
 import { ICategories } from '../../Model/categories';
 import { ChatbotService, ChatMessage } from '../../Shared/chatbot.service';
 import { MarkdownPipe } from '../../Shared/markdown.pipe';
+import { PendingActionService } from '../../Shared/pending-action.service';
 
 @Component({
   selector: 'app-posts',
@@ -36,6 +37,7 @@ export class PostsComponent implements OnInit {
   notificationService = inject(NotificationService);
   categoryFilterService = inject(CategoryFilterService);
   chatbotService = inject(ChatbotService);
+  pendingActionService = inject(PendingActionService);
 
   // Post AI Assistant State
   selectedAiPost: GetAllPostsDTO | null = null;
@@ -78,6 +80,10 @@ export class PostsComponent implements OnInit {
   inlineFormSubmitted: boolean = false;
 
   toggleInlineAddPost(open: boolean, triggerPhotoPicker: boolean = false) {
+    if (open && !this.AuthService.isLoggedIn()) {
+      this.pendingActionService.setPendingAction({ type: 'NAVIGATE', targetUrl: '/add-post' });
+      return;
+    }
     this.isInlineAddPostOpen = open;
     this.inlineFormSubmitted = false;
     if (!open) {
@@ -144,7 +150,7 @@ export class PostsComponent implements OnInit {
 
     const currentUserId = this.AuthService.userIdExists() || Number(sessionStorage.getItem('appUserId')) || this.userId;
     if (!currentUserId) {
-      this.snackBarService.showError('Please log in to create a post.');
+      this.pendingActionService.setPendingAction({ type: 'NAVIGATE', targetUrl: '/add-post' });
       return;
     }
 
@@ -221,6 +227,32 @@ export class PostsComponent implements OnInit {
       this.AuthService.appUserId$.subscribe((userId) => {
         this.userId = userId || 0;
         this.getAllPosts();
+      });
+
+      // Subscribe to pending action replay after login
+      this.pendingActionService.actionReady$.subscribe(({ action, userId }) => {
+        switch (action.type) {
+          case 'LIKE_POST': {
+            const p = this.posts?.find(x => x.postId === action.postId);
+            if (p) this.addPostReaction(action.isLike, p);
+            break;
+          }
+          case 'SAVE_POST': {
+            const p = this.posts?.find(x => x.postId === action.postId);
+            if (p) this.toggleSavePost(p);
+            break;
+          }
+          case 'HIDE_POST': {
+            const p = this.posts?.find(x => x.postId === action.postId);
+            if (p) this.hidePost(p);
+            break;
+          }
+          case 'FOLLOW_USER': {
+            const p = this.posts?.find(x => x.userId === action.targetUserId);
+            if (p) this.toggleFollow(p);
+            break;
+          }
+        }
       });
 
       this.AuthService.appUserPhotos$.subscribe((photos) => {
@@ -372,6 +404,10 @@ export class PostsComponent implements OnInit {
   }
 
   openCreatePostForActiveCategory() {
+    if (!this.AuthService.isLoggedIn()) {
+      this.pendingActionService.setPendingAction({ type: 'NAVIGATE', targetUrl: '/add-post' });
+      return;
+    }
     this.toggleInlineAddPost(true);
     if (this.selectedCategoryId) {
       this.inlinePostForm.patchValue({ category: this.selectedCategoryId });
@@ -379,6 +415,10 @@ export class PostsComponent implements OnInit {
   }
 
   openCreatePollForActiveCategory() {
+    if (!this.AuthService.isLoggedIn()) {
+      this.pendingActionService.setPendingAction({ type: 'NAVIGATE', targetUrl: '/home' });
+      return;
+    }
     if (this.selectedCategoryId) {
       this.selectedPollCategory = this.selectedCategoryId;
     }
@@ -526,10 +566,19 @@ User Question: ${userQ}`;
       this.userId = 0;
      }
 
-    this.MasterService.getAllPosts(this.userId).subscribe((posts: GetAllPostsDTO[]) => {
-      this.posts = posts;
-      this.categoryFilterService.updateCounts(this.posts);
-      console.log('Posts fetched:', this.posts);
+    this.pendingActionService.pauseReplay();
+
+    this.MasterService.getAllPosts(this.userId).subscribe({
+      next: (posts: GetAllPostsDTO[]) => {
+        this.posts = posts;
+        this.categoryFilterService.updateCounts(this.posts);
+        console.log('Posts fetched:', this.posts);
+        this.pendingActionService.resumeReplay();
+      },
+      error: (err) => {
+        console.error('Error fetching posts:', err);
+        this.pendingActionService.resumeReplay();
+      }
     });
   }
 
@@ -584,7 +633,9 @@ User Question: ${userQ}`;
   // Function to handle post reaction
   addPostReaction(isLike: boolean | null, post: GetAllPostsDTO) {
     if (!this.AuthService.isLoggedIn()) {
-      this.snackBarService.showError('Please log in to react to posts');
+      if (isLike !== null) {
+        this.pendingActionService.setPendingAction({ type: 'LIKE_POST', postId: post.postId, isLike });
+      }
       return;
     }
     if (isLike === null) {
@@ -655,7 +706,7 @@ User Question: ${userQ}`;
 
   hidePost(post: GetAllPostsDTO) {
     if (!this.AuthService.isLoggedIn()) {
-      this.snackBarService.showError('Please log in to hide posts');
+      this.pendingActionService.setPendingAction({ type: 'HIDE_POST', postId: post.postId });
       return;
     }
     this.MasterService.hidePost(this.userId, post.postId).subscribe({
@@ -671,7 +722,7 @@ User Question: ${userQ}`;
 
   toggleSavePost(post: GetAllPostsDTO) {
     if (!this.AuthService.isLoggedIn()) {
-      this.snackBarService.showError('Please log in to save posts');
+      this.pendingActionService.setPendingAction({ type: 'SAVE_POST', postId: post.postId });
       return;
     }
     if (post.isSavedByMe) {
@@ -755,6 +806,10 @@ User Question: ${userQ}`;
   }
 
   submitPoll() {
+    if (!this.AuthService.isLoggedIn()) {
+      this.pendingActionService.setPendingAction({ type: 'NAVIGATE', targetUrl: '/home' });
+      return;
+    }
     if (!this.pollQuestion.trim()) {
       this.snackBarService.showError('Please enter a poll question.');
       return;
@@ -807,7 +862,7 @@ User Question: ${userQ}`;
 
   toggleFollow(post: GetAllPostsDTO) {
     if (!this.AuthService.isLoggedIn()) {
-      this.snackBarService.showError('Please log in to follow users');
+      this.pendingActionService.setPendingAction({ type: 'FOLLOW_USER', targetUserId: post.userId });
       return;
     }
     

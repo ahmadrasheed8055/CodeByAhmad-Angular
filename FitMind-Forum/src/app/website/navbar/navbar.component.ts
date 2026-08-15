@@ -16,6 +16,7 @@ import { ForgetPasswordComponent } from '../auth/forget-password/forget-password
 import { NotificationService } from '../../Shared/notification.service';
 import { NotificationItem } from '../../Model/NotificationDTO';
 import { SearchResultDTO } from '../../Model/SearchDTO';
+import { ChatbotService } from '../../Shared/chatbot.service';
 
 @Component({
   selector: 'app-navbar',
@@ -44,16 +45,40 @@ export class NavbarComponent implements OnInit {
   masterServices = inject(MasterService);
   snackBarService = inject(SnackBarServiceService);
   notificationService = inject(NotificationService);
+  chatbotService = inject(ChatbotService);
   private platformId = inject(PLATFORM_ID);
 
   isDarkMode: boolean = false;
+  isSidebarCollapsed: boolean = false;
+  isSidebarExpanded: boolean = false;
   notifications: NotificationItem[] = [];
   unreadCount: number = 0;
+  activeNotifTab: 'all' | 'following' | 'messages' = 'all';
+
+  get filteredNotifications(): NotificationItem[] {
+    if (this.activeNotifTab === 'following') {
+      return this.notifications.filter(n => n.type === 'follow');
+    }
+    if (this.activeNotifTab === 'messages') {
+      return this.notifications.filter(n => n.type === 'comment' || n.type === 'reaction' || n.type === 'post');
+    }
+    return this.notifications;
+  }
 
   searchControl = new FormControl('');
   searchResults: SearchResultDTO | null = null;
   showDropdown: boolean = false;
   searchLoading: boolean = false;
+
+  toggleSidebar() {
+    this.isSidebarExpanded = !this.isSidebarExpanded;
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
+
+  toggleChatbot() {
+    this.chatbotService.toggleChat();
+  }
+
 
   ngOnInit() {
     this.notificationService.notifications$.subscribe((items) => {

@@ -18,6 +18,7 @@ import { UserLoginDTO } from '../../../Model/AppUsers';
 import { CommonModule } from '@angular/common';
 import { MasterService } from '../../../Shared/master.service';
 import { AuthService } from '../../../Shared/auth.service';
+import { PendingActionService } from '../../../Shared/pending-action.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -38,6 +39,7 @@ export class LoginComponent implements OnInit {
   emailVarificationModal: string = '#emailVarificationModal';
   services = inject(MasterService);
   authServices = inject(AuthService);
+  pendingActionService = inject(PendingActionService);
   route = inject(Router);
   errorMessage: string = '';
   loginBtn: string = 'Login';
@@ -93,21 +95,33 @@ export class LoginComponent implements OnInit {
         HashedPassword: formValues.password,
       };
 
-      // debugger;
       this.services.loginUser(this.user).subscribe({
         next: (result) => {
 
           sessionStorage.setItem('token', result.token);
           sessionStorage.setItem('appUserId', result.userId.toString());
-          // console.log("Token: " + result.token);
-      
-          this.route.navigate(['/home']).then(() => {
+
+          const hasPending = this.pendingActionService.hasPendingAction();
+
+          const completeLogin = () => {
             this.loginBtn = 'Login';
             this.loginBtnLoading = false;
             this.closeButton.nativeElement.click();
             this.afterLogin();
             this.closeModal();
-          });
+            // Emit login success signal for pending action replay
+            this.authServices.loginSuccess$.next(result.userId);
+          };
+
+          if (hasPending) {
+            // Stay on current page — don't navigate to /home
+            completeLogin();
+          } else {
+            // Normal flow — navigate to home
+            this.route.navigate(['/home']).then(() => {
+              completeLogin();
+            });
+          }
         },
         error: (error) => {
           this.loginBtn = 'Login';

@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { PublicAppUserDTO, AppUserPhotos } from '../../../Model/AppUsers';
 import { AuthService } from '../../../Shared/auth.service';
-import { Subscription } from 'rxjs';
+import { Subscription, debounceTime, distinctUntilChanged, filter, skip, switchMap, tap } from 'rxjs';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MasterService } from '../../../Shared/master.service';
 import { GetUserPostsDTO } from '../../../Model/GetUserPosts';
@@ -59,14 +59,125 @@ export class ProfileViewComponent {
 
   userId: number = Number(sessionStorage.getItem('appUserId')) || 0;
 
-  //update form
+  // Inline Profile Edit State
+  isEditingProfile: boolean = false;
+  isSavingProfile: boolean = false;
+  editProfileForm!: FormGroup;
+  isCheckingUniqueName: boolean = false;
+  isUniqueNameTaken: boolean = false;
+  private uniqueNameSub?: Subscription;
+
+  countriesList: string[] = [
+    'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France',
+    'Pakistan', 'India', 'Bulgaria', 'United Arab Emirates', 'Saudi Arabia',
+    'Italy', 'Spain', 'Netherlands', 'Brazil', 'Turkey', 'Mexico', 'South Africa',
+    'Singapore', 'New Zealand', 'Sweden', 'Norway', 'Denmark', 'Switzerland',
+    'Austria', 'Belgium', 'Ireland', 'Poland', 'Portugal', 'Greece', 'Czech Republic',
+    'Romania', 'Hungary', 'Egypt', 'Malaysia', 'Indonesia', 'Philippines', 'Vietnam',
+    'Thailand', 'Argentina', 'Chile', 'Colombia', 'Peru', 'South Korea', 'Japan', 'China'
+  ];
+
+  initEditProfileForm() {
+    this.editProfileForm = new FormGroup({
+      username: new FormControl(this.user.username || '', [Validators.required]),
+      uniqueName: new FormControl(this.user.uniqueName || '', [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(20),
+        Validators.pattern('^[a-zA-Z0-9_]+$')
+      ]),
+      bio: new FormControl(this.user.bio || ''),
+      phone: new FormControl(this.user.phone || ''),
+      location: new FormControl(this.user.location || ''),
+      country: new FormControl(this.user.country || ''),
+      facebookLink: new FormControl(this.user.facebookLink || ''),
+      instagramLink: new FormControl(this.user.instagramLink || '')
+    });
+
+    this.isUniqueNameTaken = false;
+    this.isCheckingUniqueName = false;
+
+    if (this.uniqueNameSub) {
+      this.uniqueNameSub.unsubscribe();
+    }
+
+    // Live Debounced Check for Unique Name (Just like Instagram)
+    this.uniqueNameSub = this.editProfileForm.controls['uniqueName'].valueChanges.pipe(
+      skip(1),
+      filter((val): val is string => !!val && val.trim().length >= 3),
+      distinctUntilChanged(),
+      tap(() => {
+        this.isCheckingUniqueName = true;
+      }),
+      debounceTime(600),
+      switchMap((uniqueName) => this.masterService.checkUniqueName(uniqueName.trim(), this.user.id))
+    ).subscribe({
+      next: (isTaken: any) => {
+        this.isUniqueNameTaken = !!isTaken;
+        this.isCheckingUniqueName = false;
+      },
+      error: () => {
+        this.isCheckingUniqueName = false;
+      }
+    });
+  }
+
+  toggleEditProfile() {
+    this.initEditProfileForm();
+    this.isEditingProfile = true;
+  }
+
+  cancelEditProfile() {
+    if (this.uniqueNameSub) {
+      this.uniqueNameSub.unsubscribe();
+    }
+    this.isEditingProfile = false;
+  }
+
+  saveProfile() {
+    if (this.editProfileForm.invalid || this.isUniqueNameTaken) {
+      this.snackBar.showError('Please check the required fields or unique handle');
+      return;
+    }
+
+    this.isSavingProfile = true;
+    const formVal = this.editProfileForm.value;
+    const updatedUser: PublicAppUserDTO = {
+      ...this.user,
+      username: formVal.username,
+      uniqueName: formVal.uniqueName,
+      bio: formVal.bio,
+      phone: formVal.phone,
+      location: formVal.location,
+      country: formVal.country,
+      facebookLink: formVal.facebookLink,
+      instagramLink: formVal.instagramLink
+    };
+
+    this.masterService.updateAppUser(this.user.id, updatedUser).subscribe({
+      next: () => {
+        this.user = updatedUser;
+        this.authService.updateUserData(this.user);
+        this.snackBar.showSuccess('Profile updated successfully!');
+        this.isSavingProfile = false;
+        this.isEditingProfile = false;
+      },
+      error: (err) => {
+        this.isSavingProfile = false;
+        if (err.status === 409) {
+          this.snackBar.showError('Unique handle already taken. Please choose another.');
+        } else {
+          this.snackBar.showError('Failed to update profile. Please try again.');
+        }
+      }
+    });
+  }
+
+  // Post Update State & Routing
   updatePostForm!: FormGroup;
   updatePostButtonLoading: boolean = false;
-
-
   router = inject(Router);
   route = inject(ActivatedRoute);
-
   profileUserId: number = 0;
   activeTab: 'posts' | 'saved' | 'hidden' = 'posts';
   isRefreshing: boolean = false;

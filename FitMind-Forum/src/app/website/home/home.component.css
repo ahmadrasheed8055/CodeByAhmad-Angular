@@ -1,0 +1,107 @@
+/* FitJoin Redesign - Home Page & Right Sidebar Styles */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.max-width-wrapper {
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+.fitjoin-main-section {
+  min-height: 80vh;
+}
+
+/* Right Sidebar Container - Completely Fixed Sticky Position at top: 74px */
+.fitjoin-right-sidebar {
+  position: sticky;
+  top: 74px;
+  margin-bottom: 2rem;
+  z-index: 10;
+}
+
+/* Widget Card */
+.fitjoin-widget-card {
+  border-radius: 16px !important;
+  background-color: var(--theme-white, #ffffff) !important;
+  border: 1px solid var(--border-color, #e5e7eb) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+:host-context([data-theme="dark"]) .fitjoin-widget-card {
+  background-color: #16171d !important;
+  border-color: #2a2c35 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.widget-title {
+  color: var(--text-color, #1f2937);
+  font-size: 1.15rem;
+  letter-spacing: -0.2px;
+}
+
+.widget-accent-count {
+  color: var(--green-color, #87bf17) !important;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* 5-per-row Avatar Grid (matching reference image) */
+.following-avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  justify-items: center;
+  align-items: center;
+}
+
+.member-avatar-wrap {
+  display: inline-block;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.member-avatar-wrap:hover {
+  transform: scale(1.12);
+}
+
+.member-avatar {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border: 2px solid var(--theme-white, #ffffff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.2s ease;
+}
+
+:host-context([data-theme="dark"]) .member-avatar {
+  border-color: #16171d;
+}
+
+.member-avatar-wrap:hover .member-avatar {
+  border-color: var(--green-color, #87bf17);
+}
+
+/* See All Button */
+.btn-widget-see-all {
+  background-color: var(--green-color, #87bf17) !important;
+  color: #ffffff !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.5px;
+  padding: 8px 20px !important;
+  border: none !important;
+  box-shadow: 0 3px 12px rgba(135, 191, 23, 0.25) !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none;
+}
+
+.btn-widget-see-all:hover {
+  background-color: var(--green-color-hover, #99d41a) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(135, 191, 23, 0.35) !important;
+  color: #ffffff !important;
+}

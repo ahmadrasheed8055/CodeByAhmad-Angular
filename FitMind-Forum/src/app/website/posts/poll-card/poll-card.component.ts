@@ -6,6 +6,7 @@ import { MasterService } from '../../../Shared/master.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../../Shared/auth.service';
 import { RouterModule } from '@angular/router';
+import { PendingActionService } from '../../../Shared/pending-action.service';
 
 @Component({
   selector: 'app-poll-card',
@@ -31,7 +32,8 @@ export class PollCardComponent implements OnInit {
   constructor(
     private masterService: MasterService,
     private toastr: ToastrService,
-    public authService: AuthService
+    public authService: AuthService,
+    private pendingActionService: PendingActionService
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +41,31 @@ export class PollCardComponent implements OnInit {
       this.loggedInUserId = userId || 0;
       if (!this.poll.userVotedOptionIds) {
         this.poll.userVotedOptionIds = [];
+      }
+    });
+
+    // Subscribe to pending action replay after login
+    this.pendingActionService.actionReady$.subscribe(({ action, userId }) => {
+      switch (action.type) {
+        case 'VOTE_POLL': {
+          if (action.pollId === this.poll?.pollId) {
+            this.toggleOption(action.optionId);
+          }
+          break;
+        }
+        case 'ADD_POLL_OPTION': {
+          if (action.pollId === this.poll?.pollId) {
+            this.customOptionText = action.optionText;
+            this.addCustomOption();
+          }
+          break;
+        }
+        case 'FOLLOW_USER': {
+          if (this.post && this.post.userId === action.targetUserId) {
+            this.toggleFollow(this.post);
+          }
+          break;
+        }
       }
     });
   }
@@ -51,7 +78,7 @@ export class PollCardComponent implements OnInit {
 
   toggleOption(optionId: number) {
     if (!this.loggedInUserId) {
-      this.toastr.warning('Please log in to vote');
+      this.pendingActionService.setPendingAction({ type: 'VOTE_POLL', pollId: this.poll.pollId, optionId });
       return;
     }
     if (this.poll.isExpired || this.poll.isClosed) {
@@ -140,7 +167,9 @@ export class PollCardComponent implements OnInit {
 
   addCustomOption() {
     if (!this.loggedInUserId) {
-      this.toastr.warning('Log in to add options');
+      if (this.customOptionText.trim()) {
+        this.pendingActionService.setPendingAction({ type: 'ADD_POLL_OPTION', pollId: this.poll.pollId, optionText: this.customOptionText.trim() });
+      }
       return;
     }
     if (!this.customOptionText.trim()) return;
@@ -252,7 +281,7 @@ export class PollCardComponent implements OnInit {
 
   toggleFollow(post: any) {
     if (!this.authService.isLoggedIn()) {
-      this.toastr.error('Please log in to follow users');
+      this.pendingActionService.setPendingAction({ type: 'FOLLOW_USER', targetUserId: post.userId });
       return;
     }
     

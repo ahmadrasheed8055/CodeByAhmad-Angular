@@ -35,6 +35,10 @@ export class AuthService {
   private appUserId = new BehaviorSubject<number | null>(null);
   appUserId$ = this.appUserId.asObservable();
 
+  //==========LOGIN SUCCESS SIGNAL =====================
+  // Emits userId after a full login sequence completes (session set + user data fetched)
+  loginSuccess$ = new Subject<number>();
+
   masterServices = inject(MasterService);
 
   constructor() {

@@ -1,147 +1,150 @@
-.dashboard {
-  padding: 40px 0;
-  background-color: var(--bg-color);
-}
+/* ==============================================
+   FitJoin Profile Settings - Redesign Styles
+   ============================================== */
 
-.dashboard-card {
-  background: var(--theme-white) !important;
-  border-radius: 16px !important;
-  border: 1px solid var(--border-color) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03) !important;
-  padding: 30px !important;
-  margin-bottom: 24px;
-}
-
-.dashboard-header h4 {
-  font-family: 'Outfit', 'Inter', sans-serif !important;
-  font-weight: 800 !important;
-  color: var(--theme-black) !important;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: -0.5px;
-  font-size: 1.15rem;
-}
-
-.form-label {
-  font-weight: 700 !important;
-  color: var(--text-color) !important;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-}
-
-/* Connect inputs prefix */
-.input-group-text {
-  border-radius: 12px 0 0 12px !important;
-  border: 1.5px solid var(--border-color) !important;
-  border-right: none !important;
-  background-color: var(--form-control) !important;
-  color: var(--text-color);
-  padding: 10px 16px;
-}
-
-.input-group-text + input {
-  border-radius: 0 12px 12px 0 !important;
-}
-
-/* Edit avatar container setting */
-.dashboard-user-box img {
-  width: 90px;
-  height: 90px;
-  border-radius: 12px !important;
-  object-fit: cover;
-  border: 2px solid var(--border-color);
-}
-
-/* Tabs style */
-.vine-tabs {
-  background: var(--theme-white) !important;
-  border-radius: 16px !important;
-  border: 1px solid var(--border-color) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
-  padding: 10px !important;
-  margin-bottom: 24px;
-}
-
-.nav-tabs .nav-link {
-  font-weight: 700 !important;
-  font-size: 0.95rem !important;
-  color: var(--text-muted, #718096) !important;
-  border: none !important;
-  padding: 12px 20px !important;
-  border-radius: 10px !important;
-  transition: all 0.25s ease !important;
-}
-
-.nav-tabs .nav-link.active {
-  background: rgba(135, 191, 23, 0.1) !important;
-  color: var(--green-color, #87bf17) !important;
-}
-
-.nav-tabs .nav-link:hover:not(.active) {
-  color: var(--green-color, #87bf17) !important;
-  background: rgba(0, 0, 0, 0.02) !important;
-}
-
-:root[data-theme="dark"] .nav-tabs .nav-link:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.02) !important;
-}
-
-/* Form Switches */
-.form-check-input:checked {
-  background-color: var(--green-color, #87bf17) !important;
-  border-color: var(--green-color, #87bf17) !important;
-}
-
-/* Custom inputs profile settings page */
-input[type="text"], input[type="password"] {
+:host {
+  display: block;
   width: 100%;
-  border-radius: 12px !important;
-  border: 1.5px solid var(--border-color) !important;
-  padding: 12px 18px !important;
-  font-size: 0.95rem !important;
-  background-color: var(--form-control) !important;
-  color: var(--text-color) !important;
-  transition: all 0.25s ease !important;
 }
 
-input[type="text"]:focus, input[type="password"]:focus {
-  border-color: var(--green-color) !important;
-  box-shadow: 0 0 0 3px rgba(135, 191, 23, 0.15) !important;
-  outline: none !important;
+.max-width-settings {
+  max-width: 980px;
+  margin: 0 auto;
 }
 
-.btn-mint {
-  background: linear-gradient(135deg, #87bf17 0%, #87bf17 100%) !important;
-  border: none !important;
-  color: white !important;
-  font-weight: 700 !important;
-  border-radius: 30px !important;
-  padding: 10px 24px !important;
-  box-shadow: 0 4px 15px rgba(135, 191, 23, 0.2) !important;
-  transition: all 0.25s ease !important;
+.page-settings-title {
+  color: var(--text-color, #0f172a);
+  font-size: 2.2rem;
+  letter-spacing: -0.5px;
 }
 
-.btn-mint:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(135, 191, 23, 0.3) !important;
+.back-link {
+  color: #64748b !important;
+  transition: color 0.2s ease;
 }
 
-.btn-secondary {
-  border-radius: 30px !important;
-  padding: 10px 24px !important;
-  font-weight: 700 !important;
-  border: 1.5px solid var(--border-color) !important;
+.back-link:hover {
+  color: var(--green-color, #87bf17) !important;
+}
+
+/* ==============================================
+   1. HORIZONTAL PILL TAB SWITCHER (Reference Style)
+   ============================================== */
+.settings-tabs-wrapper {
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.settings-tab-pill {
+  border-radius: 20px !important;
+  padding: 8px 18px !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
   background: transparent !important;
-  color: var(--text-color) !important;
+  border: 1px solid transparent !important;
   transition: all 0.2s ease !important;
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: var(--border-color) !important;
+:host-context([data-theme="dark"]) .settings-tab-pill {
+  color: #94a3b8 !important;
 }
 
-.btn-danger {
-  border-radius: 30px !important;
-  padding: 10px 24px !important;
+.settings-tab-pill:hover {
+  color: var(--text-color, #0f172a) !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+
+:host-context([data-theme="dark"]) .settings-tab-pill:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.settings-tab-pill.active {
+  color: var(--text-color, #0f172a) !important;
+  background: #e2e8f0 !important;
   font-weight: 700 !important;
+}
+
+:host-context([data-theme="dark"]) .settings-tab-pill.active {
+  color: #ffffff !important;
+  background: #2a2c35 !important;
+}
+
+/* ==============================================
+   2. SETTINGS CARD CONTAINER
+   ============================================== */
+.settings-card {
+  border-radius: 24px !important;
+  background-color: var(--theme-white, #ffffff) !important;
+  border: 1px solid var(--border-color, #e5e7eb) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04) !important;
+}
+
+:host-context([data-theme="dark"]) .settings-card,
+:host-context([data-bs-theme="dark"]) .settings-card {
+  background-color: #16171d !important;
+  border-color: #2a2c35 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Form Inputs */
+.settings-input {
+  border-radius: 12px !important;
+  border: 1px solid var(--border-color, #e2e8f0) !important;
+  padding: 10px 14px !important;
+  font-size: 0.9rem !important;
+  background-image: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.settings-input:focus {
+  border-color: var(--green-color, #87bf17) !important;
+  box-shadow: 0 0 0 3px rgba(135, 191, 23, 0.15) !important;
+}
+
+/* Photo Previews */
+.avatar-preview {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+}
+
+.banner-preview-wrap {
+  width: 100px;
+  height: 50px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.default-banner-bg {
+  background: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+}
+
+.max-width-form {
+  max-width: 540px;
+}
+
+/* ==============================================
+   3. NOTIFICATION TOGGLE SWITCHES (Reference Style)
+   ============================================== */
+.notif-toggle-switch {
+  width: 2.4em !important;
+  height: 1.2em !important;
+  cursor: pointer;
+}
+
+.notif-toggle-switch:checked {
+  background-color: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+}
+
+.btn-mint {
+  background-color: var(--green-color, #87bf17) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn-mint:hover {
+  background-color: var(--green-color-hover, #99d41a) !important;
 }

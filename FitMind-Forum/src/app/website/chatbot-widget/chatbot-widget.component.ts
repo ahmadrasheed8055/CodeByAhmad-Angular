@@ -1,6 +1,7 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { ChatbotService, ChatMessage } from '../../Shared/chatbot.service';
 import { MarkdownPipe } from '../../Shared/markdown.pipe';
 import { AuthService } from '../../Shared/auth.service';
@@ -12,7 +13,7 @@ import { AuthService } from '../../Shared/auth.service';
   templateUrl: './chatbot-widget.component.html',
   styleUrl: './chatbot-widget.component.css'
 })
-export class ChatbotWidgetComponent implements AfterViewChecked {
+export class ChatbotWidgetComponent implements OnInit, OnDestroy, AfterViewChecked {
   isOpen: boolean = false;
   isExpanded: boolean = true;
   isTyping: boolean = false;
@@ -20,11 +21,30 @@ export class ChatbotWidgetComponent implements AfterViewChecked {
   hasUnread: boolean = true;
   showInfoNotice: boolean = false;
   private shouldScrollToBottom: boolean = false;
+  private chatSub?: Subscription;
   
   selectedFile: { base64: string, mimeType: string, previewUrl: string, fileName: string } | null = null;
 
   private authService = inject(AuthService);
   private chatbotService = inject(ChatbotService);
+
+  ngOnInit() {
+    this.chatSub = this.chatbotService.toggleChat$.subscribe((open) => {
+      if (typeof open === 'boolean') {
+        this.isOpen = open;
+      } else {
+        this.isOpen = !this.isOpen;
+      }
+      if (this.isOpen) {
+        this.hasUnread = false;
+        this.shouldScrollToBottom = true;
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.chatSub?.unsubscribe();
+  }
 
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
@@ -42,6 +62,13 @@ export class ChatbotWidgetComponent implements AfterViewChecked {
 
   get isLocked(): boolean {
     return !this.isLoggedIn && this.guestPromptCount >= 2;
+  }
+
+  get placeholderText(): string {
+    if (this.isLoggedIn) return 'Type message or attach image...';
+    if (this.isLocked) return 'Login to continue chatting...';
+    const remaining = this.guestPromptsRemaining;
+    return `Type message... (Guest mode: ${remaining} free prompt${remaining === 1 ? '' : 's'})`;
   }
 
   toggleInfoNotice() {
@@ -83,6 +110,7 @@ export class ChatbotWidgetComponent implements AfterViewChecked {
 
   toggleExpand() {
     this.isExpanded = !this.isExpanded;
+
     this.shouldScrollToBottom = true;
   }
 

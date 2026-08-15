@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export interface ChatMessage {
   id: string;
@@ -33,6 +33,17 @@ export class ChatbotService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:5177/api/Chatbot/ask';
 
+  private toggleChatSubject = new Subject<boolean | void>();
+  toggleChat$ = this.toggleChatSubject.asObservable();
+
+  openChat() {
+    this.toggleChatSubject.next(true);
+  }
+
+  toggleChat() {
+    this.toggleChatSubject.next();
+  }
+
   askChatbot(message: string, history: ChatMessage[], imageBase64?: string, imageMimeType?: string): Observable<ChatResponseDTO> {
     const formattedHistory: ChatHistory[] = history
       .filter(h => h.text.trim() !== '') // Ensure no empty messages
@@ -51,3 +62,4 @@ export class ChatbotService {
     return this.http.post<ChatResponseDTO>(this.apiUrl, request);
   }
 }
+

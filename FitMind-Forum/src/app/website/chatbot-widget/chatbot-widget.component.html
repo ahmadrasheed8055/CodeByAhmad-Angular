@@ -135,7 +135,7 @@
 
         <input type="text" 
                class="form-control chat-input" 
-               [placeholder]="isLoggedIn ? 'Type message or attach image...' : 'Type message... (Guest mode: 2 free prompts)'" 
+               [placeholder]="placeholderText" 
                [(ngModel)]="userMessage" 
                name="userMessage"
                autocomplete="off">

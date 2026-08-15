@@ -1,345 +1,375 @@
-﻿<!-- CodeByAhmad - FitMind Forum Standard Professional Module -->
-<!-- ==============================================
-Navbar
-=============================================== -->
+<!-- FitJoin Modern UI/UX Redesign - Navigation & Shell Layout -->
+<div class="fitjoin-app-container">
 
-<!-- Switcher Icon
-<div class="switcher switcher-show" id="theme-switcher">
-  <i id="switcher-icon" class="bi bi-moon"></i>
-</div> -->
+  <!-- ==============================================
+       1. LEFT SIDEBAR ICON RAIL (Collapsible & Expandable)
+       =============================================== -->
+  <aside class="fitjoin-left-rail" [class.is-expanded]="isSidebarExpanded" [class.collapsed]="isSidebarCollapsed">
+    <div class="rail-inner d-flex flex-column align-items-center justify-content-center h-100 py-3 gap-2 my-auto">
+      
+      <!-- Profile / Account -->
+      <a *ngIf="authServices.isLoggedIn()" 
+         routerLink="/profile-view" 
+         routerLinkActive="active-rail" 
+         class="rail-icon-btn" 
+         title="My Profile">
+        <i class="bi bi-person fs-5"></i>
+        <span class="rail-text">Profile</span>
+      </a>
+      <a *ngIf="!authServices.isLoggedIn()" 
+         href="javascript:void(0)" 
+         data-bs-toggle="modal" 
+         [attr.data-bs-target]="loginModal" 
+         class="rail-icon-btn" 
+         title="Login / Register">
+        <i class="bi bi-person fs-5"></i>
+        <span class="rail-text">Login</span>
+      </a>
 
+      <!-- Feed / Activity (Main) -->
+      <a routerLink="/home" 
+         routerLinkActive="active-rail" 
+         [routerLinkActiveOptions]="{exact: true}" 
+         class="rail-icon-btn" 
+         title="Community Feed & Updates">
+        <i class="bi bi-activity fs-5"></i>
+        <span class="rail-text">Feed</span>
+      </a>
 
-<header class="vine-navbar fixed-top">
-  <nav class="navbar navbar-expand-lg py-0">
-    <div class="container align-items-center">
-      <div class="logo">
-        <a class="navbar-brand text-decoration-none" routerLink="/home" style="cursor: pointer;">
-          <!-- <img class="logo-dark" src="img/logo dark.png" alt="Logo"> -->
+      <!-- Create Post / Media -->
+      <a routerLink="/add-post" 
+         routerLinkActive="active-rail" 
+         class="rail-icon-btn" 
+         title="Share Media / Post">
+        <i class="bi bi-images fs-5"></i>
+        <span class="rail-text">Create</span>
+      </a>
 
+      <div class="rail-divider my-2"></div>
+
+      <!-- Saved / Bookmarks -->
+      <a routerLink="/profile-view" 
+         [queryParams]="{ activeTab: 'saved' }" 
+         class="rail-icon-btn" 
+         title="Saved Posts">
+        <i class="bi bi-bookmark fs-5"></i>
+        <span class="rail-text">Saved</span>
+      </a>
+
+      <!-- Settings -->
+      <a routerLink="/profile-setting" 
+         routerLinkActive="active-rail" 
+         class="rail-icon-btn" 
+         title="Settings">
+        <i class="bi bi-gear fs-5"></i>
+        <span class="rail-text">Settings</span>
+      </a>
+
+      <!-- Theme Mode -->
+      <button class="rail-icon-btn theme-rail-btn" 
+              (click)="toggleTheme()" 
+              [title]="isDarkMode ? 'Light Mode' : 'Dark Mode'">
+        <i class="bi" [ngClass]="isDarkMode ? 'bi-sun text-warning' : 'bi-moon-stars'"></i>
+        <span class="rail-text">{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
+      </button>
+
+    </div>
+  </aside>
+
+  <!-- ==============================================
+       2. TOP HEADER BAR
+       =============================================== -->
+  <header class="fitjoin-top-header fixed-top">
+    <div class="header-container d-flex align-items-center justify-content-between px-3 px-lg-4">
+      
+      <!-- Left: Logo & Sidebar Toggle Button -->
+      <div class="header-left d-flex align-items-center gap-2">
+        <button class="btn p-1 text-white header-sidebar-toggle-btn d-flex align-items-center justify-content-center" 
+                (click)="toggleSidebar()" 
+                [title]="isSidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar'"
+                aria-label="Toggle Sidebar">
+          <i class="bi fs-4" [ngClass]="isSidebarExpanded ? 'bi-layout-sidebar-inset-reverse' : 'bi-layout-sidebar'"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center text-decoration-none" routerLink="/home">
           <h1 class="fitmind-text mb-0">FitJoin</h1>
         </a>
       </div>
-      <div class="offcanvas nav-offcanvas offcanvas-start" tabindex="-1" id="offcanvas_Header_01"
-        aria-labelledby="offcanvas_Header_01">
 
-        <div class="offcanvas-body">
+      <!-- Center: Blank Space for layout consistency -->
+      <div class="header-center-spacer d-none d-md-flex flex-grow-1"></div>
 
-          <!-- Nav Search START -->
-          <div class="col-xl-12">
-            <div class="nav mt-3 mt-lg-0 px-lg-4 flex-nowrap align-items-center">
-              <div class="search-form nav-item w-100 position-relative">
-                <form class="rounded position-relative" (submit)="onSearchSubmit($event)">
-                  <input class="ps-5 bg-opacity-10 border-0 form-control pe-5" type="search" placeholder="Search" aria-label="Search" [formControl]="searchControl" (focus)="showSearchDropdown()" (blur)="hideSearchDropdown()">
-                  <button class="btn bg-transparent px-3 position-absolute top-50 start-0 translate-middle-y"
-                    type="submit"><i class="bi bi-search fs-6 text-green pe-2"></i></button>
-                  <span *ngIf="searchLoading" class="spinner-border spinner-border-sm text-green position-absolute top-50 end-0 translate-middle-y me-3" role="status" aria-hidden="true"></span>
-                </form>
+      <!-- Right: Action Cluster -->
+      <div class="header-right-cluster d-flex align-items-center gap-2 gap-sm-3">
 
-                <!-- Dropdown Panel -->
-                <div *ngIf="showDropdown && searchControl.value && searchControl.value.trim().length >= 2" 
-                     class="search-dropdown-panel position-absolute w-100 bg-body shadow-lg rounded mt-1 border overflow-auto"
-                     style="max-height: 400px; z-index: 1050; left: 0;">
-                  
-                  <div *ngIf="!searchLoading && searchResults">
-                     
-                     <div *ngIf="searchResults.users?.items?.length" class="search-group p-2 border-bottom">
-                       <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">People</small>
-                       <a *ngFor="let user of searchResults.users!.items" [routerLink]="['/profile-view']" [queryParams]="{userId: user.id}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
-                         <img [src]="user.profilePhoto ? 'data:image/jpeg;base64,' + user.profilePhoto : 'img/avatar/default.png'" class="avatar-sm rounded-circle me-2" style="width: 45px; height: 45px; object-fit: cover;">
-                         <div class="text-truncate">
-                           <div class="fw-semibold">{{ user.username }}</div>
-                           <small class="text-muted">{{ user.email }}</small>
-                         </div>
-                       </a>
-                     </div>
+        <!-- Search Box & Trigger -->
+        <div class="header-search-wrapper position-relative">
+          <form class="rounded position-relative" (submit)="onSearchSubmit($event)">
+            <input class="header-search-input" 
+                   type="search" 
+                   placeholder="Search..." 
+                   aria-label="Search" 
+                   [formControl]="searchControl" 
+                   (focus)="showSearchDropdown()" 
+                   (blur)="hideSearchDropdown()">
+            <button class="btn header-search-btn position-absolute top-50 start-0 translate-middle-y" type="submit">
+              <i class="bi bi-search fs-6"></i>
+            </button>
+            
+            <!-- Ask AI Button in Search Bar -->
+            <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center pe-2 h-100">
+              <div class="search-divider-line h-50 mx-1"></div>
+              <button type="button" class="btn btn-sm btn-link text-decoration-none d-flex align-items-center gap-1 ask-ai-btn" (click)="toggleChatbot()">
+                <i class="bi bi-stars text-warning fs-6"></i>
+                <span class="text-white fw-semibold" style="font-size: 0.85rem;">Ask</span>
+              </button>
+            </div>
 
-                     <div *ngIf="searchResults.posts?.items?.length" class="search-group p-2 border-bottom">
-                       <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Posts</small>
-                       <a *ngFor="let post of searchResults.posts!.items" [routerLink]="['/profile-view']" [queryParams]="{postId: post.postId}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
-                         <div class="text-truncate w-100">
-                           <div class="fw-semibold text-truncate">{{ post.title }}</div>
-                           <small class="text-muted text-truncate d-block">{{ post.description }}</small>
-                         </div>
-                       </a>
-                     </div>
+            <span *ngIf="searchLoading" class="spinner-border spinner-border-sm text-green position-absolute top-50 end-0 translate-middle-y me-5" role="status" aria-hidden="true"></span>
+          </form>
 
-                     <div *ngIf="searchResults.categories?.items?.length" class="search-group p-2 border-bottom">
-                       <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Categories</small>
-                       <a *ngFor="let cat of searchResults.categories!.items" [routerLink]="['/home']" [queryParams]="{category: cat.id}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
-                         <div class="text-truncate">
-                           <div class="fw-semibold">{{ cat.name }}</div>
-                         </div>
-                       </a>
-                     </div>
+          <!-- Search Dropdown Panel -->
+          <div *ngIf="showDropdown && searchControl.value && searchControl.value.trim().length >= 2" 
+               class="search-dropdown-panel position-absolute bg-body shadow-lg rounded-3 mt-1 border overflow-auto"
+               style="max-height: 400px; z-index: 1060; right: 0; min-width: 320px;">
+            
+            <div *ngIf="!searchLoading && searchResults">
+               
+               <!-- People -->
+               <div *ngIf="searchResults.users?.items?.length" class="search-group p-2 border-bottom">
+                 <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">People</small>
+                 <a *ngFor="let u of searchResults.users!.items" [routerLink]="['/profile-view']" [queryParams]="{userId: u.id}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
+                   <img [src]="u.profilePhoto ? 'data:image/jpeg;base64,' + u.profilePhoto : 'img/avatar/default.png'" class="avatar-sm rounded-circle me-2" style="width: 38px; height: 38px; object-fit: cover;">
+                   <div class="text-truncate">
+                     <div class="fw-semibold fs-7">{{ u.username }}</div>
+                     <small class="text-muted fs-8">{{ u.email }}</small>
+                   </div>
+                 </a>
+               </div>
 
-                     <div *ngIf="searchResults.polls?.items?.length" class="search-group p-2 border-bottom">
-                       <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Polls</small>
-                       <a *ngFor="let poll of searchResults.polls!.items" [routerLink]="['/profile-view']" [queryParams]="{postId: poll.postId}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
-                         <div class="text-truncate w-100">
-                           <div class="fw-semibold text-truncate">{{ poll.question }}</div>
-                         </div>
-                       </a>
-                     </div>
+               <!-- Posts -->
+               <div *ngIf="searchResults.posts?.items?.length" class="search-group p-2 border-bottom">
+                 <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Posts</small>
+                 <a *ngFor="let p of searchResults.posts!.items" [routerLink]="['/profile-view']" [queryParams]="{postId: p.postId}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
+                   <div class="text-truncate w-100">
+                     <div class="fw-semibold fs-7 text-truncate">{{ p.title }}</div>
+                     <small class="text-muted fs-8 text-truncate d-block">{{ p.description }}</small>
+                   </div>
+                 </a>
+               </div>
 
-                     <div *ngIf="!searchResults.users?.items?.length && !searchResults.posts?.items?.length && !searchResults.categories?.items?.length && !searchResults.polls?.items?.length" class="p-3 text-center text-muted">
-                        No results found for "{{ searchControl.value }}"
-                     </div>
+               <!-- Categories -->
+               <div *ngIf="searchResults.categories?.items?.length" class="search-group p-2 border-bottom">
+                 <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Categories</small>
+                 <a *ngFor="let cat of searchResults.categories!.items" [routerLink]="['/home']" [queryParams]="{category: cat.id}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
+                   <div class="text-truncate">
+                     <div class="fw-semibold fs-7">{{ cat.name }}</div>
+                   </div>
+                 </a>
+               </div>
 
-                     <a [routerLink]="['/search']" [queryParams]="{ q: searchControl.value, type: 'all' }" class="dropdown-item text-center text-green py-2 fw-semibold bg-body-tertiary">
-                       See all results for "{{ searchControl.value }}"
-                     </a>
-                  </div>
-                </div>
+               <!-- Polls -->
+               <div *ngIf="searchResults.polls?.items?.length" class="search-group p-2 border-bottom">
+                 <small class="text-muted text-uppercase fw-bold ms-2" style="font-size: 0.75rem;">Polls</small>
+                 <a *ngFor="let poll of searchResults.polls!.items" [routerLink]="['/profile-view']" [queryParams]="{postId: poll.postId}" class="dropdown-item d-flex align-items-center rounded p-2 text-decoration-none">
+                   <div class="text-truncate w-100">
+                     <div class="fw-semibold fs-7 text-truncate">{{ poll.question }}</div>
+                   </div>
+                 </a>
+               </div>
 
-              </div>
+               <div *ngIf="!searchResults.users?.items?.length && !searchResults.posts?.items?.length && !searchResults.categories?.items?.length && !searchResults.polls?.items?.length" class="p-3 text-center text-muted fs-7">
+                  No results found for "{{ searchControl.value }}"
+               </div>
+
+               <a [routerLink]="['/search']" [queryParams]="{ q: searchControl.value, type: 'all' }" class="dropdown-item text-center text-green py-2 fw-semibold bg-body-tertiary fs-7">
+                 See all results for "{{ searchControl.value }}"
+               </a>
             </div>
           </div>
-          <!-- Nav Search END -->
-
         </div>
-      </div>
-      @if (authServices.isLoggedIn()) {
-      <div class="header-end d-flex align-items-center justify-content-end">
 
-        <!-- Theme Toggle Switcher -->
-        <button class="btn btn-theme-toggle me-2" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
-          <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill text-warning' : 'bi-moon-stars-fill'"></i>
+        <!-- Vertical Divider -->
+        <span class="header-divider d-none d-sm-block"></span>
+
+        <!-- AI Assistant / Chat Icon Button -->
+        <button class="btn header-action-btn" (click)="toggleChatbot()" title="Chat with FitMind AI">
+          <i class="bi bi-chat-dots-fill fs-5"></i>
         </button>
 
-        <!-- Notification Dropdown -->
-        <div class="nav-item me-2 dropdown h-col">
+        <!-- Notification Bell with Red Numeric Badge -->
+        <div class="dropdown header-notif-dropdown">
           <button 
-            class="btn btn-notification-bell position-relative rounded-circle d-flex align-items-center justify-content-center"
+            #dropdownBell
+            class="btn header-action-btn position-relative"
             id="notificationDropdown"
             role="button" 
             data-bs-toggle="dropdown" 
             aria-expanded="false"
             title="Notifications">
-            <i class="bi bi-bell-fill"></i>
-            <span *ngIf="unreadCount > 0" class="notif-badge-count position-absolute top-0 start-100 translate-middle badge rounded-pill">
+            <i class="bi bi-bell-fill fs-5"></i>
+            <span *ngIf="unreadCount > 0" class="header-red-badge badge rounded-pill">
               {{ unreadCount > 99 ? '99+' : unreadCount }}
             </span>
           </button>
 
+          <!-- Notification Dropdown Menu (Compact & Direct Layout) -->
           <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow-lg border-0 p-0 overflow-hidden" aria-labelledby="notificationDropdown">
-            <!-- Header -->
-            <div class="notif-header px-3 py-3 border-bottom d-flex align-items-center justify-content-between">
+            
+            <!-- Header Row -->
+            <div class="notif-header px-3 py-2-5 border-bottom d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center gap-2">
-                <h6 class="fw-bold mb-0 notif-title">Notifications</h6>
-                <span *ngIf="unreadCount > 0" class="badge notif-count-pill">{{ unreadCount }} new</span>
+                <h6 class="fw-bold mb-0 notif-title fs-7">Notifications</h6>
+                <span *ngIf="unreadCount > 0" class="badge rounded-pill bg-primary fs-8">{{ unreadCount }} new</span>
               </div>
               <button 
                 *ngIf="unreadCount > 0" 
                 type="button" 
-                class="btn btn-link p-0 text-decoration-none notif-mark-all-btn" 
+                class="btn btn-link p-0 text-decoration-none notif-see-all-btn fs-8 text-primary fw-bold" 
                 (click)="markAllNotificationsAsRead()">
                 Mark all as read
               </button>
             </div>
 
-            <!-- Notifications List -->
-            <div class="notification-list overflow-auto" style="max-height: 380px;">
-              <div *ngIf="notifications.length === 0" class="notif-empty-state text-center p-4">
-                <div class="notif-empty-icon mb-2">
-                  <i class="bi bi-bell-slash"></i>
+            <!-- Notifications List (All Notifications Displayed Directly) -->
+            <div class="notification-list overflow-auto" style="max-height: 360px;">
+              <div *ngIf="notifications.length === 0" class="notif-empty-state text-center p-3">
+                <div class="notif-empty-icon mb-1">
+                  <i class="bi bi-bell-slash fs-3 text-muted"></i>
                 </div>
-                <h6 class="fw-semibold text-body mb-1 fs-7">No notifications yet</h6>
-                <p class="text-muted fs-8 mb-0">We'll notify you when someone interacts with your posts.</p>
+                <h6 class="fw-semibold text-body mb-0 fs-8">No notifications here</h6>
+                <small class="text-muted fs-8">You're all caught up!</small>
               </div>
 
-              <a 
+              <div 
                 *ngFor="let notif of notifications"
-                href="javascript:void(0)"
-                class="dropdown-item notif-item px-3 py-2-5 border-bottom d-flex align-items-center gap-3"
-                [class.unread-item]="!notif.isRead"
-                (click)="onNotificationClick(notif)">
+                class="notif-item px-3 py-2-5 border-bottom d-flex align-items-start gap-2-5"
+                [class.unread-item]="!notif.isRead">
                 
-                <!-- User Avatar / Icon Container -->
-                <div class="position-relative flex-shrink-0">
+                <!-- Left Unread Blue Dot Indicator -->
+                <div class="notif-dot-wrap pt-2 flex-shrink-0">
+                  <span *ngIf="!notif.isRead" class="unread-blue-dot"></span>
+                </div>
+
+                <!-- Avatar -->
+                <div class="position-relative flex-shrink-0" (click)="onNotificationClick(notif)">
                   <img 
                     *ngIf="notif.userImage && notif.userImage !== 'data:image/jpeg;base64,null'" 
                     [src]="notif.userImage" 
-                    style="width: 50px !important; height: 50px !important; min-width: 50px !important; min-height: 50px !important;"
-                    class="notif-avatar rounded-circle object-fit-cover" 
+                    style="width: 36px; height: 36px; object-fit: cover;"
+                    class="notif-avatar rounded-circle shadow-sm cursor-pointer" 
                     alt="User photo">
                   <div 
                     *ngIf="!notif.userImage || notif.userImage === 'data:image/jpeg;base64,null'" 
-                    style="width: 50px !important; height: 50px !important; min-width: 50px !important; min-height: 50px !important;"
-                    class="notif-avatar-placeholder rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-7">
+                    style="width: 36px; height: 36px;"
+                    class="notif-avatar-placeholder rounded-circle d-flex align-items-center justify-content-center fw-bold text-white fs-8 shadow-sm cursor-pointer">
                     {{ (notif.userName || 'M').charAt(0).toUpperCase() }}
                   </div>
-                  <!-- Type Badge Overlay -->
-                  <span class="notif-type-badge position-absolute rounded-circle"
-                        [ngClass]="{
-                          'badge-post': notif.type === 'post',
-                          'badge-poll': notif.type === 'poll',
-                          'badge-reaction': notif.type === 'reaction',
-                          'badge-comment': notif.type === 'comment',
-                          'badge-follow': notif.type === 'follow'
-                        }">
-                    <i *ngIf="notif.type === 'post'" class="bi bi-plus-lg"></i>
-                    <i *ngIf="notif.type === 'poll'" class="bi bi-bar-chart-fill"></i>
-                    <i *ngIf="notif.type === 'reaction'" class="bi bi-heart-fill"></i>
-                    <i *ngIf="notif.type === 'comment'" class="bi bi-chat-fill"></i>
-                    <i *ngIf="notif.type === 'follow'" class="bi bi-person-plus-fill"></i>
-                  </span>
                 </div>
 
-                <!-- Content Body -->
-                <div class="flex-grow-1 min-w-0">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <span class="fw-semibold notif-user-title text-truncate">{{ notif.title }}</span>
-                    <span class="notif-time text-muted flex-shrink-0 ms-2">{{ notificationService.timeAgo(notif.timestamp) }}</span>
+                <!-- Content & Action Buttons -->
+                <div class="flex-grow-1 min-w-0" (click)="onNotificationClick(notif)">
+                  <div class="notif-body-text fs-8">
+                    <span class="fw-bold text-dark">{{ notif.userName || notif.title }}</span> 
+                    <span class="text-secondary ms-1">{{ notif.message }}</span>
                   </div>
-                  <p class="notif-message text-muted mb-0 text-truncate-2">{{ notif.message }}</p>
-                    <div *ngIf="notif.type === 'follow'" class="mt-2">
-                      <button class="btn btn-sm rounded-pill px-3 py-1" style="font-size: 0.75rem;" 
-                              [ngClass]="notif.isFollowingActor ? 'btn-outline-secondary disabled' : 'btn-mint'"
-                              [disabled]="notif.isFollowingActor"
-                              (click)="!notif.isFollowingActor && followBack($event, notif)">
-                        <i class="bi" [ngClass]="notif.isFollowingActor ? 'bi-person-check-fill me-1' : 'bi-person-plus-fill me-1'"></i> 
-                        {{ notif.isFollowingActor ? 'Following' : 'Follow Back' }}
-                      </button>
-                    </div>
+                  <div class="notif-time text-muted fs-8 mt-0-5">
+                    {{ notificationService.timeAgo(notif.timestamp) }}
+                  </div>
+
+                  <!-- Follow / Action Request Buttons -->
+                  <div *ngIf="notif.type === 'follow'" class="d-flex align-items-center gap-2 mt-1-5" (click)="$event.stopPropagation()">
+                    <button class="btn btn-accept-pill btn-sm px-2-5 py-0-5 fs-8 fw-bold" 
+                            [disabled]="notif.isFollowingActor"
+                            (click)="followBack($event, notif)">
+                      {{ notif.isFollowingActor ? 'Following' : 'Accept' }}
+                    </button>
+                    <button class="btn btn-decline-pill btn-sm px-2-5 py-0-5 fs-8 fw-semibold"
+                            (click)="deleteNotification($event, notif.id)">
+                      Decline
+                    </button>
+                  </div>
                 </div>
 
-                <!-- Right Side Actions & Unread Indicator -->
-                <div class="d-flex flex-column align-items-end justify-content-between h-100 flex-shrink-0 notif-actions">
-                  <button 
-                    type="button" 
-                    class="btn btn-link p-0 text-decoration-none notif-delete-btn" 
-                    (click)="deleteNotification($event, notif.id)"
-                    title="Delete Notification">
-                    <i class="bi bi-trash3"></i>
-                  </button>
-                  <span *ngIf="!notif.isRead" class="unread-dot"></span>
-                </div>
+                <!-- Delete Action -->
+                <button 
+                  type="button" 
+                  class="btn btn-link p-0 text-decoration-none notif-delete-btn flex-shrink-0" 
+                  (click)="deleteNotification($event, notif.id)"
+                  title="Delete Notification">
+                  <i class="bi bi-x-lg fs-8"></i>
+                </button>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- User Avatar & Dropdown / Login -->
+        @if (authServices.isLoggedIn()) {
+          <div class="dropdown header-user-dropdown">
+            <a href="javascript:void(0)" 
+               id="userMenuDropdown" 
+               role="button" 
+               data-bs-toggle="dropdown" 
+               aria-expanded="false" 
+               class="d-flex align-items-center text-decoration-none gap-2 user-avatar-btn">
+              <img class="header-avatar rounded-circle shadow-sm"
+                   [src]="(userPhotos && userPhotos.profilePhoto && userPhotos.profilePhoto !== 'data:image/jpeg;base64,null') ? userPhotos.profilePhoto : 'img/avatar/default.png'"
+                   alt="User avatar">
+              <i class="bi bi-three-dots d-none d-sm-inline-block fw-bold"></i>
+            </a>
+
+            <!-- Account Menu Dropdown -->
+            <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" aria-labelledby="userMenuDropdown" style="min-width: 15rem; border-radius: 14px;">
+              <div class="px-3 py-2 border-bottom mb-1">
+                <div class="fw-bold text-truncate">{{ user.username }}</div>
+                <small class="text-muted text-truncate d-block">{{ user.email }}</small>
+              </div>
+              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/home">
+                <i class="bi bi-house fs-6 text-mint"></i> Home Feed
+              </a>
+              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/profile-view">
+                <i class="bi bi-person fs-6 text-mint"></i> View Profile
+              </a>
+              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/profile-setting">
+                <i class="bi bi-gear fs-6 text-mint"></i> Settings
+              </a>
+              <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/profile-view" [queryParams]="{ activeTab: 'saved' }">
+                <i class="bi bi-bookmark fs-6 text-mint"></i> Saved Posts
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item d-flex align-items-center gap-2 text-danger" (click)="authServices.logout()" style="cursor: pointer;">
+                <i class="bi bi-box-arrow-right fs-6"></i> Log out
               </a>
             </div>
           </div>
-        </div>
-
-        <!-- Create Post Button -->
-        <button class="btn btn-create-post" routerLink="add-post"> <i class="bi bi-plus-lg"></i> Create</button>
-        <!-- Add Post END -->
-
-        <!-- Account -->
-        <div *ngIf="userPhotos.profilePhoto !== 'data:image/jpeg;base64,null' || userPhotos.profilePhoto" class="nav-item ms-3 dropdown h-col">
-          <a href="#" id="navbarShoppingCartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-            data-bs-dropdown-animation="">
-            <div class="d-flex">
-              <img class="avatar-sm avatar-img rounded-circle"
-                [src]="userPhotos.profilePhoto !== 'data:image/jpeg;base64,null' && userPhotos.profilePhoto  ? userPhotos.profilePhoto : 'img/avatar/default.png'"
-                alt="Image Description">
-              <div class="profile-text d-none d-sm-block">
-                <div class="profile-head text-muted">Hello,</div>
-                <div class="text-nowrap"> {{user.username}} </div>
-              </div>
-            </div>
+        } @else {
+          <a href="javascript:void(0)" class="btn btn-login-nav" data-bs-toggle="modal" [attr.data-bs-target]="loginModal">
+            Login
           </a>
+        }
 
-          <div class="dropdown-menu dropdown-animation dropdown-menu-end dropdown-menu-size-md p-2 shadow-lg border-0"
-            aria-labelledby="navbarShoppingCartDropdown" style="min-width: 16rem;">
-
-            <a class="dropdown-item" routerLink="home">
-              <span class="dropdown-item-icon">
-                <i class="bi-house"></i>
-              </span>Home</a>
-            <a class="dropdown-item" routerLink="profile-view" href="#">
-              <span class="dropdown-item-icon">
-                <i class="bi-person"></i>
-              </span> View Profile
-            </a>
-
-
-
-            <a class="dropdown-item" routerLink="profile-setting" href=""><span class="dropdown-item-icon"><i
-                  class="bi bi-gear"></i></span> Settings </a>
-            <!-- <a class="dropdown-item" href="dash-bookmarks.html"><span class="dropdown-item-icon"><i class="bi-bookmarks"></i></span> Bookmarks </a> -->
-            <!-- <a class="dropdown-item" href="dash-subscriptions.html"><span class="dropdown-item-icon"><i class="bi-wallet2"></i></span> Subscriptions</a> -->
-
-            <div class="dropdown-divider"></div>
-
-
-            <a class="dropdown-item" href="#">
-              <span class="dropdown-item-icon">
-                <i class="bi-question-circle"></i>
-              </span> Help
-            </a>
-            <a (click)="authServices.logout()" class="dropdown-item" style="cursor: pointer;">
-              <span class="dropdown-item-icon">
-                <i class="bi-box-arrow-right"></i>
-              </span> Log out
-            </a>
-
-          </div>
-        </div><!-- End Account -->
-
-        <!-- Mobile Toggle -->
-        <div class="h-col h-toggler d-xl-none">
-          <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas_Header_01"
-            aria-controls="offcanvas_Header_01">
-            <span class="px-navbar-toggler-icon"></span>
-          </button>
-        </div>
       </div>
-      }@else {
-
-
-
-
-      <div class="header-end d-flex align-items-center justify-content-end">
-        <!-- Theme Toggle Switcher -->
-        <button class="btn btn-theme-toggle me-2" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
-          <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill text-warning' : 'bi-moon-stars-fill'"></i>
-        </button>
-
-        <a href="" class="btn btn-login-nav me-2" data-bs-toggle="modal"
-          [attr.data-bs-target]="loginModal">Login</a>
-        <!-- Translate dropdown START -->
-        <div class="nav-item dropdown h-col d-none d-lg-block">
-          <a class="h-translate-icon h-icon" href="#" id="languageDropdown" role="button" data-bs-auto-close="outside"
-            data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-three-dots"></i>
-
-          </a>
-          <ul class="dropdown-menu dropdown-animation dropdown-menu-end min-w-auto mt-2"
-            aria-labelledby="languageDropdown">
-            @if (authServices.isLoggedIn()) {
-            <li> <a class="dropdown-item me-4" href="" (click)="logout()"><i
-                  class="bi bi-box-arrow-in-right me-2"></i>Logout</a>
-            </li>
-            }@else {
-            <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal" [attr.data-bs-target]="loginModal"><i
-                  class="bi bi-box-arrow-in-right me-2"></i>Login</a> </li>
-
-            <li> <a class="dropdown-item me-4" href="" data-bs-toggle="modal"
-                [attr.data-bs-target]="emailVarificationModal"><i class="bi bi-person-plus me-2"></i>Register</a>
-            </li>
-
-            <li> <a class="dropdown-item me-4" href="#"><i class="bi bi-envelope me-2"></i>Contact</a> </li>
-            }
-            <!-- <li> <a class="dropdown-item me-4" routerLink="/register"><i class="bi bi-envelope me-2"></i>Registration page</a> </li>
-              <li> Button trigger modal -->
-
-            <!-- </li> -->
-          </ul>
-        </div>
-        <!-- Translate dropdown END -->
-      </div>
-      }
-
 
     </div>
-  </nav>
-</header>
-<app-emailVarification></app-emailVarification>
-<app-login></app-login>
-<app-forget-password></app-forget-password>
-<router-outlet></router-outlet>
+  </header>
 
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-backdrop d-lg-none" 
+       *ngIf="isSidebarExpanded" 
+       (click)="toggleSidebar()">
+  </div>
 
+  <!-- ==============================================
+       3. MAIN CONTENT CONTAINER WRAPPER (Responsive Layout)
+       =============================================== -->
+  <main class="fitjoin-content-viewport" [class.rail-expanded]="isSidebarExpanded">
+    <router-outlet></router-outlet>
+  </main>
 
-
-
-
+  <!-- Auth Modals -->
+  <app-emailVarification></app-emailVarification>
+  <app-login></app-login>
+  <app-forget-password></app-forget-password>
+</div>
