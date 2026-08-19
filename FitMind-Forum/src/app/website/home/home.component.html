@@ -16,7 +16,8 @@
       <div class="col-12 col-lg-4 col-xl-4">
         <div #rightSidebar class="fitjoin-right-sidebar d-flex flex-column gap-4">
 
-          <!-- WIDGET 1: Following / Active Community Members -->
+          <!-- WIDGET 1: Following / Active Community Members (Only for authenticated users) -->
+          @if (authService.isLoggedIn()) {
           <div class="fitjoin-widget-card card border-0 shadow-sm">
             <div class="card-body p-4">
               <!-- Header -->
@@ -24,25 +25,123 @@
                 <h5 class="widget-title fw-bold mb-0">
                   I'm following <span class="widget-accent-count">{{ followingCount }}</span>
                 </h5>
+                <a [routerLink]="['/people']" class="btn btn-xs btn-mint rounded-pill px-3 py-1 fw-bold d-flex align-items-center gap-1 text-decoration-none shadow-xs">
+                  <i class="bi bi-person-plus-fill"></i> Add Friends
+                </a>
               </div>
 
-              <!-- Avatar Grid (Shows all followed members at once) -->
-              <div class="following-avatar-grid">
+              <!-- Loading Skeleton State -->
+              <div *ngIf="isLoadingCommunityMembers" class="d-flex align-items-center gap-2 justify-content-around py-2">
+                <app-skeleton variant="circular" width="44px" height="44px"></app-skeleton>
+                <app-skeleton variant="circular" width="44px" height="44px"></app-skeleton>
+                <app-skeleton variant="circular" width="44px" height="44px"></app-skeleton>
+                <app-skeleton variant="circular" width="44px" height="44px"></app-skeleton>
+                <app-skeleton variant="circular" width="44px" height="44px"></app-skeleton>
+              </div>
+
+              <!-- Avatar Grid (Shows all followed members) -->
+              <div *ngIf="!isLoadingCommunityMembers && communityMembers.length > 0" class="following-avatar-grid">
                 @for (member of communityMembers; track member.id) {
-                  <a [routerLink]="['/profile', member.id]" 
+                  <a [routerLink]="['/profile-view']" [queryParams]="{userId: member.id}"
                      class="member-avatar-wrap" 
                      [title]="member.username">
                     <img [src]="member.avatarUrl" 
+                         (error)="member.avatarUrl = 'img/avatar/default.png'"
                          [alt]="member.username" 
+                         style="width: 42px !important; height: 42px !important; min-width: 42px !important; max-width: 42px !important; min-height: 42px !important; max-height: 42px !important; object-fit: cover !important; border-radius: 50% !important; display: block;"
                          class="member-avatar rounded-circle shadow-sm" />
                   </a>
                 }
               </div>
+
+              <!-- Empty State when Following 0 -->
+              <div *ngIf="!isLoadingCommunityMembers && communityMembers.length === 0" class="text-center py-3 px-2 rounded-3 bg-body-tertiary">
+                <p class="text-muted fs-8 mb-2">You aren't following anyone yet.</p>
+                <a [routerLink]="['/people']" class="btn btn-mint btn-xs rounded-pill px-3 fw-semibold text-decoration-none">
+                  <i class="bi bi-person-plus-fill me-1"></i> Discover Friends
+                </a>
+              </div>
+
+              <!-- Suggested Friends & Members Section -->
+              <div *ngIf="!isLoadingCommunityMembers && suggestedFriends.length > 0" class="suggested-friends-section border-top pt-3 mt-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h6 class="fs-8 text-uppercase fw-bold text-muted tracking-wider mb-0 d-flex align-items-center gap-1.5">
+                    <i class="bi bi-person-plus-fill text-mint fs-7"></i>
+                    <span>Suggested Friends</span>
+                  </h6>
+                  <a [routerLink]="['/people']" 
+                     class="text-decoration-none fs-8 fw-semibold text-mint d-flex align-items-center gap-1">
+                    <span>See all</span>
+                    <i class="bi bi-chevron-right fs-8"></i>
+                  </a>
+                </div>
+
+                <div class="d-flex flex-column gap-2">
+                  <div *ngFor="let friend of suggestedFriends" class="friend-item-row d-flex align-items-center justify-content-between p-2 rounded-3 hover-bg">
+                    <div class="d-flex align-items-center gap-2 overflow-hidden me-2" 
+                         [routerLink]="['/profile-view']" [queryParams]="{userId: friend.id}" style="cursor: pointer;">
+                      <div class="flex-shrink-0" style="width: 40px; height: 40px; min-width: 40px; max-width: 40px; min-height: 40px; max-height: 40px;">
+                        <img [src]="friend.avatarUrl" 
+                             (error)="friend.avatarUrl = 'img/avatar/default.png'" 
+                             [alt]="friend.username" 
+                             style="width: 40px !important; height: 40px !important; min-width: 40px !important; max-width: 40px !important; min-height: 40px !important; max-height: 40px !important; object-fit: cover !important; border-radius: 50% !important; display: block;"
+                             class="friend-avatar rounded-circle shadow-sm" />
+                      </div>
+                      <div class="text-truncate">
+                        <div class="fw-semibold fs-7 text-truncate text-body">{{ friend.username }}</div>
+                        <small class="text-muted fs-8 d-block text-truncate">{{ friend.roleOrBio }}</small>
+                      </div>
+                    </div>
+
+                    <button type="button" 
+                            class="btn btn-xs rounded-pill px-3 fw-bold flex-shrink-0 d-flex align-items-center gap-1"
+                            [ngClass]="friend.isFollowing ? 'btn-outline-secondary' : 'btn-mint'"
+                            (click)="followFriend(friend)">
+                      <i class="bi" [ngClass]="friend.isFollowing ? 'bi-check2' : 'bi-person-plus-fill'"></i>
+                      <span>{{ friend.isFollowing ? 'Following' : 'Add' }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Find More Friends Quick Link -->
+                <a [routerLink]="['/people']" class="btn btn-light w-100 rounded-pill fs-8 fw-semibold py-1.5 mt-3 border d-flex align-items-center justify-content-center gap-1.5 text-decoration-none hover-bg">
+                  <i class="bi bi-people-fill text-mint"></i> Find More Friends
+                </a>
+              </div>
             </div>
           </div>
-
-          <!-- WIDGET 2: Topics / Groups / Categories -->
-          <app-categories></app-categories>
+          } @else {
+          <!-- WIDGET 1 GUEST: Welcome & Join Community Card -->
+          <div class="fitjoin-widget-card fitjoin-guest-card card border-0 shadow-sm">
+            <div class="card-body p-4 text-center">
+              <div class="guest-card-icon-wrap mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle">
+                <i class="bi bi-people-fill fs-3 text-mint"></i>
+              </div>
+              <h5 class="fw-bold mb-2">Join FitJoin Community</h5>
+              <p class="text-muted fs-8 mb-3">
+                Connect with fitness enthusiasts, share workouts, ask AI for advice, and track progress together!
+              </p>
+              <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap mb-3">
+                <button type="button" class="btn btn-mint btn-sm rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
+                  Log In
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#emailVarificationModal">
+                  Register
+                </button>
+              </div>
+              <div class="guest-highlights border-top pt-3 text-start d-flex flex-column gap-2 fs-8 text-muted">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-check-circle-fill text-mint fs-7"></i>
+                  <span>Ask FitMind AI for personalized insights</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-check-circle-fill text-mint fs-7"></i>
+                  <span>Participate in community topics & polls</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          }
 
           <!-- Footer Navigation / Credits -->
           <app-footer></app-footer>

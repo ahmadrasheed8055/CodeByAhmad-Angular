@@ -3,10 +3,13 @@
 <section class="profile-main-section py-4">
   <div class="container max-width-profile">
 
+    <!-- Profile Header Skeleton -->
+    <app-profile-skeleton *ngIf="isProfileLoading || !user || !user.id"></app-profile-skeleton>
+
     <!-- ==============================================
          TOP CARD: UNIFIED PROFILE CARD WITH ATTACHED COVER BANNER
          ============================================== -->
-    <div class="profile-card card border-0 shadow-sm mb-4 overflow-hidden">
+    <div *ngIf="!isProfileLoading && user && user.id" class="profile-card card border-0 shadow-sm mb-4 overflow-hidden">
       
       <!-- Attached Cover Banner Header -->
       <div class="profile-banner position-relative w-100"
@@ -91,6 +94,27 @@
                   <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2 fw-semibold" (click)="refreshProfileFeed()">
                     <i class="bi bi-chat-left-text-fill me-1"></i> Message
                   </button>
+                  <div class="dropdown ms-1">
+                    <button class="btn btn-sm btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" type="button" data-bs-toggle="dropdown" style="width: 38px; height: 38px;">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 12px;">
+                      <li>
+                        <a class="dropdown-item py-2" href="javascript:void(0)" (click)="copyProfileLink()">
+                          <i class="bi bi-link-45deg me-2 text-secondary"></i> Copy url
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item py-2" href="javascript:void(0)" 
+                           [ngClass]="reportService.isProfileReported(profileUserId) ? 'text-muted disabled' : 'text-danger'"
+                           [attr.data-bs-toggle]="!reportService.isProfileReported(profileUserId) ? 'modal' : null" 
+                           [attr.data-bs-target]="!reportService.isProfileReported(profileUserId) ? '#profileReportModal' : null">
+                          <i class="bi me-2" [class.bi-flag]="!reportService.isProfileReported(profileUserId)" [class.bi-check2-circle]="reportService.isProfileReported(profileUserId)"></i> 
+                          {{ reportService.isProfileReported(profileUserId) ? 'Reported ✓' : 'Report Profile' }}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -199,8 +223,8 @@
 
                 <!-- Live Status Indicator on the right edge -->
                 <div class="position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center">
-                  <!-- Checking Spinner -->
-                  <span *ngIf="isCheckingUniqueName" class="spinner-border spinner-border-sm text-mint" role="status" aria-hidden="true"></span>
+                  <!-- Checking Status -->
+                  <i *ngIf="isCheckingUniqueName" class="bi bi-arrow-repeat fs-6 text-mint spin-icon"></i>
                   
                   <!-- Green Checkmark (Available & Valid) -->
                   <i *ngIf="!isCheckingUniqueName && !isUniqueNameTaken && editProfileForm.get('uniqueName')?.valid && editProfileForm.get('uniqueName')?.dirty" 
@@ -262,7 +286,6 @@
                 Cancel
               </button>
               <button type="submit" class="btn btn-mint rounded-pill px-4 fw-bold shadow-sm" [disabled]="isSavingProfile || editProfileForm.invalid">
-                <span *ngIf="isSavingProfile" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                 {{ isSavingProfile ? 'Saving...' : 'Save Changes' }}
               </button>
             </div>
@@ -335,12 +358,8 @@
         </button>
       </div>
 
-      <!-- Posts Loader -->
-      <div *ngIf="postsLoader" class="d-flex justify-content-center align-items-center py-5">
-        <div class="spinner-border text-mint" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <!-- Posts Skeleton Loader -->
+      <app-post-card-skeleton *ngIf="postsLoader" [count]="2"></app-post-card-skeleton>
 
       <!-- Empty State -->
       <div *ngIf="!postsLoader && userPosts.length === 0" class="empty-feed-card text-center py-5">
@@ -381,22 +400,33 @@
                 </div>
 
                 <!-- Right: 3-Dots Action Menu -->
-                <div class="dropdown" *ngIf="postsData.userId === userId">
+                <div class="dropdown" *ngIf="userId > 0">
                   <a class="text-muted fs-5 text-decoration-none p-1" href="javascript:void(0)" data-bs-toggle="dropdown">
                     <i class="bi bi-three-dots"></i>
                   </a>
                   <div class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="border-radius: 12px;">
-                    <a class="dropdown-item py-2" (click)="enableUpdatePost(postsData)" style="cursor: pointer;">
-                      <i class="bi bi-pencil me-2 text-secondary"></i> Edit Post
-                    </a>
-                    <a class="dropdown-item py-2" href="javascript:void(0)" (click)="hidePost(postsData)">
-                      <i class="bi me-2 text-secondary" [ngClass]="activeTab === 'hidden' ? 'bi-eye' : 'bi-eye-slash'"></i>
-                      {{ activeTab === 'hidden' ? 'Unhide Post' : 'Hide Post' }}
-                    </a>
-                    <a class="dropdown-item py-2 text-danger" href="javascript:void(0)" 
-                       data-bs-toggle="modal" data-bs-target="#draftDeleteModal" 
-                       (click)="selectedPostId = postsData.postId">
-                      <i class="bi bi-trash3 me-2"></i> Delete Post
+                    <ng-container *ngIf="postsData.userId === userId">
+                      <a class="dropdown-item py-2" (click)="enableUpdatePost(postsData)" style="cursor: pointer;">
+                        <i class="bi bi-pencil me-2 text-secondary"></i> Edit Post
+                      </a>
+                      <a class="dropdown-item py-2" href="javascript:void(0)" (click)="hidePost(postsData)">
+                        <i class="bi me-2 text-secondary" [ngClass]="activeTab === 'hidden' ? 'bi-eye' : 'bi-eye-slash'"></i>
+                        {{ activeTab === 'hidden' ? 'Unhide Post' : 'Hide Post' }}
+                      </a>
+                      <a class="dropdown-item py-2 text-danger" href="javascript:void(0)" 
+                         data-bs-toggle="modal" data-bs-target="#draftDeleteModal" 
+                         (click)="selectedPostId = postsData.postId">
+                        <i class="bi bi-trash3 me-2"></i> Delete Post
+                      </a>
+                    </ng-container>
+                    <a *ngIf="postsData.userId !== userId" class="dropdown-item py-2" 
+                       href="javascript:void(0)" 
+                       [ngClass]="reportService.isPostReported(postsData.postId) ? 'text-muted disabled opacity-75' : 'text-danger'"
+                       (click)="!reportService.isPostReported(postsData.postId) && (selectedPostId = postsData.postId)" 
+                       [attr.data-bs-toggle]="!reportService.isPostReported(postsData.postId) ? 'modal' : null" 
+                       [attr.data-bs-target]="!reportService.isPostReported(postsData.postId) ? '#postReportModal' : null">
+                      <i class="bi me-2" [class.bi-flag]="!reportService.isPostReported(postsData.postId)" [class.bi-flag-fill]="reportService.isPostReported(postsData.postId)" [class.text-warning]="reportService.isPostReported(postsData.postId)"></i> 
+                      {{ reportService.isPostReported(postsData.postId) ? 'Reported' : 'Report Post' }}
                     </a>
                   </div>
                 </div>
@@ -649,3 +679,6 @@
     </div>
   </div>
 </div>
+
+<!-- 5. Profile Report Modal -->
+<app-report-modal [modalId]="'profileReportModal'" [targetType]="'profile'" [targetId]="profileUserId"></app-report-modal>

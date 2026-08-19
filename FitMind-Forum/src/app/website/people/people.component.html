@@ -1,0 +1,119 @@
+<div class="people-page-container container-fluid py-3 px-md-4">
+  <!-- Header Banner -->
+  <div class="people-header-card card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+    <div class="card-body p-4 p-md-5 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-mint px-3 py-1-5 rounded-pill fs-8 fw-bold">COMMUNITY DIRECTORY</span>
+        </div>
+        <h2 class="fw-bold mb-1 people-title">Discover Fitness Community</h2>
+        <p class="text-muted mb-0 fs-7">Connect with passionate athletes, certified trainers, and fitness peers.</p>
+      </div>
+
+      <!-- Search Input -->
+      <div class="people-search-box position-relative">
+        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+        <input type="text" 
+               class="form-control rounded-pill ps-5 pe-3 fs-7 border-0 bg-body-tertiary shadow-none" 
+               placeholder="Search by name, role, city..."
+               [(ngModel)]="searchQuery" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Navigation Tabs -->
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <ul class="nav nav-pills people-nav-pills gap-2 p-1 rounded-pill bg-body-tertiary">
+      <li class="nav-item">
+        <button class="nav-link rounded-pill fs-7 fw-semibold px-4" 
+                [class.active]="activeTab === 'all'" 
+                (click)="setTab('all')">
+          <i class="bi bi-people-fill me-1"></i> All Members
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill fs-7 fw-semibold px-4" 
+                [class.active]="activeTab === 'trainers'" 
+                (click)="setTab('trainers')">
+          <i class="bi bi-award-fill me-1 text-warning"></i> Trainers & Coaches
+        </button>
+      </li>
+      <li class="nav-item" *ngIf="authService.isLoggedIn()">
+        <button class="nav-link rounded-pill fs-7 fw-semibold px-4" 
+                [class.active]="activeTab === 'following'" 
+                (click)="setTab('following')">
+          <i class="bi bi-person-check-fill me-1"></i> Following
+        </button>
+      </li>
+    </ul>
+
+    <span class="text-muted fs-8">
+      Showing <strong>{{ filteredMembers.length }}</strong> {{ filteredMembers.length === 1 ? 'person' : 'people' }}
+    </span>
+  </div>
+
+  <!-- Loading Skeleton State -->
+  <div *ngIf="isLoading" class="row g-3">
+    <div *ngFor="let i of [1,2,3,4,5,6,7,8]" class="col-12 col-sm-6 col-lg-4 col-xl-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 h-100 text-center">
+        <app-skeleton variant="circular" width="64px" height="64px" class="mx-auto mb-3"></app-skeleton>
+        <app-skeleton variant="text" width="60%" height="16px" class="mx-auto mb-2"></app-skeleton>
+        <app-skeleton variant="text" width="80%" height="12px" class="mx-auto mb-3"></app-skeleton>
+        <app-skeleton variant="rounded" width="100px" height="32px" class="mx-auto rounded-pill"></app-skeleton>
+      </div>
+    </div>
+  </div>
+
+  <!-- Members Grid -->
+  <div *ngIf="!isLoading && filteredMembers.length > 0" class="row g-3">
+    <div *ngFor="let member of filteredMembers" class="col-12 col-sm-6 col-lg-4 col-xl-3">
+      <div class="member-card card border-0 shadow-sm rounded-4 h-100 p-3 text-center transition-all">
+        
+        <!-- Avatar -->
+        <div class="position-relative d-inline-block mx-auto mb-3" 
+             [routerLink]="['/profile-view']" [queryParams]="{userId: member.id}" style="cursor: pointer;">
+          <img [src]="member.avatarUrl" 
+               (error)="member.avatarUrl = 'img/avatar/default.png'" 
+               [alt]="member.username" 
+               class="member-card-avatar rounded-circle shadow-sm" />
+          <span *ngIf="member.isTrainer" class="trainer-badge position-absolute bottom-0 end-0 badge rounded-pill bg-warning text-dark p-1 shadow-xs" title="Certified Trainer">
+            <i class="bi bi-award-fill fs-8"></i>
+          </span>
+        </div>
+
+        <!-- Name & Bio -->
+        <h6 class="fw-bold mb-1 text-truncate" 
+            [routerLink]="['/profile-view']" [queryParams]="{userId: member.id}" style="cursor: pointer;">
+          {{ member.username }}
+        </h6>
+        <p class="text-muted fs-8 mb-2 text-truncate">{{ member.roleOrBio }}</p>
+        
+        <!-- Location / Info -->
+        <div class="d-flex align-items-center justify-content-center gap-2 text-muted fs-8 mb-3">
+          <span><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ member.location }}</span>
+          <span>•</span>
+          <span><i class="bi bi-pencil-square me-1"></i>{{ member.postsCount }} posts</span>
+        </div>
+
+        <!-- Follow / Unfollow Button -->
+        <div class="mt-auto">
+          <button type="button" 
+                  class="btn w-100 rounded-pill fs-8 fw-bold py-2 shadow-xs transition-all"
+                  [ngClass]="member.isFollowing ? 'btn-outline-secondary' : 'btn-mint'"
+                  (click)="toggleFollow(member)">
+            <i class="bi me-1" [ngClass]="member.isFollowing ? 'bi-check2' : 'bi-person-plus-fill'"></i>
+            {{ member.isFollowing ? 'Following' : 'Follow' }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty Search / Filter State -->
+  <div *ngIf="!isLoading && filteredMembers.length === 0" class="text-center py-5">
+    <i class="bi bi-people fs-1 text-muted d-block mb-2"></i>
+    <h5 class="fw-bold mb-1">No community members found</h5>
+    <p class="text-muted fs-7">Try adjusting your search query or tab filter.</p>
+  </div>
+</div>

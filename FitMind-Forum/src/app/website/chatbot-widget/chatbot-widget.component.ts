@@ -50,25 +50,9 @@ export class ChatbotWidgetComponent implements OnInit, OnDestroy, AfterViewCheck
     return this.authService.isLoggedIn();
   }
 
-  get guestPromptCount(): number {
-    if (this.isLoggedIn) return 0;
-    const count = sessionStorage.getItem('fitmind_guest_prompts');
-    return count ? parseInt(count, 10) : 0;
-  }
-
-  get guestPromptsRemaining(): number {
-    return Math.max(0, 2 - this.guestPromptCount);
-  }
-
-  get isLocked(): boolean {
-    return !this.isLoggedIn && this.guestPromptCount >= 2;
-  }
-
   get placeholderText(): string {
     if (this.isLoggedIn) return 'Type message or attach image...';
-    if (this.isLocked) return 'Login to continue chatting...';
-    const remaining = this.guestPromptsRemaining;
-    return `Type message... (Guest mode: ${remaining} free prompt${remaining === 1 ? '' : 's'})`;
+    return 'Type a message... (Log in to attach files)';
   }
 
   toggleInfoNotice() {
@@ -151,21 +135,13 @@ export class ChatbotWidgetComponent implements OnInit, OnDestroy, AfterViewCheck
   }
 
   sendQuickPrompt(promptText: string) {
-    if (this.isLocked) return;
     this.userMessage = promptText;
     this.sendMessage();
   }
 
   sendMessage() {
-    if (this.isLocked) return;
     const text = this.userMessage.trim();
     if (!text && !this.selectedFile) return;
-
-    // Increment guest prompt counter if user is not logged in
-    if (!this.isLoggedIn) {
-      const nextCount = this.guestPromptCount + 1;
-      sessionStorage.setItem('fitmind_guest_prompts', nextCount.toString());
-    }
 
     const fileBase64 = this.isLoggedIn ? this.selectedFile?.base64 : undefined;
     const fileMimeType = this.isLoggedIn ? this.selectedFile?.mimeType : undefined;
@@ -203,11 +179,22 @@ export class ChatbotWidgetComponent implements OnInit, OnDestroy, AfterViewCheck
       },
       error: (err) => {
         this.isTyping = false;
+        let errorMessage = 'Oops! I am having trouble connecting to the server. Please try again later.';
+        if (err.status === 429) {
+          errorMessage = '⚠️ Rate limit reached. Please wait a moment before asking again.';
+        } else if (err.status === 413) {
+          errorMessage = '⚠️ The attached image is too large. Please choose a smaller image.';
+        } else if (err.status === 400 && typeof err.error === 'string' && err.error.length > 0 && err.error.length < 200) {
+          errorMessage = `⚠️ ${err.error}`;
+        } else if (err.error?.message && typeof err.error.message === 'string' && err.error.message.length < 200) {
+          errorMessage = `⚠️ ${err.error.message}`;
+        }
         this.messages.push({
           id: Date.now().toString(),
           sender: 'bot',
-          text: 'Oops! I am having trouble connecting to the server. Please try again later.',
-          timestamp: new Date()
+          text: errorMessage,
+          timestamp: new Date(),
+          isError: true
         });
         this.shouldScrollToBottom = true;
       }

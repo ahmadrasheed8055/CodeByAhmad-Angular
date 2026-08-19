@@ -7,11 +7,13 @@ import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../../Shared/auth.service';
 import { RouterModule } from '@angular/router';
 import { PendingActionService } from '../../../Shared/pending-action.service';
+import { ReportModalComponent } from '../../../Shared/components/report-modal/report-modal.component';
+import { ReportService } from '../../../Shared/report.service';
 
 @Component({
   selector: 'app-poll-card',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ReportModalComponent],
   templateUrl: './poll-card.component.html',
   styleUrl: './poll-card.component.css'
 })
@@ -33,7 +35,8 @@ export class PollCardComponent implements OnInit {
     private masterService: MasterService,
     private toastr: ToastrService,
     public authService: AuthService,
-    private pendingActionService: PendingActionService
+    private pendingActionService: PendingActionService,
+    public reportService: ReportService
   ) {}
 
   ngOnInit(): void {

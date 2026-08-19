@@ -3,11 +3,12 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MasterService } from '../../Shared/master.service';
 import { SearchResultDTO } from '../../Model/SearchDTO';
+import { SearchSkeletonComponent } from '../../Shared/skeleton';
 
 @Component({
   selector: 'app-search-results',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SearchSkeletonComponent],
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.css']
 })

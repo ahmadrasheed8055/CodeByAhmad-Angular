@@ -1,0 +1,56 @@
+<div class="modal fade" [id]="modalId" tabindex="-1" [attr.aria-labelledby]="modalId + 'Label'" aria-hidden="true" (hidden.bs.modal)="resetForm()">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content report-modal-content border-0 shadow-lg">
+      
+      <!-- Professional Header -->
+      <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+        <div class="w-100">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h5 class="modal-title fw-bold m-0" [id]="modalId + 'Label'" style="font-size: 1.25rem;">{{ title }}</h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close" #closeBtn (click)="resetForm()"></button>
+          </div>
+          <p class="text-muted fs-7 mb-0">{{ description }}</p>
+        </div>
+      </div>
+      
+      <div class="modal-body px-4 pt-4 pb-3">
+        <!-- Reasons List -->
+        <div class="report-reasons-list d-flex flex-column gap-2 mb-3">
+          <label *ngFor="let reason of reasons; let i = index" 
+                 class="report-reason-item d-flex align-items-center rounded-3 p-3 cursor-pointer"
+                 [class.selected]="selectedReason === reason">
+            
+            <div class="custom-radio-circle me-3" [class.checked]="selectedReason === reason">
+              <div class="inner-circle" *ngIf="selectedReason === reason"></div>
+            </div>
+            
+            <span class="reason-text flex-grow-1 fw-medium" [class.text-dark]="selectedReason === reason" [class.text-secondary]="selectedReason !== reason">
+              {{ reason }}
+            </span>
+            
+            <!-- Hidden native radio -->
+            <input type="radio" class="d-none" name="reportReasonGroup" [value]="reason" [(ngModel)]="selectedReason">
+          </label>
+        </div>
+
+        <!-- Optional Text Area with smooth reveal -->
+        <div class="other-reason-container mt-3" [class.show]="selectedReason === 'Other'">
+          <label for="otherReasonText" class="form-label fs-7 fw-semibold text-muted mb-2">Additional details (optional)</label>
+          <textarea id="otherReasonText" class="form-control report-textarea" rows="3" 
+                    [(ngModel)]="otherReason" placeholder="Please provide any additional context to help us investigate..."></textarea>
+        </div>
+      </div>
+      
+      <!-- Footer Actions -->
+      <div class="modal-footer border-top-0 pt-0 pb-4 px-4 d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-pill px-4 fw-medium" data-bs-dismiss="modal" (click)="resetForm()">Cancel</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm d-flex align-items-center justify-content-center" 
+                [disabled]="!isFormValid || isSubmitting" (click)="submitReport()" style="min-width: 140px;">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <span>Submit Report</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

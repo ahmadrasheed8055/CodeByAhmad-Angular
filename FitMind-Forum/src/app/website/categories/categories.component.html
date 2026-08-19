@@ -17,11 +17,7 @@
 
     <!-- Loading State -->
     @if (loading) {
-      <div class="text-center py-4">
-        <div class="spinner-border spinner-border-sm text-mint" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <app-list-item-skeleton type="category" [count]="5"></app-list-item-skeleton>
     }
 
     <!-- Error State -->

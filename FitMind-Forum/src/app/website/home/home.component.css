@@ -50,13 +50,56 @@
   margin-left: 4px;
 }
 
-/* 5-per-row Avatar Grid (matching reference image) */
+/* Flex Wrap Avatar Grid (Left Aligned) */
 .following-avatar-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  justify-items: center;
   align-items: center;
+  justify-content: flex-start;
+}
+
+/* Suggested Friends & Members Section */
+.suggested-friends-section,
+.suggested-trainers-section {
+  border-color: var(--border-color, #e5e7eb) !important;
+}
+
+.friend-avatar,
+.trainer-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  display: block !important;
+  border: 1.5px solid var(--theme-white, #ffffff);
+}
+
+:host-context([data-theme="dark"]) .friend-avatar,
+:host-context([data-theme="dark"]) .trainer-avatar {
+  border-color: #16171d;
+}
+
+.friend-item-row,
+.trainer-item-row {
+  transition: background-color 0.2s ease;
+}
+
+.hover-bg:hover {
+  background-color: var(--form-control, #f5f4ef);
+}
+
+:host-context([data-theme="dark"]) .hover-bg:hover {
+  background-color: #22242d;
+}
+
+.btn-xs {
+  font-size: 0.75rem !important;
+  padding: 3px 12px !important;
 }
 
 .member-avatar-wrap {
@@ -70,9 +113,15 @@
 }
 
 .member-avatar {
-  width: 44px;
-  height: 44px;
-  object-fit: cover;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  display: block !important;
   border: 2px solid var(--theme-white, #ffffff);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: border-color 0.2s ease;
@@ -103,5 +152,27 @@
   background-color: var(--green-color-hover, #99d41a) !important;
   transform: translateY(-1px);
   box-shadow: 0 5px 16px rgba(135, 191, 23, 0.35) !important;
+  color: #ffffff !important;
+}
+
+/* Guest Welcome Widget Card */
+.guest-card-icon-wrap {
+  width: 52px;
+  height: 52px;
+  background-color: rgba(135, 191, 23, 0.12);
+}
+
+.text-mint {
+  color: var(--green-color, #87bf17) !important;
+}
+
+.btn-mint {
+  background-color: var(--green-color, #87bf17) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn-mint:hover {
+  background-color: var(--green-color-hover, #99d41a) !important;
   color: #ffffff !important;
 }

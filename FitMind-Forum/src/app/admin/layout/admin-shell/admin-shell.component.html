@@ -1,0 +1,122 @@
+<div class="admin-layout-root">
+  <!-- Left Admin Sidebar Rail (Fixed Non-Expandable) -->
+  <aside class="admin-sidebar">
+    <!-- Brand Header -->
+    <div class="sidebar-brand">
+      <a routerLink="/admin/dashboard" class="brand-link">
+        <span class="fitmind-text">FitJoin</span>
+        <span class="admin-badge">ADMIN</span>
+      </a>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">MANAGEMENT CORE</div>
+
+      <a routerLink="/admin/dashboard" routerLinkActive="active-nav" [routerLinkActiveOptions]="{exact: true}" class="nav-item-link" title="Dashboard">
+        <div class="nav-icon"><i class="bi bi-grid-1x2-fill"></i></div>
+        <span class="nav-label">Dashboard</span>
+      </a>
+
+      <a routerLink="/admin/users" routerLinkActive="active-nav" class="nav-item-link" title="App Users">
+        <div class="nav-icon"><i class="bi bi-people-fill"></i></div>
+        <span class="nav-label">App Users</span>
+      </a>
+
+      <a routerLink="/admin/posts" routerLinkActive="active-nav" class="nav-item-link" title="Posts & Content">
+        <div class="nav-icon"><i class="bi bi-file-earmark-richtext-fill"></i></div>
+        <span class="nav-label">Posts & Comments</span>
+      </a>
+
+      <a routerLink="/admin/reports" routerLinkActive="active-nav" class="nav-item-link" title="Reports Queue">
+        <div class="nav-icon"><i class="bi bi-shield-exclamation"></i></div>
+        <span class="nav-label">Reports Queue</span>
+      </a>
+
+      <div class="nav-section-title mt-3">COMMUNITY TOOLS</div>
+
+      <a routerLink="/admin/categories" routerLinkActive="active-nav" class="nav-item-link" title="Categories">
+        <div class="nav-icon"><i class="bi bi-tags-fill"></i></div>
+        <span class="nav-label">Categories</span>
+      </a>
+
+      <a routerLink="/admin/polls" routerLinkActive="active-nav" class="nav-item-link" title="Polls">
+        <div class="nav-icon"><i class="bi bi-pie-chart-fill"></i></div>
+        <span class="nav-label">Polls & Votes</span>
+      </a>
+
+      <a routerLink="/admin/admins" routerLinkActive="active-nav" class="nav-item-link" title="Admin Whitelist">
+        <div class="nav-icon"><i class="bi bi-shield-lock-fill"></i></div>
+        <span class="nav-label">Admin Access</span>
+      </a>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <div class="live-status-pill">
+        <span class="status-dot"></span>
+        <span class="status-text">FitMindDB Online</span>
+      </div>
+
+      <a routerLink="/home" class="footer-action-link" title="View Public Website">
+        <i class="bi bi-box-arrow-up-right"></i>
+        <span>Public Website</span>
+      </a>
+
+      <button (click)="logout()" class="footer-logout-btn" title="Sign Out of Admin Portal">
+        <i class="bi bi-power"></i>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Viewport -->
+  <div class="admin-main-viewport">
+    <!-- Topbar Header -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <div class="breadcrumb-tracker">
+          <span class="breadcrumb-root">FitJoin Admin</span>
+          <i class="bi bi-chevron-right breadcrumb-separator"></i>
+          <span class="breadcrumb-current">{{ currentRouteTitle }}</span>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Live System Pulse -->
+        <div class="system-pulse-badge d-none d-md-flex">
+          <span class="pulse-indicator"></span>
+          <span>Live Telemetry</span>
+        </div>
+
+        <!-- Dark/Light Theme Switcher -->
+        <button class="topbar-icon-btn" (click)="toggleTheme()" [title]="isDarkMode ? 'Switch to Light Theme' : 'Switch to Dark Theme'">
+          <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill text-warning' : 'bi-moon-stars-fill'"></i>
+        </button>
+
+        <div class="topbar-divider"></div>
+
+        <!-- Admin Profile Pill -->
+        <div class="admin-profile-pill">
+          <div class="profile-avatar">
+            {{ adminEmail.charAt(0).toUpperCase() }}
+          </div>
+          <div class="profile-meta d-none d-sm-block">
+            <div class="profile-name">{{ adminDisplayName }}</div>
+            <div class="profile-email">{{ adminEmail }}</div>
+          </div>
+        </div>
+
+        <!-- Quick Sign Out -->
+        <button class="topbar-logout-btn" (click)="logout()" title="Sign Out">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Dynamic Routed Content Container -->
+    <main class="admin-content-stage">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

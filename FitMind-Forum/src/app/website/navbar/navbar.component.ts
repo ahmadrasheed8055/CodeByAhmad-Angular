@@ -17,6 +17,7 @@ import { NotificationService } from '../../Shared/notification.service';
 import { NotificationItem } from '../../Model/NotificationDTO';
 import { SearchResultDTO } from '../../Model/SearchDTO';
 import { ChatbotService } from '../../Shared/chatbot.service';
+import { ListItemSkeletonComponent } from '../../Shared/skeleton';
 
 @Component({
   selector: 'app-navbar',
@@ -27,7 +28,8 @@ import { ChatbotService } from '../../Shared/chatbot.service';
     ReactiveFormsModule,
     EmailVarificationComponent,
     LoginComponent,
-    ForgetPasswordComponent
+    ForgetPasswordComponent,
+    ListItemSkeletonComponent
   ],
 
   templateUrl: './navbar.component.html',
@@ -205,6 +207,15 @@ export class NavbarComponent implements OnInit {
   deleteNotification(event: Event, id: string) {
     event.stopPropagation(); // prevent clicking the dropdown item
     this.notificationService.deleteNotification(id);
+  }
+
+  getCleanMessage(notif: NotificationItem): string {
+    if (!notif || !notif.message) return '';
+    let msg = notif.message.trim();
+    if (notif.userName && msg.startsWith(notif.userName)) {
+      msg = msg.substring(notif.userName.length).trim();
+    }
+    return msg;
   }
 
   followBack(event: Event, notif: NotificationItem) {

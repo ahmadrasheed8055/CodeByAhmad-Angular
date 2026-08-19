@@ -1,0 +1,97 @@
+/* Professional Report Modal Styling */
+.report-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.report-reasons-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  /* Custom scrollbar for webkit */
+}
+.report-reasons-list::-webkit-scrollbar {
+  width: 6px;
+}
+.report-reasons-list::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+
+.report-reason-item {
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease-in-out;
+  background-color: #ffffff;
+}
+
+.report-reason-item:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.report-reason-item.selected {
+  border-color: #0d6efd;
+  background-color: #f0f7ff;
+}
+
+.custom-radio-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.custom-radio-circle.checked {
+  border-color: #0d6efd;
+}
+
+.inner-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #0d6efd;
+  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reason-text {
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.other-reason-container {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.other-reason-container.show {
+  max-height: 150px;
+  opacity: 1;
+}
+
+.report-textarea {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  resize: none;
+  box-shadow: none;
+}
+
+.report-textarea:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

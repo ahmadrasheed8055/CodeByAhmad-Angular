@@ -11,11 +11,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MasterService } from '../../../Shared/master.service';
 import { SnackBarServiceService } from '../../../Shared/snack-bar-service.service';
 import { AuthService } from '../../../Shared/auth.service';
+import { FormSkeletonComponent } from '../../../Shared/skeleton';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, FormSkeletonComponent],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.css'
 })

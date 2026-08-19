@@ -8,6 +8,7 @@ export interface ChatMessage {
   text: string;
   timestamp: Date;
   imagePreview?: string;
+  isError?: boolean;
 }
 
 export interface ChatHistory {
@@ -45,15 +46,30 @@ export class ChatbotService {
   }
 
   askChatbot(message: string, history: ChatMessage[], imageBase64?: string, imageMimeType?: string): Observable<ChatResponseDTO> {
-    const formattedHistory: ChatHistory[] = history
-      .filter(h => h.text.trim() !== '') // Ensure no empty messages
-      .map(h => ({
-        role: h.sender === 'bot' ? 'model' : 'user',
-        content: h.text
-      }));
+    // Exclude welcome greeting (id === '1'), error messages, and empty messages
+    const validHistory = history
+      .filter(h => h.id !== '1' && !h.isError && h.text && h.text.trim() !== '')
+      .slice(-6); // Keep last 6 valid messages (max 3 turns) to prevent token bloat & 503 timeouts
+
+    // Strictly enforce alternating user -> model conversational sequence required by Gemini API
+    const formattedHistory: ChatHistory[] = [];
+    let expectedRole: 'user' | 'model' = 'user';
+
+    for (const msg of validHistory) {
+      const role = msg.sender === 'bot' ? 'model' : 'user';
+      if (role === expectedRole) {
+        formattedHistory.push({ role, content: msg.text.trim() });
+        expectedRole = expectedRole === 'user' ? 'model' : 'user';
+      }
+    }
+
+    // History must end with 'model' so the new prompt appended on backend is 'user'
+    if (formattedHistory.length > 0 && formattedHistory[formattedHistory.length - 1].role === 'user') {
+      formattedHistory.pop();
+    }
 
     const request: ChatRequestDTO = {
-      message: message,
+      message: message.trim(),
       history: formattedHistory,
       imageBase64: imageBase64,
       imageMimeType: imageMimeType
@@ -62,4 +78,3 @@ export class ChatbotService {
     return this.http.post<ChatResponseDTO>(this.apiUrl, request);
   }
 }
-

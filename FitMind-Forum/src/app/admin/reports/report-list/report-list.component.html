@@ -1,0 +1,342 @@
+<div class="admin-module-container">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Reports & Moderation Queue</h2>
+      <p class="module-subtitle">Review community-flagged posts and comments, investigate violations, and enforce guidelines.</p>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="admin-card text-center p-3">
+        <h3 class="fw-bold text-dark">{{ summary.total }}</h3>
+        <span class="text-muted fs-7 text-uppercase fw-semibold">Total Reports</span>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="admin-card text-center p-3" style="border-left: 4px solid var(--admin-danger);">
+        <h3 class="fw-bold text-dark">{{ summary.pending }}</h3>
+        <span class="text-muted fs-7 text-uppercase fw-semibold">Pending Review</span>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="admin-card text-center p-3" style="border-left: 4px solid var(--admin-warning);">
+        <h3 class="fw-bold text-dark">{{ summary.underReview }}</h3>
+        <span class="text-muted fs-7 text-uppercase fw-semibold">Under Review</span>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="admin-card text-center p-3" style="border-left: 4px solid var(--admin-success);">
+        <h3 class="fw-bold text-dark">{{ summary.resolved }}</h3>
+        <span class="text-muted fs-7 text-uppercase fw-semibold">Resolved</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="toolbar-wrapper">
+      <div class="filter-actions d-flex gap-2">
+        <select (change)="onFilterChange($event)" class="admin-select">
+          <option value="All">All Statuses</option>
+          <option value="Pending" selected>Pending Review</option>
+          <option value="Under Review">Under Review</option>
+          <option value="Resolved">Resolved / Action Taken</option>
+          <option value="Dismissed">Dismissed / Allowed</option>
+        </select>
+
+        <select (change)="onTypeChange($event)" class="admin-select">
+          <option value="">All Types</option>
+          <option value="Post">Posts</option>
+          <option value="Poll">Polls</option>
+          <option value="Profile">Profiles</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="admin-data-table">
+        <thead>
+          <tr>
+            <th>Date Flagged</th>
+            <th>Reported By</th>
+            <th>Target Content</th>
+            <th>Violation Reason</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="6" class="table-loader-cell">
+              <div class="admin-spinner"></div>
+              <span>Fetching moderation queue...</span>
+            </td>
+          </tr>
+
+          <tr *ngFor="let report of reports" [class.hidden]="isLoading">
+            <td class="text-muted">{{ report.createdAt | date:'mediumDate' }}</td>
+            <td>
+              <div class="reporter-tag"><i class="bi bi-person-circle"></i> {{ report.reporterName }}</div>
+            </td>
+            <td>
+              <span class="target-badge text-capitalize">{{ report.targetType }} #{{ report.targetId }}</span>
+            </td>
+            <td>
+              <div class="reason-text" [title]="report.reason">
+                <em>"{{ report.reason }}"</em>
+              </div>
+            </td>
+            <td>
+              <span *ngIf="report.status === 'Pending'" class="status-pill status-suspended">Pending Review</span>
+              <span *ngIf="report.status === 'Under Review'" class="status-pill text-bg-warning">Under Review</span>
+              <span *ngIf="report.status === 'Resolved'" class="status-pill status-active">Resolved</span>
+              <span *ngIf="report.status === 'Dismissed'" class="status-pill status-deleted">Dismissed</span>
+              <div *ngIf="report.reviewedBy" class="reviewer-meta">by {{ report.reviewedBy }}</div>
+            </td>
+            <td class="text-end">
+              <div class="action-buttons-group">
+                <button class="btn btn-sm btn-outline-mint rounded-pill px-3 fw-bold shadow-sm" 
+                        title="View Details" 
+                        (click)="openReportDetail(report)" 
+                        data-bs-toggle="offcanvas" 
+                        data-bs-target="#reportDetailOffcanvas">
+                  <i class="bi bi-eye"></i> View
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="!isLoading && reports.length === 0">
+            <td colspan="6" class="table-empty-cell">
+              <i class="bi bi-shield-check text-mint"></i>
+              <p>No reports currently pending review in this queue.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div *ngIf="totalPages > 1" class="pagination-footer">
+      <div class="pagination-summary">
+        Showing <strong>{{ ((page - 1) * pageSize) + 1 }}</strong> to <strong>{{ page * pageSize > totalItems ? totalItems : page * pageSize }}</strong> of <strong>{{ totalItems }}</strong> reports
+      </div>
+      <div class="pagination-controls">
+        <button [disabled]="page === 1" (click)="changePage(page - 1)" class="btn-pagination">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="pagination-badge">Page {{ page }} of {{ totalPages }}</span>
+        <button [disabled]="page === totalPages" (click)="changePage(page + 1)" class="btn-pagination">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+  </div>
+</div>
+
+<!-- Report Detail Offcanvas (Side Drawer) -->
+<div class="offcanvas offcanvas-end shadow-lg border-0" tabindex="-1" id="reportDetailOffcanvas" style="width: 500px; max-width: 90vw;">
+  <div class="offcanvas-header border-bottom bg-light">
+    <h5 class="offcanvas-title fw-bold">
+      <i class="bi bi-flag-fill text-danger me-2"></i>Report Details
+    </h5>
+    <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  
+  <div class="offcanvas-body p-0 position-relative">
+    <div *ngIf="isDetailLoading" class="d-flex align-items-center justify-content-center w-100 h-100 position-absolute" style="background: rgba(255,255,255,0.8); z-index: 10;">
+      <div class="spinner-border text-mint" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <div *ngIf="selectedReportDetails" class="d-flex flex-column h-100">
+      
+      <!-- Report Metadata -->
+      <div class="p-4 border-bottom bg-white">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <span class="badge" 
+                  [ngClass]="{
+                    'bg-secondary': selectedReportDetails.report.status === 'Pending',
+                    'bg-warning text-dark': selectedReportDetails.report.status === 'Under Review',
+                    'bg-success': selectedReportDetails.report.status === 'Resolved',
+                    'bg-danger': selectedReportDetails.report.status === 'Dismissed'
+                  }">
+              {{ selectedReportDetails.report.status }}
+              <div *ngIf="selectedReportDetails.report.status !== 'Pending'" class="fs-7 text-muted ms-auto">
+                Action taken by {{ selectedReportDetails.report.reviewedBy?.email || 'System' }}
+              </div>
+            </span>
+            <div class="text-muted fs-8 mt-2">Reported on {{ selectedReportDetails.report.createdAt | date:'medium' }}</div>
+          </div>
+          <span class="badge text-bg-light border text-capitalize px-3 py-2">
+            {{ selectedReportDetails.report.targetType }} #{{ selectedReportDetails.report.targetId }}
+          </span>
+        </div>
+
+        <div class="mb-3">
+          <label class="text-muted fs-8 fw-bold text-uppercase d-block mb-1">Reported By</label>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-circle fs-4 text-secondary"></i>
+            <div>
+              <div class="fw-bold fs-7">{{ selectedReportDetails.report.reporter.username }}</div>
+              <div class="text-muted fs-8">{{ selectedReportDetails.report.reporter.email }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-muted fs-8 fw-bold text-uppercase d-block mb-1">Reason Provided</label>
+          <div class="p-3 bg-light rounded text-danger fw-semibold fs-7" style="border-left: 3px solid var(--admin-danger);">
+            "{{ selectedReportDetails.report.reason }}"
+          </div>
+        </div>
+      </div>
+
+      <!-- Target Content Review -->
+      <div class="p-4 flex-grow-1 bg-light">
+        <h6 class="fw-bold mb-3 border-bottom pb-2">
+          <i class="bi bi-search text-mint me-2"></i>Original Content Review
+        </h6>
+
+        <div class="bg-white rounded-3 shadow-sm p-4 border" *ngIf="selectedReportDetails.targetDetails; else notFound">
+          
+          <!-- POST -->
+          <ng-container *ngIf="selectedReportDetails.report.targetType.toLowerCase() === 'post'">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-3 border-bottom">
+              <div class="bg-mint text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                {{ selectedReportDetails.targetDetails.authorName.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <div class="fw-bold fs-7">{{ selectedReportDetails.targetDetails.authorName }}</div>
+                <div class="text-muted fs-8">{{ selectedReportDetails.targetDetails.createdAt | date:'short' }}</div>
+              </div>
+            </div>
+            <h5 class="fw-bold fs-6">{{ selectedReportDetails.targetDetails.title || 'Untitled Post' }}</h5>
+            <p class="text-body fs-7" style="white-space: pre-wrap;">{{ selectedReportDetails.targetDetails.description }}</p>
+            
+            <div *ngIf="selectedReportDetails.targetDetails.hasMedia || selectedReportDetails.targetDetails.postImageBase64" class="mt-3 rounded-3 overflow-hidden border">
+              <img [src]="'data:image/jpeg;base64,' + selectedReportDetails.targetDetails.postImageBase64" class="w-100 object-fit-cover" style="max-height: 250px;">
+            </div>
+          </ng-container>
+
+          <!-- POLL -->
+          <ng-container *ngIf="selectedReportDetails.report.targetType.toLowerCase() === 'poll'">
+            <div class="d-flex align-items-center gap-2 mb-3 pb-3 border-bottom">
+              <div class="bg-mint text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                {{ selectedReportDetails.targetDetails.authorName.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <div class="fw-bold fs-7">{{ selectedReportDetails.targetDetails.authorName }}</div>
+                <div class="text-muted fs-8">{{ selectedReportDetails.targetDetails.createdAt | date:'short' }}</div>
+              </div>
+            </div>
+            <h5 class="fw-bold fs-6 mb-3"><i class="bi bi-bar-chart-fill text-mint me-2"></i> {{ selectedReportDetails.targetDetails.question }}</h5>
+            <div class="d-flex flex-column gap-2">
+              <div class="p-2 bg-light rounded border text-muted fs-7" *ngFor="let option of selectedReportDetails.targetDetails.options">
+                <span class="fw-bold me-2">{{ option.optionLetter }})</span> {{ option.optionText }}
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- PROFILE -->
+          <ng-container *ngIf="selectedReportDetails.report.targetType.toLowerCase() === 'profile'">
+            <div class="text-center mb-3">
+              <div class="bg-mint text-white rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto mb-2" style="width: 80px; height: 80px; font-size: 2rem;">
+                {{ selectedReportDetails.targetDetails.username.charAt(0).toUpperCase() }}
+              </div>
+              <h5 class="fw-bold mb-0">{{ selectedReportDetails.targetDetails.username }}</h5>
+              <div class="text-muted fs-7">{{ selectedReportDetails.targetDetails.email }}</div>
+            </div>
+            
+            <div class="bg-light p-3 rounded text-center mb-3">
+              <div class="text-muted fs-8 fw-bold text-uppercase mb-1">Bio</div>
+              <p class="mb-0 fs-7 font-italic">{{ selectedReportDetails.targetDetails.bio || 'No bio provided.' }}</p>
+            </div>
+            
+            <div class="d-flex justify-content-center gap-2">
+              <span class="badge bg-secondary">Joined: {{ selectedReportDetails.targetDetails.joinedDate | date:'shortDate' }}</span>
+              <span class="badge" [ngClass]="{'bg-success': selectedReportDetails.targetDetails.status === 1, 'bg-warning': selectedReportDetails.targetDetails.status === 2, 'bg-danger': selectedReportDetails.targetDetails.status === 3}">
+                Status: {{ selectedReportDetails.targetDetails.status === 1 ? 'Active' : (selectedReportDetails.targetDetails.status === 2 ? 'Suspended' : 'Banned') }}
+              </span>
+            </div>
+          </ng-container>
+
+        </div>
+
+        <ng-template #notFound>
+          <div class="bg-white rounded-3 shadow-sm p-5 border text-center text-muted">
+            <i class="bi bi-exclamation-triangle fs-1 text-warning mb-2 d-block"></i>
+            <h6 class="fw-bold">Content Not Found</h6>
+            <p class="fs-7 mb-0">This {{ selectedReportDetails.report.targetType }} may have already been deleted.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Moderation Actions Footer -->
+      <div class="p-4 border-top bg-white">
+        <h6 class="fw-bold mb-3 fs-7 text-uppercase text-muted">Moderation Actions</h6>
+        
+        <div class="d-flex flex-wrap gap-2 mb-3 pb-3 border-bottom">
+          <button class="btn btn-sm" [ngClass]="selectedReportDetails.report.status === 'Under Review' ? 'btn-warning fw-bold' : 'btn-outline-warning'" (click)="updateReportStatus('Under Review')">Under Review</button>
+          <button class="btn btn-sm" [ngClass]="selectedReportDetails.report.status === 'Dismissed' ? 'btn-danger fw-bold' : 'btn-outline-danger'" (click)="updateReportStatus('Dismissed')">Dismiss Report</button>
+          <button class="btn btn-sm" [ngClass]="selectedReportDetails.report.status === 'Resolved' ? 'btn-success fw-bold' : 'btn-outline-success'" (click)="updateReportStatus('Resolved')">Mark Resolved</button>
+        </div>
+
+        <div *ngIf="selectedReportDetails.targetDetails" class="d-flex flex-wrap gap-2">
+          
+          <ng-container *ngIf="selectedReportDetails.report.targetType.toLowerCase() === 'post'">
+            <button class="btn btn-danger btn-sm px-3 fw-bold flex-grow-1" (click)="deletePost(selectedReportDetails.targetDetails.postId)">
+              <i class="bi bi-trash3 me-1"></i> Delete Post
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="selectedReportDetails.report.targetType.toLowerCase() === 'poll'">
+            <button class="btn btn-danger btn-sm px-3 fw-bold flex-grow-1" (click)="deletePoll(selectedReportDetails.targetDetails.pollId)">
+              <i class="bi bi-trash3 me-1"></i> Delete Poll
+            </button>
+          </ng-container>
+
+          <div class="w-100 mt-2 d-flex gap-2">
+            <button class="btn btn-outline-warning btn-sm px-3 fw-bold flex-grow-1" (click)="warnUser(selectedReportDetails.targetDetails.authorId || selectedReportDetails.targetDetails.id)">
+              <i class="bi bi-exclamation-triangle me-1"></i> Warn User
+            </button>
+            <button class="btn btn-outline-danger btn-sm px-3 fw-bold flex-grow-1" (click)="suspendUser(selectedReportDetails.targetDetails.authorId || selectedReportDetails.targetDetails.id)">
+              <i class="bi bi-pause-circle me-1"></i> Suspend User
+            </button>
+          </div>
+
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Admin Confirmation Modal -->
+<div class="modal fade" id="adminConfirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+      <div class="modal-body p-4 text-center">
+        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+             [ngClass]="confirmModalType === 'danger' ? 'bg-danger-subtle text-danger' : (confirmModalType === 'warning' ? 'bg-warning-subtle text-warning' : 'bg-primary-subtle text-primary')"
+             style="width: 60px; height: 60px; font-size: 1.5rem;">
+          <i class="bi" [ngClass]="confirmModalIcon"></i>
+        </div>
+        <h5 class="fw-bold mb-2">{{ confirmModalTitle }}</h5>
+        <p class="text-muted fs-7 mb-4">{{ confirmModalMessage }}</p>
+        
+        <div class="d-flex gap-2 w-100">
+          <button type="button" class="btn btn-light flex-grow-1 rounded-pill fw-bold" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn flex-grow-1 rounded-pill fw-bold" 
+                  [ngClass]="confirmModalType === 'danger' ? 'btn-danger' : (confirmModalType === 'warning' ? 'btn-warning text-dark' : 'btn-primary')"
+                  (click)="executeConfirmAction()"
+                  data-bs-dismiss="modal">
+            {{ confirmModalActionText }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

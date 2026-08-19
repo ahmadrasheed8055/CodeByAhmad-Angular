@@ -1,0 +1,82 @@
+<div class="admin-module-container">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Admin Whitelist Security Management</h2>
+      <p class="module-subtitle">Control authorized Google OAuth accounts eligible for executive administrative access.</p>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="toolbar-wrapper">
+      <div class="add-admin-form">
+        <div class="search-box">
+          <i class="bi bi-google search-icon text-mint"></i>
+          <input type="email" [(ngModel)]="newAdminEmail" (keyup.enter)="addAdmin()" placeholder="Enter authorized Gmail address..." class="admin-input">
+        </div>
+        <button (click)="addAdmin()" class="btn-admin-primary">
+          <i class="bi bi-shield-plus"></i>
+          <span>Whitelist Admin</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="admin-data-table">
+        <thead>
+          <tr>
+            <th>Admin Gmail</th>
+            <th>First Provisioned</th>
+            <th>Last Security Session</th>
+            <th>Authorization</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="5" class="table-loader-cell">
+              <div class="admin-spinner"></div>
+              <span>Verifying admin directory...</span>
+            </td>
+          </tr>
+
+          <tr *ngFor="let admin of admins" [class.hidden]="isLoading">
+            <td>
+              <div class="admin-email-cell">
+                <i class="bi bi-shield-lock-fill text-mint"></i>
+                <code class="email-code">{{ admin.email }}</code>
+              </div>
+            </td>
+            <td class="text-muted">
+              {{ admin.firstLoginAt ? (admin.firstLoginAt | date:'medium') : 'Pending first sign-in' }}
+            </td>
+            <td class="text-muted">
+              {{ admin.lastLoginAt ? (admin.lastLoginAt | date:'medium') : 'Never' }}
+            </td>
+            <td>
+              <span *ngIf="admin.isActive" class="status-pill status-active">Authorized</span>
+              <span *ngIf="!admin.isActive" class="status-pill status-banned">Revoked</span>
+            </td>
+            <td class="text-end">
+              <div class="action-buttons-group">
+                <button (click)="toggleStatus(admin)" class="btn-action-warn" [title]="admin.isActive ? 'Revoke Access' : 'Authorize Access'">
+                  <i class="bi" [ngClass]="admin.isActive ? 'bi-shield-slash' : 'bi-shield-check'"></i>
+                  <span>{{ admin.isActive ? 'Revoke' : 'Authorize' }}</span>
+                </button>
+                <button (click)="deleteAdmin(admin)" class="btn-action-delete" title="Remove Whitelist Entry">
+                  <i class="bi bi-trash"></i> Remove
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="!isLoading && admins.length === 0">
+            <td colspan="5" class="table-empty-cell">
+              <i class="bi bi-shield-x text-muted"></i>
+              <p>No admin accounts found in the whitelist directory.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

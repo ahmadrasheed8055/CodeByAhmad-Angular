@@ -98,9 +98,9 @@ export class PendingActionService {
    */
   setDeferredNavigation(targetUrl: string): void {
     this.pendingAction = { type: 'NAVIGATE', targetUrl };
-    // Delay modal open slightly to allow navigation to /home to complete
     if (isPlatformBrowser(this.platformId)) {
-      setTimeout(() => this.openLoginModal(), 300);
+      // Immediate execution
+      requestAnimationFrame(() => this.openLoginModal());
     }
   }
 
@@ -119,7 +119,7 @@ export class PendingActionService {
   // ========== Private Helpers ==========
 
   /**
-   * Programmatically opens the Bootstrap 5 login modal using the JS API.
+   * Programmatically opens the Bootstrap 5 login modal using the JS API immediately.
    */
   private openLoginModal(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -130,8 +130,17 @@ export class PendingActionService {
     if (modalEl) {
       const bs = (window as any).bootstrap;
       if (bs?.Modal) {
-        const modal = bs.Modal.getOrCreateInstance(modalEl);
+        const modal = bs.Modal.getOrCreateInstance(modalEl, {
+          backdrop: true,
+          keyboard: true,
+          focus: true
+        });
         modal.show();
+      } else {
+        const trigger = document.querySelector('[data-bs-target="#loginModal"]') as HTMLElement;
+        if (trigger) {
+          trigger.click();
+        }
       }
     }
   }

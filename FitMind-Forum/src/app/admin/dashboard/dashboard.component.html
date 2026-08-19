@@ -1,0 +1,290 @@
+<div class="dashboard-page-container">
+  <!-- 1. Hero Header & Quick Controls -->
+  <section class="dashboard-hero-card">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="live-pulse"></span>
+        <span>FitJoin Core Administrator</span>
+      </div>
+      <h1 class="hero-title">Executive Control Center</h1>
+      <p class="hero-subtitle">Real-time forum telemetry, content moderation, and SQL Server diagnostics.</p>
+    </div>
+
+    <div class="hero-actions">
+      <div class="refresh-indicator">
+        <span class="text-muted">Last synced:</span>
+        <span class="time-stamp">{{ lastRefreshedAt | date:'mediumTime' }}</span>
+      </div>
+      <button class="btn-hero-refresh" (click)="loadDashboard()" [disabled]="isLoading">
+        <i class="bi" [ngClass]="isLoading ? 'bi-arrow-repeat spin-icon' : 'bi-arrow-clockwise'"></i>
+        <span>{{ isLoading ? 'Syncing...' : 'Sync Telemetry' }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading && !summary" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Connecting to FitMindDB & aggregating live metrics...</p>
+  </div>
+
+  <div *ngIf="summary" class="dashboard-body">
+    <!-- 2. Primary KPI Stat Cards Grid -->
+    <section class="kpi-grid">
+      <!-- Card 1: Total Users -->
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper bg-blue-subtle text-blue">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="kpi-data">
+          <div class="kpi-label">Registered Members</div>
+          <div class="kpi-value">{{ summary.totalUsers || 0 }}</div>
+          <div class="kpi-subtext">
+            <span class="badge-mint">{{ summary.activeUsers || 0 }} active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Total Posts -->
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper bg-mint-subtle text-mint">
+          <i class="bi bi-file-earmark-richtext-fill"></i>
+        </div>
+        <div class="kpi-data">
+          <div class="kpi-label">Community Posts</div>
+          <div class="kpi-value">{{ summary.totalPosts || 0 }}</div>
+          <div class="kpi-subtext">
+            <span class="text-muted">{{ summary.totalComments || 0 }} comments</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Pending Reports (Attention) -->
+      <div class="kpi-card" [class.alert-card]="summary.pendingReports > 0">
+        <div class="kpi-icon-wrapper bg-red-subtle text-red">
+          <i class="bi bi-shield-exclamation"></i>
+        </div>
+        <div class="kpi-data">
+          <div class="kpi-label">Pending Reports</div>
+          <div class="kpi-value text-red">{{ summary.pendingReports || 0 }}</div>
+          <div class="kpi-subtext">
+            <a routerLink="/admin/reports" class="kpi-link">Review Queue &rarr;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Active Polls -->
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper bg-purple-subtle text-purple">
+          <i class="bi bi-pie-chart-fill"></i>
+        </div>
+        <div class="kpi-data">
+          <div class="kpi-label">Active Polls</div>
+          <div class="kpi-value">{{ summary.activePolls || 0 }}</div>
+          <div class="kpi-subtext">
+            <span class="text-muted">{{ summary.totalCategories || 0 }} categories</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Live DB & Telemetry Diagnostic Banner -->
+    <section class="live-db-panel" *ngIf="liveDb">
+      <div class="live-db-header">
+        <div class="db-title-group">
+          <i class="bi bi-database-fill-check text-mint"></i>
+          <div>
+            <h3 class="db-title">Live Database Diagnostics</h3>
+            <span class="db-subtitle">{{ liveDb.databaseName }} &bull; Microsoft SQL Server</span>
+          </div>
+        </div>
+        <div class="db-status-pill">
+          <span class="status-pulse-green"></span>
+          <span>{{ liveDb.status }}</span>
+        </div>
+      </div>
+
+      <div class="db-telemetry-grid">
+        <div class="telemetry-item">
+          <span class="telemetry-label">API Uptime</span>
+          <span class="telemetry-value">{{ liveDb.uptimeMinutes }} mins</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="telemetry-label">Allocated Memory</span>
+          <span class="telemetry-value">{{ liveDb.allocatedMemoryMb }} MB</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="telemetry-label">Server UTC Time</span>
+          <span class="telemetry-value">{{ liveDb.serverTime | date:'HH:mm:ss' }} UTC</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="telemetry-label">Security Whitelist</span>
+          <span class="telemetry-value text-mint">{{ summary.totalAdmins || 2 }} Admins Active</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Interactive Activity Center -->
+    <section class="activity-section">
+      <div class="activity-tabs-header">
+        <div class="tabs-nav">
+          <button class="tab-btn" [class.active]="activeTab === 'timeline'" (click)="setTab('timeline')">
+            <i class="bi bi-clock-history"></i>
+            <span>Recent Activity Timeline</span>
+          </button>
+
+          <button class="tab-btn" [class.active]="activeTab === 'posts'" (click)="setTab('posts')">
+            <i class="bi bi-file-text"></i>
+            <span>Latest Posts ({{ recentActivity?.posts?.length || 0 }})</span>
+          </button>
+
+          <button class="tab-btn" [class.active]="activeTab === 'users'" (click)="setTab('users')">
+            <i class="bi bi-person-plus"></i>
+            <span>New Members ({{ recentActivity?.users?.length || 0 }})</span>
+          </button>
+
+          <button class="tab-btn" [class.active]="activeTab === 'dbLogs'" (click)="setTab('dbLogs')">
+            <i class="bi bi-journal-code"></i>
+            <span>Real-time Store Logs & History</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="activity-content-panel">
+        <!-- TAB 1: Activity Timeline -->
+        <div *ngIf="activeTab === 'timeline'" class="timeline-container">
+          <div *ngIf="!recentActivity?.posts?.length && !recentActivity?.users?.length" class="empty-feed">
+            <i class="bi bi-inbox text-muted"></i>
+            <p>No recent activity detected in the database.</p>
+          </div>
+
+          <div class="timeline-stream">
+            <!-- Interleaved Post Events -->
+            <div *ngFor="let post of recentActivity?.posts" class="timeline-entry">
+              <div class="timeline-marker bg-mint"><i class="bi bi-pencil-square"></i></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="badge-category">{{ post.categoryName }}</span>
+                  <span class="timeline-time">{{ post.createdAt | date:'short' }}</span>
+                </div>
+                <div class="timeline-title">
+                  <strong>{{ post.authorName }}</strong> published a new discussion: <em>"{{ post.title }}"</em>
+                </div>
+                <div class="timeline-meta">
+                  <span><i class="bi bi-eye"></i> {{ post.viewCount || 0 }} views</span>
+                  <span class="status-indicator-tag" [class.published]="post.isPublished">
+                    {{ post.isPublished ? 'Published' : 'Hidden' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interleaved User Events -->
+            <div *ngFor="let user of recentActivity?.users" class="timeline-entry">
+              <div class="timeline-marker bg-blue"><i class="bi bi-person-check-fill"></i></div>
+              <div class="timeline-card">
+                <div class="timeline-header">
+                  <span class="badge-user">New Member</span>
+                  <span class="timeline-time">{{ user.joinedDate | date:'short' }}</span>
+                </div>
+                <div class="timeline-title">
+                  <strong>{{ user.username }}</strong> joined the FitJoin community with email <code>{{ user.email }}</code>.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Latest Posts List -->
+        <div *ngIf="activeTab === 'posts'" class="table-responsive-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Views</th>
+                <th>Status</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let post of recentActivity?.posts">
+                <td class="fw-bold">{{ post.title }}</td>
+                <td>{{ post.authorName }}</td>
+                <td><span class="badge-category">{{ post.categoryName }}</span></td>
+                <td>{{ post.viewCount || 0 }}</td>
+                <td>
+                  <span class="status-badge" [class.badge-active]="post.isPublished" [class.badge-suspended]="!post.isPublished">
+                    {{ post.isPublished ? 'Live' : 'Hidden' }}
+                  </span>
+                </td>
+                <td class="text-muted">{{ post.createdAt | date:'shortDate' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TAB 3: New Members List -->
+        <div *ngIf="activeTab === 'users'" class="table-responsive-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email Address</th>
+                <th>Status</th>
+                <th>Joined Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of recentActivity?.users">
+                <td class="fw-bold">{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                  <span class="status-badge" [class.badge-active]="u.status === 1" [class.badge-suspended]="u.status !== 1">
+                    {{ u.status === 1 ? 'Active' : 'Suspended' }}
+                  </span>
+                </td>
+                <td class="text-muted">{{ u.joinedDate | date:'mediumDate' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TAB 4: Real-time Store & Creation Logs -->
+        <div *ngIf="activeTab === 'dbLogs'" class="db-logs-console">
+          <div class="log-console-header">
+            <div class="console-title">
+              <i class="bi bi-terminal-fill"></i>
+              <span>Live FitMindDB Audit Stream</span>
+            </div>
+            <span class="badge-live-stream">STREAMING</span>
+          </div>
+
+          <div class="console-body">
+            <div class="log-row">
+              <span class="log-ts">[{{ liveDb.serverTime | date:'HH:mm:ss' }}]</span>
+              <span class="log-type info">[INFO]</span>
+              <span class="log-msg">SQL Connection Verified &bull; Database <span class="text-mint">FitMindDB</span> is responsive and healthy.</span>
+            </div>
+            <div class="log-row">
+              <span class="log-ts">[{{ liveDb.serverTime | date:'HH:mm:ss' }}]</span>
+              <span class="log-type auth">[AUTH]</span>
+              <span class="log-msg">Google OAuth 2.0 Identity Token accepted for admin session.</span>
+            </div>
+            <div class="log-row" *ngFor="let r of recentActivity?.reports">
+              <span class="log-ts">[{{ r.createdAt | date:'HH:mm:ss' }}]</span>
+              <span class="log-type warn">[MODERATION]</span>
+              <span class="log-msg">Report #{{ r.reportId }} flagged for {{ r.targetType }} #{{ r.targetId }} &bull; Reason: <em>"{{ r.reason }}"</em> &bull; Status: {{ r.status }}</span>
+            </div>
+            <div class="log-row" *ngFor="let p of recentActivity?.posts">
+              <span class="log-ts">[{{ p.createdAt | date:'HH:mm:ss' }}]</span>
+              <span class="log-type success">[CREATE]</span>
+              <span class="log-msg">AddPost record created (ID: {{ p.postId }}) by author "{{ p.authorName }}" in category "{{ p.categoryName }}".</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

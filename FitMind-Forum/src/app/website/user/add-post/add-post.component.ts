@@ -23,11 +23,12 @@ import { GetDraftedPostDTO } from '../../../Model/GetDraftedPostDTO';
 import { UpdatePostDTO } from '../../../Model/UpdatePostDTO';
 import { Router } from '@angular/router';
 import { PostReactionsDTO } from '../../../Model/AddPostReaction';
+import { ListItemSkeletonComponent } from '../../../Shared/skeleton';
 // import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-add-post',
-  imports: [ReactiveFormsModule, NgSelectModule, CommonModule],
+  imports: [ReactiveFormsModule, NgSelectModule, CommonModule, ListItemSkeletonComponent],
   templateUrl: './add-post.component.html',
   styleUrl: './add-post.component.css',
 })
@@ -179,18 +180,20 @@ export class AddPostComponent {
           this.buttonLoading = null;
         },
         (error) => {
-          if (error.status === 400) {
-            this.snackBar.showError(error.error);
-          } else if (error.status === 404) {
-            this.snackBar.showError('Category not found');
-          } else if (error.status === 422) {
-            this.snackBar.showError('Inappropriate content.');
-          } else if (error.status === 500) {
-            this.snackBar.showError('Server error: ' + error.error);
-          } else {
-            this.snackBar.showError('An unexpected error occurred.');
-          }
           this.buttonLoading = null;
+          let errorMessage = 'An unexpected error occurred. Please try again.';
+          if (error.status === 400) {
+            errorMessage = typeof error.error === 'string' ? error.error : (error.error?.message || 'Invalid post data.');
+          } else if (error.status === 404) {
+            errorMessage = 'Category not found.';
+          } else if (error.status === 422) {
+            errorMessage = 'Inappropriate content detected in the image or description.';
+          } else if (error.status === 500) {
+            errorMessage = typeof error.error === 'string' && error.error.length < 200 ? error.error : 'Server error while processing post/image. Please try again.';
+          } else if (error.status === 0) {
+            errorMessage = 'Unable to reach the server. Please check your connection.';
+          }
+          this.snackBar.showError(errorMessage);
         }
       );
     }

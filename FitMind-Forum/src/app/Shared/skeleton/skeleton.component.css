@@ -1,0 +1,88 @@
+/* FitJoin Skeleton Shimmer Base Styles */
+
+:host {
+  display: inline-block;
+  vertical-align: middle;
+  width: var(--skeleton-width, 100%);
+  max-width: 100%;
+}
+
+.fitjoin-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--skeleton-bg, rgba(0, 0, 0, 0.07));
+  border-radius: var(--skeleton-radius, 6px);
+  width: 100%;
+  height: var(--skeleton-height, 1rem);
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Shape Variants */
+.fitjoin-skeleton.variant-text {
+  border-radius: 4px;
+  height: var(--skeleton-height, 0.875rem);
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.fitjoin-skeleton.variant-circular {
+  border-radius: 50% !important;
+  aspect-ratio: 1 / 1;
+}
+
+.fitjoin-skeleton.variant-rounded {
+  border-radius: var(--skeleton-radius, 12px);
+}
+
+.fitjoin-skeleton.variant-rectangular {
+  border-radius: var(--skeleton-radius, 0px);
+}
+
+/* Subtle Shimmer Animation */
+.fitjoin-skeleton.animated::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: fitjoin-shimmer 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fitjoin-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Dark Mode Overrides */
+:root[data-bs-theme="dark"] .fitjoin-skeleton,
+:root[data-theme="dark"] .fitjoin-skeleton,
+[data-bs-theme="dark"] .fitjoin-skeleton,
+body.dark .fitjoin-skeleton {
+  background-color: var(--skeleton-bg-dark, rgba(255, 255, 255, 0.08));
+}
+
+:root[data-bs-theme="dark"] .fitjoin-skeleton.animated::after,
+:root[data-theme="dark"] .fitjoin-skeleton.animated::after,
+[data-bs-theme="dark"] .fitjoin-skeleton.animated::after,
+body.dark .fitjoin-skeleton.animated::after {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}

@@ -4,6 +4,28 @@ import { emailTokenGuardGuard } from './Shared/email-token-guard.guard';
 
 export const routes: Routes = [
   {
+    path: 'admin',
+    loadChildren: () => import('./admin/admin-routing.module').then(m => m.AdminRoutingModule)
+  },
+  {
+    path: 'register',
+    canActivate: [emailTokenGuardGuard],
+    loadComponent: () => import('./website/auth/register/register.component').then(m => m.RegisterComponent),
+  },
+  {
+    path: 'forget-password',
+    canActivate: [emailTokenGuardGuard],
+    loadComponent: () => import('./website/auth/forget-password/forget-password.component').then(m => m.ForgetPasswordComponent),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./website/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
+  },
+  {
+    path: 'error',
+    loadComponent: () => import('./website/error/error.component').then(m => m.ErrorComponent),
+  },
+  {
     path: '',
     loadComponent: () => import('./website/navbar/navbar.component').then(m => m.NavbarComponent),
     children: [
@@ -19,6 +41,10 @@ export const routes: Routes = [
       {
         path: 'search',
         loadComponent: () => import('./website/search-results/search-results.component').then(m => m.SearchResultsComponent),
+      },
+      {
+        path: 'people',
+        loadComponent: () => import('./website/people/people.component').then(m => m.PeopleComponent),
       },
       {
         path: 'profile-setting',
@@ -50,24 +76,6 @@ export const routes: Routes = [
         redirectTo: 'home',
       }
     ]
-  },
-  {
-    path: 'register',
-    canActivate: [emailTokenGuardGuard],
-    loadComponent: () => import('./website/auth/register/register.component').then(m => m.RegisterComponent),
-  },
-  {
-    path: 'forget-password',
-    canActivate: [emailTokenGuardGuard],
-    loadComponent: () => import('./website/auth/forget-password/forget-password.component').then(m => m.ForgetPasswordComponent),
-  },
-  {
-    path: 'reset-password',
-    loadComponent: () => import('./website/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
-  },
-  {
-    path: 'error',
-    loadComponent: () => import('./website/error/error.component').then(m => m.ErrorComponent),
   },
   {
     path: '**',

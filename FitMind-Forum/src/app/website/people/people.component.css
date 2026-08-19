@@ -1,0 +1,100 @@
+.people-header-card {
+  background: linear-gradient(135deg, rgba(135, 191, 23, 0.08) 0%, rgba(135, 191, 23, 0.02) 100%), var(--theme-white, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb) !important;
+}
+
+.people-title {
+  color: var(--text-color, #1e1b4b);
+  letter-spacing: -0.5px;
+}
+
+.people-search-box {
+  width: 100%;
+  max-width: 320px;
+}
+
+.people-search-box input {
+  height: 42px;
+  background-color: var(--form-control, #f5f4ef) !important;
+  color: var(--text-color, #1e1b4b);
+  transition: all 0.2s ease;
+}
+
+.people-search-box input:focus {
+  background-color: var(--theme-white, #ffffff) !important;
+  box-shadow: 0 0 0 3px rgba(135, 191, 23, 0.2) !important;
+}
+
+.people-nav-pills {
+  background-color: var(--form-control, #f5f4ef);
+}
+
+.people-nav-pills .nav-link {
+  color: var(--text-muted, #64748b);
+  transition: all 0.2s ease;
+}
+
+.people-nav-pills .nav-link.active {
+  background-color: var(--green-color, #87bf17) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(135, 191, 23, 0.3);
+}
+
+.member-card {
+  background-color: var(--theme-white, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+.member-card-avatar {
+  width: 68px !important;
+  height: 68px !important;
+  min-width: 68px;
+  max-width: 68px;
+  object-fit: cover !important;
+  border: 2px solid var(--border-color, #e5e7eb);
+}
+
+.trainer-badge {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+}
+
+.bg-mint {
+  background-color: var(--green-color, #87bf17) !important;
+  color: #ffffff !important;
+}
+
+.btn-mint {
+  background-color: var(--green-color, #87bf17) !important;
+  color: #ffffff !important;
+  border: none;
+}
+
+.btn-mint:hover {
+  background-color: var(--green-color-hover, #99d41a) !important;
+  color: #ffffff !important;
+}
+
+:host-context([data-theme="dark"]) .people-header-card,
+:host-context([data-theme="dark"]) .member-card {
+  background-color: #16171d !important;
+  border-color: #2a2c35 !important;
+}
+
+:host-context([data-theme="dark"]) .people-nav-pills {
+  background-color: #22242d !important;
+}
+
+:host-context([data-theme="dark"]) .people-search-box input {
+  background-color: #22242d !important;
+}

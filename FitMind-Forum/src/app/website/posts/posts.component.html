@@ -165,8 +165,7 @@
             class="btn btn-brand-primary btn-sm rounded-pill px-4 shadow-sm d-flex align-items-center gap-2" 
             (click)="submitInlinePost('publish')"
             [disabled]="isSubmittingInlinePost">
-            <span>Publish</span>
-            <i *ngIf="isSubmittingInlinePost" class="spinner-border spinner-border-sm"></i>
+            <span>{{ isSubmittingInlinePost ? 'Publishing...' : 'Publish' }}</span>
           </button>
         </div>
       </div>
@@ -174,6 +173,21 @@
   </div>
   }
 
+</div>
+} @else {
+<!-- 1. UNAUTHENTICATED WELCOME BANNER CARD -->
+<div class="fitjoin-welcome-card card border-0 mb-4 shadow-sm" data-aos="fade-down" data-aos-easing="linear">
+  <div class="card-body p-4 p-md-5 text-center">
+    <small class="welcome-subtitle text-uppercase mb-2 d-block">
+      — HELLO FROM THE TEAM —
+    </small>
+    <h2 class="welcome-heading mb-2">
+      YOU <span class="highlight-underline">FOUND<svg class="hand-underline" viewBox="0 0 140 10" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 7C35 3 105 2 138 7" stroke="var(--green-color, #87bf17)" stroke-width="4.5" stroke-linecap="round"/></svg></span> US.
+    </h2>
+    <p class="welcome-desc mb-0">
+      And we're really glad you did.
+    </p>
+  </div>
 </div>
 }
 
@@ -311,8 +325,11 @@
 <!-- 3. FEED CARDS LIST -->
 <div class="fitjoin-feed-list d-flex flex-column gap-4">
 
+  <!-- Skeletons during Initial Feed Load -->
+  <app-post-card-skeleton *ngIf="isLoadingPosts && !posts" [count]="3"></app-post-card-skeleton>
+
   <!-- Empty Feed Card -->
-  @if (filteredPosts.length === 0) {
+  @if (!isLoadingPosts && filteredPosts.length === 0) {
     <div class="empty-feed-card card border-0 text-center py-5 px-4 shadow-sm">
       <div class="card-body">
         <div class="empty-icon-wrap mb-3 mx-auto d-flex align-items-center justify-content-center rounded-circle">
@@ -398,6 +415,15 @@
               </a>
               <a href="javascript:void(0)" (click)="openShareModal(postsData.postId)" data-bs-toggle="modal" data-bs-target="#sharePostModal" class="dropdown-item py-2">
                 <i class="bi bi-share me-2 text-secondary"></i> Share Link
+              </a>
+              <a *ngIf="userId > 0 && postsData.userId !== userId" href="javascript:void(0)" 
+                 class="dropdown-item py-2"
+                 [ngClass]="reportService.isPostReported(postsData.postId) ? 'text-muted disabled opacity-75' : 'text-danger'"
+                 (click)="!reportService.isPostReported(postsData.postId) && (selectedPostId = postsData.postId)" 
+                 [attr.data-bs-toggle]="!reportService.isPostReported(postsData.postId) ? 'modal' : null" 
+                 [attr.data-bs-target]="!reportService.isPostReported(postsData.postId) ? '#postReportModal' : null">
+                <i class="bi me-2" [class.bi-flag]="!reportService.isPostReported(postsData.postId)" [class.bi-flag-fill]="reportService.isPostReported(postsData.postId)" [class.text-warning]="reportService.isPostReported(postsData.postId)"></i> 
+                {{ reportService.isPostReported(postsData.postId) ? 'Reported' : 'Report Post' }}
               </a>
             </div>
           </div>
@@ -624,8 +650,7 @@
       <div class="modal-footer border-top px-4 py-3">
         <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn btn-brand-primary btn-sm rounded-pill px-4" (click)="submitPoll()" [disabled]="isSubmittingPoll">
-          <span *ngIf="!isSubmittingPoll">Launch Poll</span>
-          <span *ngIf="isSubmittingPoll" class="spinner-border spinner-border-sm"></span>
+          <span>{{ isSubmittingPoll ? 'Launching...' : 'Launch Poll' }}</span>
         </button>
       </div>
     </div>
@@ -665,9 +690,15 @@
 
         <!-- AI Output Box -->
         <div class="ai-output-box p-3 rounded-3 mb-3" style="min-height: 150px; background: var(--form-control, #f0f2f5);">
-          <div *ngIf="isAiAnalyzing" class="text-center py-4">
-            <div class="spinner-border spinner-border-sm text-mint mb-2" role="status"></div>
-            <p class="text-muted fs-8 mb-0">Analyzing post insights with FitMind AI...</p>
+          <div *ngIf="isAiAnalyzing" class="d-flex flex-column gap-2 py-2">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <app-skeleton variant="circular" width="20px" height="20px"></app-skeleton>
+              <app-skeleton variant="text" width="180px" height="14px"></app-skeleton>
+            </div>
+            <app-skeleton variant="text" width="95%" height="13px"></app-skeleton>
+            <app-skeleton variant="text" width="88%" height="13px"></app-skeleton>
+            <app-skeleton variant="text" width="75%" height="13px"></app-skeleton>
+            <app-skeleton variant="text" width="50%" height="13px"></app-skeleton>
           </div>
           <div *ngIf="!isAiAnalyzing && aiAnalysisResult" [innerHTML]="aiAnalysisResult | markdown"></div>
         </div>
@@ -694,3 +725,5 @@
     </div>
   </div>
 </div>
+
+<app-report-modal [modalId]="'postReportModal'" [targetType]="'post'" [targetId]="selectedPostId"></app-report-modal>

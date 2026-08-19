@@ -127,7 +127,7 @@
 
             <!-- Live Status Indicators -->
             <div class="position-absolute top-50 end-0 translate-middle-y me-3 d-flex align-items-center">
-              <span *ngIf="isCheckingUniqueName" class="spinner-border spinner-border-sm text-mint" role="status" aria-hidden="true"></span>
+              <i *ngIf="isCheckingUniqueName" class="bi bi-arrow-repeat fs-6 text-mint spin-icon"></i>
               <i *ngIf="!isCheckingUniqueName && !isTaken && profileForm.get('uniqueName')?.valid && profileForm.get('uniqueName')?.dirty" class="bi bi-check-circle-fill text-success fs-5"></i>
               <i *ngIf="!isCheckingUniqueName && isTaken" class="bi bi-x-circle-fill text-danger fs-5"></i>
             </div>

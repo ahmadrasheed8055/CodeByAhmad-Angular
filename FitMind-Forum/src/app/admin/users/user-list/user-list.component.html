@@ -1,0 +1,116 @@
+<div class="admin-module-container">
+  <!-- Module Header -->
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">App Users Management</h2>
+      <p class="module-subtitle">Inspect registered community members, verify accounts, and manage moderation status.</p>
+    </div>
+  </div>
+
+  <!-- Filter & Search Toolbar -->
+  <div class="admin-card">
+    <div class="toolbar-wrapper">
+      <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search by username, email, handle..." class="admin-input">
+      </div>
+
+      <div class="filter-actions">
+        <select (change)="onFilterChange($event)" class="admin-select">
+          <option value="">All Statuses</option>
+          <option value="1">Active</option>
+          <option value="2">Suspended</option>
+          <option value="3">Banned</option>
+        </select>
+        <button (click)="onSearch()" class="btn-admin-primary">
+          <i class="bi bi-funnel-fill"></i>
+          <span>Search</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+      <table class="admin-data-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Email</th>
+            <th>Joined</th>
+            <th>Posts</th>
+            <th>Status</th>
+            <th class="text-end">Moderation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="6" class="table-loader-cell">
+              <div class="admin-spinner"></div>
+              <span>Loading user records...</span>
+            </td>
+          </tr>
+
+          <tr *ngFor="let user of users" [class.hidden]="isLoading">
+            <td>
+              <div class="user-cell">
+                <img class="user-avatar-img" [src]="user.profilePhoto ? 'data:image/jpeg;base64,' + user.profilePhoto : 'img/avatar/default.png'" alt="">
+                <div>
+                  <div class="user-name">{{ user.username }}</div>
+                  <div class="user-sub" *ngIf="user.uniqueName">&#64;{{ user.uniqueName }}</div>
+                </div>
+              </div>
+            </td>
+            <td><code class="email-code">{{ user.email }}</code></td>
+            <td class="text-muted">{{ user.joinedDate | date:'mediumDate' }}</td>
+            <td><span class="badge-count">{{ user.postCount || 0 }}</span></td>
+            <td>
+              <span *ngIf="user.status === 1" class="status-pill status-active">Active</span>
+              <span *ngIf="user.status === 2" class="status-pill status-suspended">Suspended</span>
+              <span *ngIf="user.status === 3" class="status-pill status-banned">Banned</span>
+              <span *ngIf="user.isDeleted" class="status-pill status-deleted">Deleted</span>
+            </td>
+            <td class="text-end">
+              <div class="action-buttons-group">
+                <button *ngIf="user.status !== 1" (click)="updateStatus(user, 1)" class="btn-action-mint" title="Activate Account">
+                  <i class="bi bi-check-circle"></i> Activate
+                </button>
+                <button *ngIf="user.status === 1" (click)="updateStatus(user, 2)" class="btn-action-warn" title="Suspend Account">
+                  <i class="bi bi-pause-circle"></i> Suspend
+                </button>
+                <button *ngIf="user.status !== 3" (click)="updateStatus(user, 3)" class="btn-action-danger" title="Ban Account">
+                  <i class="bi bi-slash-circle"></i> Ban
+                </button>
+                <button (click)="deleteUser(user)" class="btn-action-delete" title="Permanently Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="!isLoading && users.length === 0">
+            <td colspan="6" class="table-empty-cell">
+              <i class="bi bi-people text-muted"></i>
+              <p>No user accounts matched your query.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div *ngIf="totalPages > 1" class="pagination-footer">
+      <div class="pagination-summary">
+        Showing <strong>{{ ((page - 1) * pageSize) + 1 }}</strong> to <strong>{{ page * pageSize > totalItems ? totalItems : page * pageSize }}</strong> of <strong>{{ totalItems }}</strong> users
+      </div>
+      <div class="pagination-controls">
+        <button [disabled]="page === 1" (click)="changePage(page - 1)" class="btn-pagination">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="pagination-badge">Page {{ page }} of {{ totalPages }}</span>
+        <button [disabled]="page === totalPages" (click)="changePage(page + 1)" class="btn-pagination">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

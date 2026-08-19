@@ -8,10 +8,11 @@ import { Subscription } from 'rxjs';
 import { MasterService } from '../../Shared/master.service';
 import { CategoryFilterService, CategoryStats } from '../../Shared/category-filter.service';
 import { ICategories } from './../../Model/categories';
+import { ListItemSkeletonComponent } from '../../Shared/skeleton';
 
 @Component({
   selector: 'app-categories',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ListItemSkeletonComponent],
   standalone: true,
   templateUrl: './categories.component.html',
   styleUrls: ['./categories.component.css']

@@ -193,12 +193,7 @@
         <!-- Example draft list -->
         <div class="list-group" style="max-height: 400px; overflow-y: auto;">
           @if (IsdraftedPostAvailable) {
-          <div *ngIf="draftedPosts == null" class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-2 text-muted">Loading drafts...</p>
-          </div>
+          <app-list-item-skeleton *ngIf="draftedPosts == null" type="draft" [count]="3"></app-list-item-skeleton>
           @for (dPost of draftedPosts; track $index) {
 
           <div class="list-group-item d-flex justify-content-between align-items-start py-3 px-3">

@@ -1,0 +1,89 @@
+<div class="admin-module-container">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Community Polls Management</h2>
+      <p class="module-subtitle">Inspect user-generated voting polls, monitor option counts, and review tally distributions.</p>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="toolbar-wrapper">
+      <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search polls by question or discussion title..." class="admin-input">
+      </div>
+      <button (click)="onSearch()" class="btn-admin-primary">
+        <i class="bi bi-search"></i>
+        <span>Search</span>
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="admin-data-table">
+        <thead>
+          <tr>
+            <th>Poll Question</th>
+            <th>Parent Discussion</th>
+            <th>Total Votes</th>
+            <th>Created Date</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="5" class="table-loader-cell">
+              <div class="admin-spinner"></div>
+              <span>Loading polls...</span>
+            </td>
+          </tr>
+
+          <tr *ngFor="let poll of polls" [class.hidden]="isLoading">
+            <td>
+              <div class="poll-question-cell">
+                <i class="bi bi-bar-chart-fill text-purple"></i>
+                <span class="poll-question">{{ poll.question }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="parent-post-title" [title]="poll.parentPostTitle">{{ poll.parentPostTitle || 'Stand-alone Poll' }}</span>
+            </td>
+            <td>
+              <span class="badge-votes">{{ poll.totalVotes || 0 }} votes</span>
+            </td>
+            <td class="text-muted">{{ poll.createdAt | date:'mediumDate' }}</td>
+            <td class="text-end">
+              <div class="action-buttons-group">
+                <button (click)="deletePoll(poll)" class="btn-action-delete" title="Delete Poll">
+                  <i class="bi bi-trash"></i> Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="!isLoading && polls.length === 0">
+            <td colspan="5" class="table-empty-cell">
+              <i class="bi bi-pie-chart text-muted"></i>
+              <p>No community polls found matching your search.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div *ngIf="totalPages > 1" class="pagination-footer">
+      <div class="pagination-summary">
+        Showing <strong>{{ ((page - 1) * pageSize) + 1 }}</strong> to <strong>{{ page * pageSize > totalItems ? totalItems : page * pageSize }}</strong> of <strong>{{ totalItems }}</strong> polls
+      </div>
+      <div class="pagination-controls">
+        <button [disabled]="page === 1" (click)="changePage(page - 1)" class="btn-pagination">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="pagination-badge">Page {{ page }} of {{ totalPages }}</span>
+        <button [disabled]="page === totalPages" (click)="changePage(page + 1)" class="btn-pagination">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

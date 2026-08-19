@@ -27,11 +27,12 @@ import {
   PostComment,
   AddCommentRequest
 } from '../../../Model/comment.interface';
+import { CommentSkeletonComponent } from '../../../Shared/skeleton';
 
 @Component({
   selector: 'app-comments',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, CommentSkeletonComponent],
   templateUrl: './comments.component.html',
   styleUrls: ['./comments.component.css'],
 })

@@ -26,11 +26,14 @@ import { debug } from 'node:console';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { CommentsComponent } from '../../posts/comments/comments.component';
 import { PollCardComponent } from '../../posts/poll-card/poll-card.component';
+import { ProfileSkeletonComponent, PostCardSkeletonComponent } from '../../../Shared/skeleton';
+import { ReportModalComponent } from '../../../Shared/components/report-modal/report-modal.component';
+import { ReportService } from '../../../Shared/report.service';
 
 @Component({
   selector: 'app-profile-view',
   standalone: true,
-  imports: [DatePipe, CommonModule, ReactiveFormsModule, CommentsComponent, RouterModule, PollCardComponent],
+  imports: [DatePipe, CommonModule, ReactiveFormsModule, CommentsComponent, RouterModule, PollCardComponent, ProfileSkeletonComponent, PostCardSkeletonComponent, ReportModalComponent],
   templateUrl: './profile-view.component.html',
   styleUrl: './profile-view.component.css',
 })
@@ -40,6 +43,7 @@ export class ProfileViewComponent {
   // masterService = Inject(MasterService);
   userPosts: GetUserPostsDTO[] = [];
   postsLoader: boolean = false;
+  isProfileLoading: boolean = true;
 
   isCommentsVisibleMap: { [key: number]: boolean } = {};
   commentCounts: { [key: number]: number } = {};
@@ -196,7 +200,8 @@ export class ProfileViewComponent {
   constructor(
     public authService: AuthService,
     private masterService: MasterService,
-    private snackBar: SnackBarServiceService
+    private snackBar: SnackBarServiceService,
+    public reportService: ReportService
   ) {}
 
   ngOnInit(): void {
@@ -218,9 +223,11 @@ export class ProfileViewComponent {
         }
 
         // Fetch the user's profile info
+        this.isProfileLoading = true;
         this.masterService.getAppUser(this.profileUserId).subscribe({
           next: (user: PublicAppUserDTO) => {
             this.user = user;
+            this.isProfileLoading = false;
             // Also need to fetch background and profile photos using existing APIs
             this.masterService.getProfilePicture(this.profileUserId).subscribe({
               next: (pic: any) => { this.userPhotos = { ...this.userPhotos, profilePhoto: pic ? `data:image/jpeg;base64,${pic}` : '' }; },
@@ -233,7 +240,8 @@ export class ProfileViewComponent {
             this.loadPostsForTab(this.activeTab);
           },
           error: () => {
-            this.router.navigate(['/error?status=404']);
+            this.isProfileLoading = false;
+            this.router.navigate(['/error'], { queryParams: { status: 404 } });
           }
         });
       })
@@ -406,6 +414,13 @@ export class ProfileViewComponent {
     inputElement.select();
     document.execCommand('copy');
     this.snackBar.showSuccess('Link copied to clipboard!');
+  }
+
+  copyProfileLink() {
+    const link = window.location.origin + '/profile/' + this.profileUserId;
+    navigator.clipboard.writeText(link).then(() => {
+      this.snackBar.showSuccess('Profile link copied to clipboard!');
+    });
   }
 
   ngOnDestroy(): void {

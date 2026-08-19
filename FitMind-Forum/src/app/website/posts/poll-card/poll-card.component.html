@@ -40,21 +40,34 @@
         {{ post?.isFollowingAuthor ? 'Following' : 'Follow' }}
       </button>
 
-      <a *ngIf="loggedInUserId === post?.userId" class="dropdown-toggle text-muted fs-5 text-decoration-none p-1 ms-1" href="javascript:void(0)" data-bs-toggle="dropdown">
+      <a *ngIf="loggedInUserId > 0" class="dropdown-toggle text-muted fs-5 text-decoration-none p-1 ms-1" href="javascript:void(0)" data-bs-toggle="dropdown">
         <i class="bi bi-three-dots"></i>
       </a>
-      <div class="dropdown-menu dropdown-menu-end shadow border-0">
-        <a class="dropdown-item py-2" href="javascript:void(0)" (click)="togglePin()">
-          <i class="bi me-2 text-secondary" [ngClass]="poll.isPinned ? 'bi-pin-angle' : 'bi-pin-fill'"></i> 
-          <span class="text-dark">{{ poll.isPinned ? 'Unpin Poll' : 'Pin Poll' }}</span>
+      <div class="dropdown-menu dropdown-menu-end shadow border-0" *ngIf="loggedInUserId > 0">
+        <ng-container *ngIf="loggedInUserId === post?.userId">
+          <a class="dropdown-item py-2" href="javascript:void(0)" (click)="togglePin()">
+            <i class="bi me-2 text-secondary" [ngClass]="poll.isPinned ? 'bi-pin-angle' : 'bi-pin-fill'"></i> 
+            <span class="text-dark">{{ poll.isPinned ? 'Unpin Poll' : 'Pin Poll' }}</span>
+          </a>
+          <a class="dropdown-item" href="javascript:void(0)" (click)="toggleClose()">
+            <i class="bi me-2 text-dark" [ngClass]="poll.isClosed ? 'bi-door-open' : 'bi-door-closed'"></i> 
+            <span class="text-dark">{{ poll.isClosed ? 'Reopen Poll' : 'Close Poll' }}</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item text-danger" href="javascript:void(0)" (click)="deletePoll()">
+            <i class="bi bi-trash me-2"></i> Delete Poll
+          </a>
+        </ng-container>
+        
+        <a class="dropdown-item py-2" href="javascript:void(0)" (click)="openShareModal()">
+          <i class="bi bi-link-45deg me-2 text-secondary"></i> Copy url
         </a>
-        <a class="dropdown-item" href="javascript:void(0)" (click)="toggleClose()">
-          <i class="bi me-2 text-dark" [ngClass]="poll.isClosed ? 'bi-door-open' : 'bi-door-closed'"></i> 
-          <span class="text-dark">{{ poll.isClosed ? 'Reopen Poll' : 'Close Poll' }}</span>
-        </a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item text-danger" href="javascript:void(0)" (click)="deletePoll()">
-          <i class="bi bi-trash me-2"></i> Delete Poll
+        <a *ngIf="loggedInUserId !== post?.userId" class="dropdown-item py-2" href="javascript:void(0)" 
+           [ngClass]="reportService.isPollReported(poll.pollId) ? 'text-muted disabled opacity-75' : 'text-danger'"
+           [attr.data-bs-toggle]="!reportService.isPollReported(poll.pollId) ? 'modal' : null" 
+           [attr.data-bs-target]="!reportService.isPollReported(poll.pollId) ? '#pollReportModal' : null">
+          <i class="bi me-2" [class.bi-flag]="!reportService.isPollReported(poll.pollId)" [class.bi-flag-fill]="reportService.isPollReported(poll.pollId)" [class.text-warning]="reportService.isPollReported(poll.pollId)"></i> 
+          {{ reportService.isPollReported(poll.pollId) ? 'Reported' : 'Report Poll' }}
         </a>
       </div>
     </div>
@@ -76,7 +89,6 @@
   <div class="d-flex gap-2">
     <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" (click)="cancelDelete()">Cancel</button>
     <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" (click)="confirmDeletePoll()" [disabled]="isDeletingPoll">
-      <span class="spinner-border spinner-border-sm me-1" *ngIf="isDeletingPoll"></span>
       {{ isDeletingPoll ? 'Deleting...' : 'Delete' }}
     </button>
   </div>
@@ -134,8 +146,7 @@
                 (click)="addCustomOption()"
                 [disabled]="!customOptionText.trim() || isAddingOption"
                 title="Add Option">
-          <i class="bi bi-plus-lg" *ngIf="!isAddingOption"></i>
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="isAddingOption"></span>
+          <i class="bi" [ngClass]="isAddingOption ? 'bi-hourglass-split' : 'bi-plus-lg'"></i>
         </button>
       </div>
     </div>
@@ -149,5 +160,9 @@
       <span *ngIf="poll.isExpired" class="text-danger"><i class="bi bi-clock-history me-1"></i> Expired</span>
       <span *ngIf="!poll.isExpired"><i class="bi bi-clock-history me-1"></i> Ends {{ poll.expiresAt | date:'shortDate' }}</span>
     </span>
-  </div>
 </div>
+
+<!-- Hidden dummy input for copyUrl if needed, or we just write it directly to clipboard -->
+<input type="text" [value]="shareLink" #shareInput style="position: absolute; left: -9999px;">
+
+<app-report-modal [modalId]="'pollReportModal'" [targetType]="'poll'" [targetId]="poll.pollId"></app-report-modal>

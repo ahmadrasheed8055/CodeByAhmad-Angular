@@ -1,0 +1,112 @@
+<div class="admin-module-container">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Posts & Comments Moderation</h2>
+      <p class="module-subtitle">Manage community discussions, review media attachments, and control post visibility.</p>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="toolbar-wrapper">
+      <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Search discussions by title, author..." class="admin-input">
+      </div>
+
+      <div class="filter-actions">
+        <select (change)="onFilterChange($event)" class="admin-select">
+          <option value="">All Visibility</option>
+          <option value="true">Live / Published</option>
+          <option value="false">Hidden / Moderated</option>
+        </select>
+        <button (click)="onSearch()" class="btn-admin-primary">
+          <i class="bi bi-funnel-fill"></i>
+          <span>Filter</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="admin-data-table">
+        <thead>
+          <tr>
+            <th>Discussion Title & Content</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Engagement</th>
+            <th>Visibility</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="6" class="table-loader-cell">
+              <div class="admin-spinner"></div>
+              <span>Fetching discussions...</span>
+            </td>
+          </tr>
+
+          <tr *ngFor="let post of posts" [class.hidden]="isLoading">
+            <td>
+              <div class="post-preview-cell">
+                <div class="post-title">{{ post.title }}</div>
+                <div class="post-snippet text-muted" [title]="post.snippet">{{ post.snippet || 'No description provided.' }}</div>
+              </div>
+            </td>
+            <td>
+              <div class="author-tag"><i class="bi bi-person-fill text-muted"></i> {{ post.authorName }}</div>
+            </td>
+            <td>
+              <span class="badge-category">{{ post.categoryName }}</span>
+            </td>
+            <td>
+              <div class="engagement-metrics">
+                <span><i class="bi bi-heart-fill text-red"></i> {{ post.reactionCount || 0 }}</span>
+                <span><i class="bi bi-chat-dots-fill text-blue"></i> {{ post.commentCount || 0 }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-pill" [class.status-active]="post.isPublished" [class.status-suspended]="!post.isPublished">
+                {{ post.isPublished ? 'Live' : 'Hidden' }}
+              </span>
+            </td>
+            <td class="text-end">
+              <div class="action-buttons-group">
+                <button (click)="toggleVisibility(post)" class="btn-action-mint" [title]="post.isPublished ? 'Hide Post' : 'Publish Post'">
+                  <i class="bi" [ngClass]="post.isPublished ? 'bi-eye-slash' : 'bi-eye'"></i>
+                  <span>{{ post.isPublished ? 'Hide' : 'Publish' }}</span>
+                </button>
+                <button (click)="deletePost(post)" class="btn-action-delete" title="Permanently Delete Post">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="!isLoading && posts.length === 0">
+            <td colspan="6" class="table-empty-cell">
+              <i class="bi bi-chat-square-text text-muted"></i>
+              <p>No posts found matching the filter criteria.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div *ngIf="totalPages > 1" class="pagination-footer">
+      <div class="pagination-summary">
+        Showing <strong>{{ ((page - 1) * pageSize) + 1 }}</strong> to <strong>{{ page * pageSize > totalItems ? totalItems : page * pageSize }}</strong> of <strong>{{ totalItems }}</strong> posts
+      </div>
+      <div class="pagination-controls">
+        <button [disabled]="page === 1" (click)="changePage(page - 1)" class="btn-pagination">
+          <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="pagination-badge">Page {{ page }} of {{ totalPages }}</span>
+        <button [disabled]="page === totalPages" (click)="changePage(page + 1)" class="btn-pagination">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

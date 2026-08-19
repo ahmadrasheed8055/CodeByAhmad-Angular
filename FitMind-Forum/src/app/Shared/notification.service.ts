@@ -48,40 +48,14 @@ export class NotificationService {
 
     this.pollBackendData();
 
+    // Poll lightweight user notifications every 20s
     setInterval(() => {
       this.pollBackendData();
-    }, 10000);
+    }, 20000);
   }
 
   private pollBackendData() {
     const currentUserId = this.authService.userIdExists() || Number(sessionStorage.getItem('appUserId')) || 0;
-    
-    // Poll for New Posts count to show on the feed
-    this.masterService.getAllPosts(0, true).subscribe({
-      next: (posts) => {
-        if (!posts || !Array.isArray(posts)) return;
-
-        if (this.isFirstPoll) {
-          posts.forEach(p => {
-            if (p && p.postId) {
-              this.knownPostIds.add(p.postId);
-            }
-          });
-          this.isFirstPoll = false;
-        } else {
-          posts.forEach(post => {
-            if (!post || !post.postId) return;
-            if (!this.knownPostIds.has(post.postId)) {
-              this.knownPostIds.add(post.postId);
-              if (post.userId !== currentUserId) {
-                this.incrementNewContentCount();
-              }
-            }
-          });
-        }
-      },
-      error: () => {}
-    });
 
     // Poll for Backend Notifications (Likes, Comments, Replies)
     if (currentUserId > 0) {

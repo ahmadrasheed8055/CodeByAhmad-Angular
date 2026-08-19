@@ -363,113 +363,128 @@
 }
 
 /* ==============================================
-   3. NOTIFICATION & DROPDOWN MENUS (Compact & Direct)
+   3. NOTIFICATION & DROPDOWN MENUS
    ============================================== */
 .notification-dropdown {
-  width: 330px;
-  max-width: calc(100vw - 20px);
-  border-radius: 18px !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12) !important;
+  width: 360px !important;
+  max-width: calc(100vw - 24px) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
   border: 1px solid var(--border-color, #e2e8f0) !important;
-  background-color: #ffffff !important;
+  background-color: var(--theme-white, #ffffff) !important;
+  overflow: hidden !important;
 }
 
 :host-context([data-theme="dark"]) .notification-dropdown {
   background-color: #16171d !important;
   border-color: #2a2c35 !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45) !important;
+}
+
+.notification-list {
+  max-height: 380px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Custom Scrollbar for Notification List */
+.notification-list::-webkit-scrollbar {
+  width: 5px;
+}
+.notification-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.notification-list::-webkit-scrollbar-thumb {
+  background: var(--border-color, #cbd5e1);
+  border-radius: 4px;
 }
 
 .notif-header {
-  background: transparent;
+  border-bottom: 1px solid var(--border-color, #e2e8f0) !important;
+  background-color: var(--theme-white, #ffffff);
 }
 
-.notif-title {
-  color: var(--text-color, #1e1b4b);
-  letter-spacing: -0.2px;
+:host-context([data-theme="dark"]) .notif-header {
+  background-color: #16171d;
+  border-bottom-color: #2a2c35 !important;
 }
 
-.notif-see-all-btn {
-  color: #3b82f6 !important;
-  transition: color 0.2s ease;
+.bg-mint {
+  background-color: var(--green-color, #87bf17) !important;
+  color: #ffffff !important;
 }
 
-.notif-see-all-btn:hover {
-  color: #1d4ed8 !important;
+.text-mint {
+  color: var(--green-color, #87bf17) !important;
 }
 
-/* Notification Row Item */
+.notif-mark-read-btn {
+  transition: opacity 0.2s ease;
+}
+.notif-mark-read-btn:hover {
+  opacity: 0.8;
+}
+
 .notif-item {
   transition: background-color 0.2s ease;
-  white-space: normal;
   border-bottom: 1px solid var(--border-color, #f1f5f9) !important;
 }
 
+:host-context([data-theme="dark"]) .notif-item {
+  border-bottom-color: #262832 !important;
+}
+
 .notif-item:hover {
-  background-color: rgba(59, 130, 246, 0.04) !important;
+  background-color: var(--form-control, #f8fafc) !important;
+}
+
+:host-context([data-theme="dark"]) .notif-item:hover {
+  background-color: #22242d !important;
 }
 
 .notif-item.unread-item {
-  background-color: rgba(59, 130, 246, 0.05);
+  background-color: rgba(135, 191, 23, 0.07) !important;
 }
 
-/* Left Unread Blue Dot Indicator */
-.unread-blue-dot {
-  display: block;
-  width: 7px;
-  height: 7px;
+:host-context([data-theme="dark"]) .notif-item.unread-item {
+  background-color: rgba(135, 191, 23, 0.12) !important;
+}
+
+.unread-mint-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: var(--green-color, #87bf17);
+  border: 2px solid var(--theme-white, #ffffff);
   border-radius: 50%;
-  background-color: #3b82f6;
 }
 
-/* Accept / Decline Action Pill Buttons */
-.btn-accept-pill {
-  background-color: #3b82f6 !important;
+:host-context([data-theme="dark"]) .unread-mint-badge {
+  border-color: #16171d;
+}
+
+.notif-avatar-placeholder {
+  background: linear-gradient(135deg, #87bf17 0%, #5d8c07 100%) !important;
   color: #ffffff !important;
-  border: none !important;
-  border-radius: 8px !important;
-  padding: 4px 14px !important;
-  font-size: 0.78rem !important;
-  transition: all 0.2s ease !important;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2) !important;
+  font-weight: 700;
 }
 
-.btn-accept-pill:hover {
-  background-color: #2563eb !important;
-  transform: translateY(-1px);
+.btn-close-notif {
+  color: var(--text-muted, #94a3b8);
+  opacity: 0.5;
+  transition: opacity 0.2s ease, color 0.2s ease;
 }
 
-.btn-accept-pill:disabled {
-  background-color: #94a3b8 !important;
-  box-shadow: none !important;
-  cursor: default;
-}
-
-.btn-decline-pill {
-  background-color: #ffffff !important;
-  color: #475569 !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 8px !important;
-  padding: 4px 14px !important;
-  font-size: 0.78rem !important;
-  transition: all 0.2s ease !important;
-}
-
-.btn-decline-pill:hover {
-  background-color: #f8fafc !important;
-  color: #1e293b !important;
-  border-color: #94a3b8 !important;
-}
-
-.notif-delete-btn {
-  color: #cbd5e1;
-  transition: color 0.2s ease;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.notif-delete-btn:hover {
+.btn-close-notif:hover {
+  opacity: 1;
   color: #ef4444;
+}
+
+.btn-xs {
+  font-size: 0.75rem !important;
+  padding: 3px 12px !important;
 }
 
 .btn-mint {

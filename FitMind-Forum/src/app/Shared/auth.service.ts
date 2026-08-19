@@ -45,6 +45,24 @@ export class AuthService {
     const userId = sessionStorage.getItem('appUserId');
     if (userId) {
       this.setAppUserId(Number(userId));
+      
+      // Load cached user object immediately for instant UI
+      const cachedUser = sessionStorage.getItem('cached_app_user');
+      if (cachedUser) {
+        try {
+          this.appUser.next(JSON.parse(cachedUser));
+        } catch (_) {}
+      }
+
+      // Load cached profile photo immediately for 0ms avatar rendering
+      const cachedPhoto = sessionStorage.getItem('cached_profile_photo');
+      const cachedBg = sessionStorage.getItem('cached_bg_photo');
+      if (cachedPhoto || cachedBg) {
+        const initialPhotos = new AppUserPhotos();
+        if (cachedPhoto) initialPhotos.profilePhoto = cachedPhoto;
+        if (cachedBg) initialPhotos.backgroundPhoto = cachedBg;
+        this.appUserPhotos.next(initialPhotos);
+      }
     }
     this.setAppUser();
   }
@@ -70,6 +88,8 @@ export class AuthService {
     this.masterServices.getAppUser(numericUserId).subscribe({
       next: (user) => {
         this.appUser.next(user);
+        sessionStorage.setItem('cached_app_user', JSON.stringify(user));
+        
         // store username in session storage as well (supports userName or username)
         const name = (user as any).userName || (user as any).username || '';
         if (name) {
@@ -80,17 +100,22 @@ export class AuthService {
       error: (err) => {
         console.error('Error fetching user:', err);
 
-        // Check for Unauthorized error
         if (err.status === 401) {
           console.warn('Token expired or user not authenticated.');
-
-          // Remove token and logout
-          sessionStorage.clear();
-          this.router.navigate(['']);
-        } else {
-          // Remove token and logout
-          sessionStorage.clear();
-          this.router.navigate(['']);
+          // Remove only app user tokens, not admin tokens
+          sessionStorage.removeItem('appUserId');
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('username');
+          sessionStorage.removeItem('cached_app_user');
+          sessionStorage.removeItem('cached_profile_photo');
+          sessionStorage.removeItem('cached_bg_photo');
+          
+          // Only redirect to home if on a protected route and not on an admin route
+          const protectedRoutes = ['/profile-setting', '/profile-view', '/add-post', '/user-posts'];
+          const currentUrl = this.router.url;
+          if (protectedRoutes.some(route => currentUrl.startsWith(route)) && !currentUrl.startsWith('/admin')) {
+            this.router.navigate(['/home']);
+          }
         }
       },
     });
@@ -119,32 +144,43 @@ export class AuthService {
   //==========Updating user =====================
   updateUserData(updatedUser: PublicAppUserDTO) {
     this.appUser.next(updatedUser); // Update the BehaviorSubject
+    sessionStorage.setItem('cached_app_user', JSON.stringify(updatedUser));
   }
   private getStoredUser(): PublicAppUserDTO | null {
     const userId = sessionStorage.getItem('appUserId');
     if (userId) {
       this.masterServices
         .getAppUser(Number(userId))
-        .subscribe((user) => this.appUser.next(user)); // ✅ Store user in BehaviorSubjectuserId)
+        .subscribe((user) => {
+          this.appUser.next(user);
+          sessionStorage.setItem('cached_app_user', JSON.stringify(user));
+        });
     }
     return null;
   }
 
   private getAppUserPhotos(userId: number): void {
-    const photosObj = new AppUserPhotos();
+    const currentPhotos = this.appUserPhotos.value || new AppUserPhotos();
+    const photosObj = { ...currentPhotos };
 
     this.masterServices.getProfilePicture(userId).subscribe({
       next: (image) => {
-        photosObj.profilePhoto = `data:image/jpeg;base64,${image}`;
-        this.updateAppUserPhotos(photosObj);
+        if (image) {
+          photosObj.profilePhoto = `data:image/jpeg;base64,${image}`;
+          sessionStorage.setItem('cached_profile_photo', photosObj.profilePhoto);
+          this.updateAppUserPhotos(photosObj);
+        }
       },
       error: (err) => console.error('Error fetching profile photo:', err),
     });
 
     this.masterServices.getBackgroundPicture(userId).subscribe({
       next: (image) => {
-        photosObj.backgroundPhoto = `data:image/jpeg;base64,${image}`;
-        this.updateAppUserPhotos(photosObj);
+        if (image) {
+          photosObj.backgroundPhoto = `data:image/jpeg;base64,${image}`;
+          sessionStorage.setItem('cached_bg_photo', photosObj.backgroundPhoto);
+          this.updateAppUserPhotos(photosObj);
+        }
       },
       error: (err) => console.error('Error fetching background photo:', err),
     });
@@ -241,6 +277,7 @@ export class AuthService {
     this.setAppUserId(0); // reset app user ID
     this.appUserId.next(0); // clear BehaviorSubject
     this.appUser.next(null); // clear app user data
+    this.appUserPhotos.next(null); // clear photos data
     this.appPosts.next(null); // clear app posts data
     this.snackBarService.showSuccess('Logout successfully!');
     this.router.navigate(['/']);

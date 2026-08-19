@@ -1,3 +1,6 @@
+<!-- Loading Skeletons -->
+<app-comment-skeleton *ngIf="isLoading" [count]="3"></app-comment-skeleton>
+
 <div class="comments-wrapper" *ngIf="!isLoading">
   <!-- Collapsible Comments List -->
   <div class="comments-list-section" *ngIf="showCommentsList">
@@ -131,8 +134,7 @@
                       (click)="submitReply(comment)"
                       *ngIf="userId"
                       title="Send Reply">
-                <i class="bi bi-send-fill" *ngIf="!isSubmitting"></i>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="isSubmitting"></span>
+                <i class="bi" [ngClass]="isSubmitting ? 'bi-hourglass-split' : 'bi-send-fill'"></i>
               </button>
               <button class="send-icon-btn border-0 bg-transparent text-muted ms-2 p-0 locked"
                       (click)="handleInputFocus()"
@@ -191,8 +193,7 @@
                 [disabled]="!newCommentText.trim() || isSubmitting"
                 *ngIf="userId"
                 title="Send Comment">
-          <i class="bi bi-send-fill" *ngIf="!isSubmitting"></i>
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="isSubmitting"></span>
+          <i class="bi" [ngClass]="isSubmitting ? 'bi-hourglass-split' : 'bi-send-fill'"></i>
         </button>
         <!-- Lock icon when not logged in -->
         <button class="send-icon-btn d-flex align-items-center justify-content-center locked"

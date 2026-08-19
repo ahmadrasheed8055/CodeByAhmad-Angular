@@ -9,16 +9,39 @@ import {
 import { HttpInterceptor, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { TokenInterceptor } from './token.interceptor';
-import { loaderInterceptor } from './loader.interceptor';
+import { SocialAuthServiceConfig, GoogleLoginProvider } from '@abacritt/angularx-social-login';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(withInterceptors([loaderInterceptor, TokenInterceptor]) ,
+    provideHttpClient(withInterceptors([TokenInterceptor]) ,
       withFetch()),
     provideAnimations(),
-    provideToastr(),
+    provideToastr({
+      closeButton: true,
+      timeOut: 4000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+    }),
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '258112102687-v0tu36ul8686e791ghtvg3rqljars5p1.apps.googleusercontent.com'
+            )
+          }
+        ],
+        onError: (err) => {
+          console.error(err);
+        }
+      } as SocialAuthServiceConfig,
+    }
   ],
 };

@@ -1,0 +1,112 @@
+<div class="admin-module-container relative">
+  <div class="module-header">
+    <div>
+      <h2 class="module-title">Categories Manager</h2>
+      <p class="module-subtitle">Organize forum discussions, create new fitness topics, and maintain taxonomy slugs.</p>
+    </div>
+    <button (click)="openCreateModal()" class="btn-admin-primary">
+      <i class="bi bi-plus-lg"></i>
+      <span>Add Category</span>
+    </button>
+  </div>
+
+  <div class="admin-card">
+    <div class="table-responsive">
+      <table class="admin-data-table">
+        <thead>
+          <tr>
+            <th>Category & Description</th>
+            <th>Slug Identifier</th>
+            <th>Discussions Count</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="isLoading">
+            <td colspan="4" class="table-loader-cell">
+              <div class="admin-spinner"></div>
+              <span>Loading categories taxonomy...</span>
+            </td>
+          </tr>
+
+          <tr *ngFor="let category of categories" [class.hidden]="isLoading">
+            <td>
+              <div class="category-item-cell">
+                <div class="category-icon-box">
+                  <i class="bi bi-tag-fill text-mint"></i>
+                </div>
+                <div>
+                  <div class="category-name">{{ category.name }}</div>
+                  <div class="category-desc text-muted">{{ category.description || 'No description added yet.' }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <code class="slug-badge">{{ category.slug || 'category-' + category.id }}</code>
+            </td>
+            <td>
+              <span class="badge-count">{{ category.postCount || 0 }} posts</span>
+            </td>
+            <td class="text-end">
+              <div class="action-buttons-group">
+                <button (click)="openEditModal(category)" class="btn-action-mint" title="Edit Category">
+                  <i class="bi bi-pencil-square"></i> Edit
+                </button>
+                <button (click)="deleteCategory(category)" class="btn-action-delete" title="Delete Category">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="!isLoading && categories.length === 0">
+            <td colspan="4" class="table-empty-cell">
+              <i class="bi bi-tags text-muted"></i>
+              <p>No categories found in the database.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Styled Modal Backdrop & Card -->
+  <div *ngIf="showModal" class="modal-backdrop-overlay">
+    <div class="admin-modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ isEditing ? 'Edit Category' : 'Create New Category' }}</h3>
+        <button (click)="closeModal()" class="btn-close-modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Category Name <span class="text-red">*</span></label>
+          <input type="text" [(ngModel)]="formData.name" placeholder="e.g. Strength Training, Nutrition" class="admin-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Slug Identifier <span class="form-hint">(Optional, auto-generated)</span></label>
+          <input type="text" [(ngModel)]="formData.slug" placeholder="e.g. strength-training" class="admin-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Image or Icon URL</label>
+          <input type="text" [(ngModel)]="formData.imageUrl" placeholder="https://..." class="admin-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea [(ngModel)]="formData.description" rows="3" placeholder="Brief summary of what members can discuss in this category..." class="admin-textarea"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="closeModal()" class="btn-modal-cancel">Cancel</button>
+        <button (click)="saveCategory()" class="btn-admin-primary">
+          <i class="bi bi-check2"></i>
+          <span>Save Category</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

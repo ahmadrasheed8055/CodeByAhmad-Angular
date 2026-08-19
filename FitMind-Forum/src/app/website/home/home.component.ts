@@ -1,12 +1,6 @@
 import { Component, inject, OnInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, PLATFORM_ID } from '@angular/core';
-import { HeroComponent } from '../hero/hero.component';
-import { CategoriesComponent } from '../categories/categories.component';
 import { FooterComponent } from '../footer/footer.component';
 import { Router, RouterModule } from '@angular/router';
-import {
-  NgxUiLoaderModule,
-  NgxUiLoaderHttpModule,
-} from 'ngx-ui-loader';
 import { PostsComponent } from '../posts/posts.component';
 import { MasterService } from '../../Shared/master.service';
 import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
@@ -14,6 +8,7 @@ import { GetUserPostsDTO } from '../../Model/GetUserPosts';
 import { AuthService } from '../../Shared/auth.service';
 import { Subscription } from 'rxjs';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { SkeletonComponent } from '../../Shared/skeleton';
 
 export interface CommunityMemberItem {
   id: number;
@@ -21,19 +16,24 @@ export interface CommunityMemberItem {
   avatarUrl: string;
 }
 
+export interface SuggestedFriendItem {
+  id: number;
+  username: string;
+  avatarUrl: string;
+  roleOrBio: string;
+  isFollowing: boolean;
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   imports: [
-    HeroComponent,
-    CategoriesComponent,
     FooterComponent,
     RouterModule,
-    NgxUiLoaderModule,
-    NgxUiLoaderHttpModule,
     CommonModule,
-    PostsComponent
+    PostsComponent,
+    SkeletonComponent
   ],
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -52,15 +52,28 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoggedIn: boolean = !!this.token && !!this.userId;
 
   communityMembers: CommunityMemberItem[] = [];
-  followingCount: number = 9;
+  suggestedFriends: SuggestedFriendItem[] = [];
+  allSuggestedFriends: SuggestedFriendItem[] = [];
+  showAllSuggestions: boolean = false;
+  followingCount: number = 0;
+  isLoadingCommunityMembers: boolean = true;
 
   postsSub!: Subscription;
 
   ngOnInit() {
     this.authService.appUserData$.subscribe((user) => {
-      if (user) {
-        this.followingCount = user.followingCount || 9;
+      if (user && typeof user.followingCount === 'number') {
+        this.followingCount = user.followingCount;
       }
+    });
+
+    // Re-load community members whenever user logs in or appUserId changes
+    this.authService.appUserId$.subscribe(() => {
+      this.loadCommunityMembers();
+    });
+
+    this.authService.loginSuccess$.subscribe(() => {
+      this.loadCommunityMembers();
     });
 
     this.loadCommunityMembers();
@@ -78,86 +91,123 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   loadCommunityMembers() {
+    this.isLoadingCommunityMembers = true;
     const currentUserId = Number(sessionStorage.getItem('appUserId')) || 0;
     
     // Fetch all posts from DB passing currentUserId to get live follow relationships
     this.MasterService.getAllPosts(currentUserId > 0 ? currentUserId : null, true).subscribe({
       next: (allPosts) => {
+        this.isLoadingCommunityMembers = false;
         if (allPosts && allPosts.length > 0) {
-          const userMap = new Map<number, CommunityMemberItem>();
+          const followedMap = new Map<number, CommunityMemberItem>();
+          const suggestedMap = new Map<number, SuggestedFriendItem>();
 
-          // 1. Try to collect users that the logged-in user actually follows in DB
-          if (currentUserId > 0) {
-            allPosts.forEach(p => {
-              if (p.userId && p.userName && p.userId !== currentUserId && p.isFollowingAuthor) {
-                if (!userMap.has(p.userId)) {
-                  const avatar = (p.userImage && p.userImage !== 'null' && p.userImage !== '') 
-                    ? 'data:image/jpeg;base64,' + p.userImage 
-                    : 'img/avatar/default.png';
-                  userMap.set(p.userId, {
+          allPosts.forEach(p => {
+            if (p.userId && p.userName && p.userId !== currentUserId) {
+              let avatar = 'img/avatar/default.png';
+              if (p.userImage && p.userImage !== 'null' && p.userImage.trim().length > 20) {
+                avatar = p.userImage.startsWith('data:') ? p.userImage : 'data:image/jpeg;base64,' + p.userImage;
+              }
+
+              const bio = p.categoryName ? `${p.categoryName} Enthusiast` : 'Active Community Member';
+
+              if (currentUserId > 0 && p.isFollowingAuthor) {
+                if (!followedMap.has(p.userId)) {
+                  followedMap.set(p.userId, {
                     id: p.userId,
                     username: p.userName,
                     avatarUrl: avatar
                   });
                 }
+              } else {
+                if (!suggestedMap.has(p.userId)) {
+                  suggestedMap.set(p.userId, {
+                    id: p.userId,
+                    username: p.userName,
+                    avatarUrl: avatar,
+                    roleOrBio: bio,
+                    isFollowing: false
+                  });
+                }
               }
-            });
-          }
+            }
+          });
 
-          // 2. If not logged in or user has no followed users in DB yet, show active community post authors from DB
-          if (userMap.size === 0) {
-            allPosts.forEach(p => {
-              if (p.userId && p.userName && p.userId !== currentUserId && !userMap.has(p.userId)) {
-                const avatar = (p.userImage && p.userImage !== 'null' && p.userImage !== '') 
-                  ? 'data:image/jpeg;base64,' + p.userImage 
-                  : 'img/avatar/default.png';
-                userMap.set(p.userId, {
-                  id: p.userId,
-                  username: p.userName,
-                  avatarUrl: avatar
-                });
-              }
-            });
-          }
+          this.communityMembers = Array.from(followedMap.values());
+          this.allSuggestedFriends = Array.from(suggestedMap.values());
+          this.updateVisibleSuggestedFriends();
 
-          this.communityMembers = Array.from(userMap.values());
-          this.followingCount = this.communityMembers.length;
+          if (currentUserId > 0) {
+            this.followingCount = this.communityMembers.length;
+          }
         } else {
           this.communityMembers = [];
+          this.suggestedFriends = [];
+          this.allSuggestedFriends = [];
           this.followingCount = 0;
         }
       },
       error: () => {
+        this.isLoadingCommunityMembers = false;
         this.communityMembers = [];
+        this.suggestedFriends = [];
+        this.allSuggestedFriends = [];
         this.followingCount = 0;
       }
     });
   }
 
-  ngAfterViewInit() {
-    if (isPlatformBrowser(this.platformId) && this.rightSidebarRef?.nativeElement) {
-      const el = this.rightSidebarRef.nativeElement;
-      this.updateSidebarHeight(el);
-
-      if (typeof ResizeObserver !== 'undefined') {
-        this.sidebarResizeObserver = new ResizeObserver(() => {
-          this.updateSidebarHeight(el);
-        });
-        this.sidebarResizeObserver.observe(el);
-      }
+  updateVisibleSuggestedFriends() {
+    if (this.showAllSuggestions) {
+      this.suggestedFriends = this.allSuggestedFriends.slice(0, 10);
+    } else {
+      this.suggestedFriends = this.allSuggestedFriends.slice(0, 4);
     }
   }
 
-  ngOnDestroy() {
-    if (this.sidebarResizeObserver) {
-      this.sidebarResizeObserver.disconnect();
+  toggleSeeAllSuggestions() {
+    this.showAllSuggestions = !this.showAllSuggestions;
+    this.updateVisibleSuggestedFriends();
+  }
+
+  followFriend(friend: SuggestedFriendItem) {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/']);
+      return;
+    }
+
+    if (friend.isFollowing) {
+      this.MasterService.unfollowUser(friend.id).subscribe({
+        next: () => {
+          friend.isFollowing = false;
+          this.communityMembers = this.communityMembers.filter(m => m.id !== friend.id);
+          this.followingCount = this.communityMembers.length;
+          this.snackBarService.showSuccess(`Unfollowed ${friend.username}`);
+        },
+        error: () => this.snackBarService.showError('Failed to unfollow user')
+      });
+    } else {
+      this.MasterService.followUser(friend.id).subscribe({
+        next: () => {
+          friend.isFollowing = true;
+          if (!this.communityMembers.some(m => m.id === friend.id)) {
+            this.communityMembers.push({
+              id: friend.id,
+              username: friend.username,
+              avatarUrl: friend.avatarUrl
+            });
+          }
+          this.followingCount = this.communityMembers.length;
+          this.snackBarService.showSuccess(`You are now following ${friend.username}!`);
+        },
+        error: () => this.snackBarService.showError('Failed to follow user')
+      });
     }
   }
 
-  private updateSidebarHeight(el: HTMLElement) {
-    const h = el.offsetHeight;
-    el.style.setProperty('--sidebar-height', `${h}px`);
-  }
+  ngAfterViewInit() {}
+
+  ngOnDestroy() {}
 
   logout() {
     sessionStorage.removeItem('appUserId');

@@ -1,25 +1,60 @@
-<div class="container">
-    <div class="row">
+<div class="error-page-wrapper">
+  <div class="error-backdrop-glow"></div>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-9">
+        <div class="error-card text-center p-4 p-md-5">
+          <!-- Status Badge -->
+          <div class="error-badge-pill mb-3">
+            <span class="badge-dot"></span>
+            <span>{{ errorBadge }}</span>
+          </div>
 
-        <div class="col-lg-8 col-md-8 offset-lg-2 offset-md-2 d-flex justify-content-center">
-            <div class="error-content aos-init aos-animate" data-aos="fade-up" data-aos-easing="linear">
-                @if(status == 404){
+          <!-- Big Status Number / Graphic -->
+          <div class="error-code-container mb-3">
+            @if (status === 404) {
+              <h1 class="error-code">4<span>0</span>4</h1>
+            } @else if (status === 500) {
+              <h1 class="error-code">5<span>0</span>0</h1>
+            } @else if (status === 400) {
+              <div class="error-icon-box">
+                <i class="fa fa-exclamation-triangle"></i>
+              </div>
+            } @else {
+              <div class="error-icon-box">
+                <i class="fa fa-info-circle"></i>
+              </div>
+            }
+          </div>
 
-                    <h1>4<span>0</span>4</h1>
-                    <h2>Token not found!</h2>
-                }@else if (status == 500 ) {
-                    <h2>Token not found!</h2>
-                    
-                }@else if (status == 400) {
-                    <h2>Token is missing!</h2>
-                }@else{
-                    <h2> {{message}} </h2>
-                }
-                <p>An error occurred while you trying to access the registration page. Please try again later.</p>
-                <a class="btn btn-mint w-100 mt-4"  (click)="goHome()" >Back To Home</a>
-            </div>
+          <!-- Title & Description -->
+          <h2 class="error-title mb-3">{{ errorTitle }}</h2>
+          <p class="error-description mb-4">
+            {{ errorDescription }}
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="error-actions d-flex flex-wrap justify-content-center gap-3">
+            <button class="btn btn-mint-action px-4 py-2" (click)="goHome()">
+              <i class="fa fa-home me-2"></i> Back To Home
+            </button>
+            <button class="btn btn-outline-action px-4 py-2" (click)="goBack()">
+              <i class="fa fa-arrow-left me-2"></i> Go Back
+            </button>
+            @if (status === 500) {
+              <button class="btn btn-outline-action px-4 py-2" (click)="refreshPage()">
+                <i class="fa fa-refresh me-2"></i> Refresh Page
+              </button>
+            }
+          </div>
+
+          <div class="error-footer-note mt-4 pt-3">
+            <p class="text-muted small mb-0">
+              Need assistance? Check our <a routerLink="/home" class="support-link">FitMind Community</a> or ask our AI Assistant anytime.
+            </p>
+          </div>
         </div>
-
+      </div>
     </div>
-
+  </div>
 </div>

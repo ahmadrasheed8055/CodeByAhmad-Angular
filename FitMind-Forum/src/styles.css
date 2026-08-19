@@ -5365,65 +5365,129 @@ a.close-list-item {
 
 
 /* Success Snackbar */
+/* ==========================================================================
+   Modern Material Snackbar Overhaul (Pill Design with Icons)
+   ========================================================================== */
+
+.mat-mdc-snack-bar-container,
+.mat-mdc-snack-bar-container.success-snackbar,
+.mat-mdc-snack-bar-container.error-snackbar,
+.mat-mdc-snack-bar-container.warning-snackbar,
+.mat-mdc-snack-bar-container.info-snackbar,
+.success-snackbar,
+.error-snackbar {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-top: 16px !important;
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  min-width: 320px !important;
+  max-width: 440px !important;
+  border-radius: 40px !important;
+  padding: 12px 24px 12px 56px !important;
+  position: relative !important;
+  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+  display: flex !important;
+  align-items: center !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__label {
+  font-family: var(--gen-font-family, 'Inter', sans-serif) !important;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  letter-spacing: 0.1px !important;
+}
+
+/* Success Snackbar */
 .mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__surface {
-  background-color: var(--green-color) !important;
-  border-radius: 50px !important; /* Capsule shape */
-  padding: 4px 12px !important;
-  box-shadow: 0 10px 25px rgba(135, 191, 23, 0.25) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background-color: #e4f6ec !important;
+  border: 1.5px solid #bce6cb !important;
 }
 
 .mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__label {
-  color: #fff !important;
-  font-family: var(--gen-font-family) !important;
-  font-size: 18px !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.3px !important;
-  text-align: center !important;
+  color: #1e7e46 !important;
 }
 
-.mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__actions {
-  margin-left: 8px !important;
-}
-
-.mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__action {
-  color: #fff !important;
-  font-family: var(--gen-font-family) !important;
-  font-weight: bold !important;
+.mat-mdc-snack-bar-container.success-snackbar .mdc-snackbar__surface::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 18px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 26px !important;
+  height: 26px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='%231e7e46'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /%3E%3C/svg%3E") no-repeat center center / contain !important;
 }
 
 /* Error Snackbar */
 .mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__surface {
-  background-color: var(--theme) !important;
-  border-radius: 50px !important; /* Capsule shape */
-  padding: 4px 12px !important;
-  box-shadow: 0 10px 25px rgba(236, 89, 90, 0.25) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background-color: #fae6e6 !important;
+  border: 1.5px solid #f8c8c8 !important;
 }
 
 .mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__label {
-  color: #fff !important;
-  font-family: var(--gen-font-family) !important;
-  font-size: 18px  !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.3px !important;
-  text-align: center !important;
+  color: #c5221f !important;
 }
 
-.mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__actions {
-  margin-left: 8px !important;
+.mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__surface::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 18px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 26px !important;
+  height: 26px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='%23c5221f'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z' /%3E%3C/svg%3E") no-repeat center center / contain !important;
 }
 
-.mat-mdc-snack-bar-container.error-snackbar .mdc-snackbar__action {
-  color: #fff !important;
-  font-family: var(--gen-font-family) !important;
-  font-weight: bold !important;
+/* Warning Snackbar */
+.mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__surface {
+  background-color: #fcf3da !important;
+  border: 1.5px solid #f6e0ab !important;
 }
 
-/* Custom Button Style */
-.mdc-snackbar__action {
-  color: white !important;
-  font-weight: bold !important;
+.mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__label {
+  color: #80630c !important;
+}
+
+.mat-mdc-snack-bar-container.warning-snackbar .mdc-snackbar__surface::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 18px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 26px !important;
+  height: 26px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='%2380630c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z' /%3E%3C/svg%3E") no-repeat center center / contain !important;
+}
+
+/* Info Snackbar */
+.mat-mdc-snack-bar-container.info-snackbar .mdc-snackbar__surface {
+  background-color: #e6f0fe !important;
+  border: 1.5px solid #c2dbfe !important;
+}
+
+.mat-mdc-snack-bar-container.info-snackbar .mdc-snackbar__label {
+  color: #1967d2 !important;
+}
+
+.mat-mdc-snack-bar-container.info-snackbar .mdc-snackbar__surface::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 18px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 26px !important;
+  height: 26px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='%231967d2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z' /%3E%3C/svg%3E") no-repeat center center / contain !important;
 }
 
 @media (min-width: 1200px) {
@@ -5783,23 +5847,6 @@ select.form-select option,
 }
 
 /*------------------------------------------------------------------
-* Snackbar Styling
-*-------------------------------------------------------------------*/
-.success-snackbar {
-  background-color: var(--green-color) !important;
-  color: var(--white) !important;
-  border-radius: 50rem !important;
-  padding: 10px 20px !important;
-}
-
-.error-snackbar {
-  background-color: var(--theme) !important;
-  color: var(--white) !important;
-  border-radius: 50rem !important;
-  padding: 10px 20px !important;
-}
-
-/*------------------------------------------------------------------
 * Brand Green (#87bf17) System Overrides
 *-------------------------------------------------------------------*/
 :root {
@@ -5848,5 +5895,194 @@ select.form-select option,
 .form-check-input:checked {
   background-color: #87bf17 !important;
   border-color: #87bf17 !important;
+}
+
+/* ==========================================================================
+   Modern Pill Toast / Snackbar Styling (Custom Design)
+   ========================================================================== */
+
+#toast-container {
+  top: 24px !important;
+  right: 24px !important;
+  z-index: 999999 !important;
+}
+
+#toast-container > div {
+  position: relative !important;
+  width: 380px !important;
+  max-width: calc(100vw - 32px) !important;
+  padding: 14px 44px 14px 64px !important;
+  border-radius: 40px !important;
+  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+  margin-bottom: 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  opacity: 0.98 !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  background-image: none !important;
+}
+
+#toast-container > div:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.12), 0 6px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Title & Description Typography */
+#toast-container .toast-title {
+  font-family: var(--gen-font-family, 'Inter', sans-serif) !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  line-height: 1.25 !important;
+  margin-bottom: 2px !important;
+}
+
+#toast-container .toast-message {
+  font-family: var(--gen-font-family, 'Inter', sans-serif) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  opacity: 0.9 !important;
+}
+
+/* Close Button (X) */
+#toast-container .toast-close-button {
+  position: absolute !important;
+  top: 50% !important;
+  right: 20px !important;
+  transform: translateY(-50%) !important;
+  font-size: 20px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+  opacity: 0.65 !important;
+  text-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+  transition: opacity 0.2s ease !important;
+}
+
+#toast-container .toast-close-button:hover {
+  opacity: 1 !important;
+}
+
+/* --- 1. SUCCESS (GREEN) --- */
+#toast-container .toast-success {
+  background: #e4f6ec !important;
+  border: 1.5px solid #bce6cb !important;
+}
+#toast-container .toast-success .toast-title {
+  color: #1e7e46 !important;
+}
+#toast-container .toast-success .toast-message {
+  color: #52996d !important;
+}
+#toast-container .toast-success .toast-close-button {
+  color: #1e7e46 !important;
+}
+#toast-container .toast-success::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 20px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 30px !important;
+  height: 30px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%231e7e46'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /%3E%3C/svg%3E") no-repeat center center / contain !important;
+}
+
+/* --- 2. WARNING (YELLOW / AMBER) --- */
+#toast-container .toast-warning {
+  background: #fcf3da !important;
+  border: 1.5px solid #f6e0ab !important;
+}
+#toast-container .toast-warning .toast-title {
+  color: #80630c !important;
+}
+#toast-container .toast-warning .toast-message {
+  color: #9c812d !important;
+}
+#toast-container .toast-warning .toast-close-button {
+  color: #80630c !important;
+}
+#toast-container .toast-warning::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 20px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 30px !important;
+  height: 30px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%2380630c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z' /%3E%3C/svg%3E") no-repeat center center / contain !important;
+}
+
+/* --- 3. INFO (BLUE) --- */
+#toast-container .toast-info {
+  background: #e6f0fe !important;
+  border: 1.5px solid #c2dbfe !important;
+}
+#toast-container .toast-info .toast-title {
+  color: #1967d2 !important;
+}
+#toast-container .toast-info .toast-message {
+  color: #558cdb !important;
+}
+#toast-container .toast-info .toast-close-button {
+  color: #1967d2 !important;
+}
+#toast-container .toast-info::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 20px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 30px !important;
+  height: 30px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%231967d2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z' /%3E%3C/svg%3E") no-repeat center center / contain !important;
+}
+
+/* --- 4. ERROR / DANGER (RED) --- */
+#toast-container .toast-error,
+#toast-container .toast-danger {
+  background: #fae6e6 !important;
+  border: 1.5px solid #f8c8c8 !important;
+}
+#toast-container .toast-error .toast-title,
+#toast-container .toast-danger .toast-title {
+  color: #c5221f !important;
+}
+#toast-container .toast-error .toast-message,
+#toast-container .toast-danger .toast-message {
+  color: #d65b59 !important;
+}
+#toast-container .toast-error .toast-close-button,
+#toast-container .toast-danger .toast-close-button {
+  color: #c5221f !important;
+}
+#toast-container .toast-error::before,
+#toast-container .toast-danger::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 20px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 30px !important;
+  height: 30px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23c5221f'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z' /%3E%3C/svg%3E") no-repeat center center / contain !important;
+}
+
+/* Optimized Instant Modal Transitions */
+.modal.fade .modal-dialog {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease !important;
+}
+
+.modal.fade {
+  transition: opacity 0.12s linear !important;
+}
+
+.modal-backdrop.fade {
+  transition: opacity 0.12s linear !important;
 }
 
