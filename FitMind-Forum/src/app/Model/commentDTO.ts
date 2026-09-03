@@ -5,6 +5,7 @@ export interface GetPostComment {
   userId: number;
   userName: string;
   userImage: string;
+  userRole?: string;
   commentContent: string;
   createdAt: string;
   likeCount?: number;

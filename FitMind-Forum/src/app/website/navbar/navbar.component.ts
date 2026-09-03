@@ -8,11 +8,8 @@ import { debounceTime, distinctUntilChanged, switchMap, filter, catchError } fro
 import { of } from 'rxjs';
 import { AuthService } from '../../Shared/auth.service';
 import { AppUser, AppUserPhotos, PublicAppUserDTO } from '../../Model/AppUsers';
-import { EmailVarificationComponent } from '../auth/emailVarification/emailVarification.component';
-import { LoginComponent } from '../auth/login/login.component';
 import { MasterService } from '../../Shared/master.service';
 import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
-import { ForgetPasswordComponent } from '../auth/forget-password/forget-password.component';
 import { NotificationService } from '../../Shared/notification.service';
 import { NotificationItem } from '../../Model/NotificationDTO';
 import { SearchResultDTO } from '../../Model/SearchDTO';
@@ -26,9 +23,6 @@ import { ListItemSkeletonComponent } from '../../Shared/skeleton';
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    EmailVarificationComponent,
-    LoginComponent,
-    ForgetPasswordComponent,
     ListItemSkeletonComponent
   ],
 

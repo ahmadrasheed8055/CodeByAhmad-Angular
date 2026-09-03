@@ -196,6 +196,13 @@ export class MasterService {
     return this.http.put(url, userId);
   }
 
+  //=============Get all Trainers===================
+  GET_TRAINERS_URL = 'AppUsers/trainers';
+  getTrainers(): Observable<PublicAppUserDTO[]> {
+    const url = this.API_URL + this.GET_TRAINERS_URL;
+    return this.http.get<PublicAppUserDTO[]>(url);
+  }
+
   //=============Update user===================
   UPDATE_APP_USER = 'AppUsers/update-app-user/';
   updateAppUser(userId: number, appUser: PublicAppUserDTO) {

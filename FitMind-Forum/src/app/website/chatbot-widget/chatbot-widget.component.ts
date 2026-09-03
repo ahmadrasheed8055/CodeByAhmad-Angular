@@ -173,7 +173,12 @@ export class ChatbotWidgetComponent implements OnInit, OnDestroy, AfterViewCheck
           id: Date.now().toString(),
           sender: 'bot',
           text: res.response,
-          timestamp: new Date()
+          timestamp: new Date(),
+          detectedIntent: res.detectedIntent,
+          intentDisplayName: res.intentDisplayName,
+          confidenceScore: res.confidenceScore,
+          isSafetyAlert: res.isSafetyAlert,
+          safetyWarning: res.safetyWarning
         });
         this.shouldScrollToBottom = true;
       },

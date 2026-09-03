@@ -9,6 +9,11 @@ export interface ChatMessage {
   timestamp: Date;
   imagePreview?: string;
   isError?: boolean;
+  detectedIntent?: string;
+  intentDisplayName?: string;
+  confidenceScore?: number;
+  isSafetyAlert?: boolean;
+  safetyWarning?: string;
 }
 
 export interface ChatHistory {
@@ -21,10 +26,17 @@ export interface ChatRequestDTO {
   history: ChatHistory[];
   imageBase64?: string;
   imageMimeType?: string;
+  categoryId?: number;
+  categoryName?: string;
 }
 
 export interface ChatResponseDTO {
   response: string;
+  detectedIntent?: string;
+  intentDisplayName?: string;
+  confidenceScore?: number;
+  isSafetyAlert?: boolean;
+  safetyWarning?: string;
 }
 
 @Injectable({
@@ -45,7 +57,14 @@ export class ChatbotService {
     this.toggleChatSubject.next();
   }
 
-  askChatbot(message: string, history: ChatMessage[], imageBase64?: string, imageMimeType?: string): Observable<ChatResponseDTO> {
+  askChatbot(
+    message: string, 
+    history: ChatMessage[], 
+    imageBase64?: string, 
+    imageMimeType?: string, 
+    categoryId?: number, 
+    categoryName?: string
+  ): Observable<ChatResponseDTO> {
     // Exclude welcome greeting (id === '1'), error messages, and empty messages
     const validHistory = history
       .filter(h => h.id !== '1' && !h.isError && h.text && h.text.trim() !== '')
@@ -72,7 +91,9 @@ export class ChatbotService {
       message: message.trim(),
       history: formattedHistory,
       imageBase64: imageBase64,
-      imageMimeType: imageMimeType
+      imageMimeType: imageMimeType,
+      categoryId: categoryId,
+      categoryName: categoryName
     };
 
     return this.http.post<ChatResponseDTO>(this.apiUrl, request);

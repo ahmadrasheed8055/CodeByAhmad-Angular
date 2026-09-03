@@ -24,7 +24,12 @@
         <!-- Comment text bubble -->
         <div class="comment-bubble d-inline-block position-relative">
           <div class="d-flex justify-content-between align-items-start mb-1 pe-4">
-            <a class="commenter-name d-block text-decoration-none mb-0" [routerLink]="['/profile', comment.userId]" style="cursor: pointer;">{{ comment.userName }}</a>
+            <div class="d-flex align-items-center gap-1 flex-wrap">
+              <a class="commenter-name d-block text-decoration-none mb-0" [routerLink]="['/profile', comment.userId]" style="cursor: pointer;">{{ comment.userName }}</a>
+              <span *ngIf="comment.userRole === 'Trainer'" class="badge-trainer-mini" title="Verified Trainer">
+                <i class="bi bi-patch-check-fill"></i> Trainer
+              </span>
+            </div>
             <!-- Three-dots dropdown -->
             <div class="dropdown comment-options-dropdown" *ngIf="comment.userId === userId">
               <a href="javascript:void(0)" class="text-muted text-decoration-none p-1" data-bs-toggle="dropdown" aria-expanded="false" title="Options">
@@ -80,7 +85,12 @@
               <!-- Reply text bubble -->
               <div class="reply-bubble d-inline-block position-relative">
                 <div class="d-flex justify-content-between align-items-start mb-1 pe-4">
-                  <a class="commenter-name d-block text-sm text-decoration-none mb-0" [routerLink]="['/profile', reply.userId]" style="cursor: pointer;">{{ reply.userName }}</a>
+                  <div class="d-flex align-items-center gap-1 flex-wrap">
+                    <a class="commenter-name d-block text-sm text-decoration-none mb-0" [routerLink]="['/profile', reply.userId]" style="cursor: pointer;">{{ reply.userName }}</a>
+                    <span *ngIf="reply.userRole === 'Trainer'" class="badge-trainer-mini" title="Verified Trainer">
+                      <i class="bi bi-patch-check-fill"></i> Trainer
+                    </span>
+                  </div>
                   
                   <div class="dropdown comment-options-dropdown" *ngIf="reply.userId === userId">
                     <a href="javascript:void(0)" class="text-muted text-decoration-none p-1" data-bs-toggle="dropdown" aria-expanded="false" title="Options">

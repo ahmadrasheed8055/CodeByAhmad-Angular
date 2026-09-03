@@ -9,6 +9,7 @@ import { AuthService } from '../../Shared/auth.service';
 import { Subscription } from 'rxjs';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { SkeletonComponent } from '../../Shared/skeleton';
+import { getTrainerAvatar } from '../../Shared/trainer-avatars';
 
 export interface CommunityMemberItem {
   id: number;
@@ -21,6 +22,16 @@ export interface SuggestedFriendItem {
   username: string;
   avatarUrl: string;
   roleOrBio: string;
+  isFollowing: boolean;
+}
+
+export interface TrainerSuggestionItem {
+  id: number;
+  username: string;
+  avatarUrl: string;
+  specialization: string;
+  yearsOfExperience?: number;
+  whatsAppNumber?: string;
   isFollowing: boolean;
 }
 
@@ -44,6 +55,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   authService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
 
+  getTrainerAvatar = getTrainerAvatar;
+
   @ViewChild('rightSidebar') rightSidebarRef?: ElementRef<HTMLDivElement>;
   private sidebarResizeObserver?: ResizeObserver;
 
@@ -58,6 +71,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   followingCount: number = 0;
   isLoadingCommunityMembers: boolean = true;
 
+  suggestedTrainers: TrainerSuggestionItem[] = [];
+  allSuggestedTrainers: TrainerSuggestionItem[] = [];
+  isLoadingTrainers: boolean = true;
+  showAllTrainerSuggestions: boolean = false;
+
   postsSub!: Subscription;
 
   ngOnInit() {
@@ -70,13 +88,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // Re-load community members whenever user logs in or appUserId changes
     this.authService.appUserId$.subscribe(() => {
       this.loadCommunityMembers();
+      this.loadSuggestedTrainers();
     });
 
     this.authService.loginSuccess$.subscribe(() => {
       this.loadCommunityMembers();
+      this.loadSuggestedTrainers();
     });
 
     this.loadCommunityMembers();
+    this.loadSuggestedTrainers();
+  }
+
+  cleanWhatsApp(number?: string): string {
+    if (!number) return '';
+    return number.replace(/\+/g, '').replace(/\s+/g, '').replace(/-/g, '');
   }
 
   readonly defaultPhotoAvatars: string[] = [
@@ -120,14 +146,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                   });
                 }
               } else {
-                if (!suggestedMap.has(p.userId)) {
-                  suggestedMap.set(p.userId, {
-                    id: p.userId,
-                    username: p.userName,
-                    avatarUrl: avatar,
-                    roleOrBio: bio,
-                    isFollowing: false
-                  });
+                // Strictly ONLY regular users in Suggested Friends (not Trainers)
+                if (p.authorRole !== 'Trainer') {
+                  if (!suggestedMap.has(p.userId)) {
+                    suggestedMap.set(p.userId, {
+                      id: p.userId,
+                      username: p.userName,
+                      avatarUrl: avatar,
+                      roleOrBio: bio,
+                      isFollowing: false
+                    });
+                  }
                 }
               }
             }
@@ -201,6 +230,128 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           this.snackBarService.showSuccess(`You are now following ${friend.username}!`);
         },
         error: () => this.snackBarService.showError('Failed to follow user')
+      });
+    }
+  }
+
+  loadSuggestedTrainers() {
+    this.isLoadingTrainers = true;
+    const currentUserId = Number(sessionStorage.getItem('appUserId')) || 0;
+
+    this.MasterService.getTrainers().subscribe({
+      next: (trainers) => {
+        this.isLoadingTrainers = false;
+        if (trainers && Array.isArray(trainers)) {
+          const list: TrainerSuggestionItem[] = [];
+
+          trainers.forEach((t) => {
+            if (t.id !== currentUserId) {
+              const trainerAvatar = getTrainerAvatar(t.username, t.id);
+
+              if (t.isFollowing && currentUserId > 0) {
+                // If followed, ensure they appear in the top Following avatars section
+                if (!this.communityMembers.some(m => m.id === t.id)) {
+                  const followedTrainer: CommunityMemberItem = {
+                    id: t.id,
+                    username: t.username,
+                    avatarUrl: trainerAvatar
+                  };
+                  this.communityMembers.push(followedTrainer);
+                  this.MasterService.getProfilePicture(t.id).subscribe({
+                    next: (pic: any) => {
+                      if (pic && typeof pic === 'string' && pic.length > 50) {
+                        followedTrainer.avatarUrl = pic.startsWith('data:') ? pic : `data:image/jpeg;base64,${pic}`;
+                      }
+                    },
+                    error: () => {}
+                  });
+                  this.followingCount = this.communityMembers.length;
+                }
+              } else if (!t.isFollowing) {
+                // Only unfollowed trainers in Suggested Trainers
+                const item: TrainerSuggestionItem = {
+                  id: t.id,
+                  username: t.username,
+                  avatarUrl: trainerAvatar,
+                  specialization: t.specializationCategoryName || 'Certified Trainer',
+                  yearsOfExperience: t.yearsOfExperience,
+                  whatsAppNumber: t.whatsAppNumber,
+                  isFollowing: false,
+                };
+
+                this.MasterService.getProfilePicture(t.id).subscribe({
+                  next: (pic: any) => {
+                    if (pic && typeof pic === 'string' && pic.length > 50) {
+                      item.avatarUrl = pic.startsWith('data:') ? pic : `data:image/jpeg;base64,${pic}`;
+                    }
+                  },
+                  error: () => {},
+                });
+
+                list.push(item);
+              }
+            }
+          });
+
+          this.allSuggestedTrainers = list;
+          this.updateVisibleSuggestedTrainers();
+        } else {
+          this.suggestedTrainers = [];
+          this.allSuggestedTrainers = [];
+        }
+      },
+      error: () => {
+        this.isLoadingTrainers = false;
+        this.suggestedTrainers = [];
+        this.allSuggestedTrainers = [];
+      },
+    });
+  }
+
+  updateVisibleSuggestedTrainers() {
+    if (this.showAllTrainerSuggestions) {
+      this.suggestedTrainers = this.allSuggestedTrainers.slice(0, 8);
+    } else {
+      this.suggestedTrainers = this.allSuggestedTrainers.slice(0, 3);
+    }
+  }
+
+  toggleSeeAllTrainerSuggestions() {
+    this.showAllTrainerSuggestions = !this.showAllTrainerSuggestions;
+    this.updateVisibleSuggestedTrainers();
+  }
+
+  followTrainer(trainer: TrainerSuggestionItem) {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/']);
+      return;
+    }
+
+    if (trainer.isFollowing) {
+      this.MasterService.unfollowUser(trainer.id).subscribe({
+        next: () => {
+          trainer.isFollowing = false;
+          this.communityMembers = this.communityMembers.filter((m) => m.id !== trainer.id);
+          this.followingCount = this.communityMembers.length;
+          this.snackBarService.showSuccess(`Unfollowed ${trainer.username}`);
+        },
+        error: () => this.snackBarService.showError('Failed to unfollow trainer'),
+      });
+    } else {
+      this.MasterService.followUser(trainer.id).subscribe({
+        next: () => {
+          trainer.isFollowing = true;
+          if (!this.communityMembers.some((m) => m.id === trainer.id)) {
+            this.communityMembers.push({
+              id: trainer.id,
+              username: trainer.username,
+              avatarUrl: trainer.avatarUrl,
+            });
+          }
+          this.followingCount = this.communityMembers.length;
+          this.snackBarService.showSuccess(`You are now following ${trainer.username}!`);
+        },
+        error: () => this.snackBarService.showError('Failed to follow trainer'),
       });
     }
   }

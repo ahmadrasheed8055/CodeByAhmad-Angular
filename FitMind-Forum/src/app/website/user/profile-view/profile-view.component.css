@@ -418,3 +418,56 @@
   height: 72px;
   background-color: rgba(135, 191, 23, 0.1);
 }
+
+/* ==============================================
+   6. TRAINER BADGES & WHATSAPP
+   ============================================== */
+.badge-trainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: rgba(135, 191, 23, 0.15) !important;
+  color: #87bf17 !important;
+  border: 1px solid rgba(135, 191, 23, 0.35) !important;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 50rem;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+}
+
+:host-context([data-theme="dark"]) .badge-trainer,
+:host-context([data-bs-theme="dark"]) .badge-trainer {
+  background-color: rgba(135, 191, 23, 0.2) !important;
+  color: #a4e022 !important;
+  border-color: rgba(164, 224, 34, 0.4) !important;
+}
+
+.btn-whatsapp {
+  background-color: #25d366 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-whatsapp:hover {
+  background-color: #20bd5a !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35);
+}
+
+.trainer-spotlight-card {
+  background-color: rgba(135, 191, 23, 0.06);
+  border: 1px solid rgba(135, 191, 23, 0.22);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+:host-context([data-theme="dark"]) .trainer-spotlight-card,
+:host-context([data-bs-theme="dark"]) .trainer-spotlight-card {
+  background-color: rgba(135, 191, 23, 0.08);
+  border-color: rgba(135, 191, 23, 0.25);
+}

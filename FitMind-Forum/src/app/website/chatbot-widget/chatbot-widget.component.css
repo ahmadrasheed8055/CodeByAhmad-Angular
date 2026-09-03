@@ -446,3 +446,69 @@
   font-size: 0.6rem;
   color: #ffc107;
 }
+
+/* Custom AI Engine Metadata Tag - High Contrast & Sharp Modern UI */
+.ai-meta-tag {
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.ai-intent-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #3b82f6;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+
+.ai-intent-badge i {
+  color: #60a5fa;
+  font-size: 0.8rem;
+}
+
+.ai-intent-badge strong {
+  color: #93c5fd;
+  font-weight: 600;
+}
+
+.ai-intent-badge .confidence-pill {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 10px;
+  margin-left: 5px;
+}
+
+/* Safety Alert Mode (Red High Contrast) */
+.ai-intent-badge.safety-badge {
+  background: #2d1217;
+  color: #ffe4e6;
+  border: 1px solid #f43f5e;
+}
+
+.ai-intent-badge.safety-badge i {
+  color: #fb7185;
+}
+
+.ai-intent-badge.safety-badge strong {
+  color: #fda4af;
+}
+
+.ai-intent-badge.safety-badge .confidence-pill {
+  background: #e11d48;
+  color: #ffffff;
+}
+
+.chat-bubble.alert-border {
+  border-left: 4px solid #ef4444 !important;
+}
+

@@ -38,6 +38,7 @@ export class RegisterComponent implements OnInit {
         Validators.minLength(3),
       ]),
       email: new FormControl(this.user.email),
+      role: new FormControl('User', [Validators.required]),
       password: new FormControl('', [
         Validators.required,
         Validators.minLength(6), // Minimum length of 6 characters
@@ -75,6 +76,7 @@ export class RegisterComponent implements OnInit {
       Username: formData.userName,
       Email: userEmail || '',
       PasswordHash: formData.password,
+      Role: formData.role || 'User'
     };
     
     this.services.addAppUser(newUser).subscribe(

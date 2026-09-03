@@ -185,6 +185,63 @@
           <textarea formControlName="bio" rows="3" class="form-control settings-input" placeholder="Tell the community about yourself..."></textarea>
         </div>
 
+        <!-- ==============================================
+             TRAINER EXCLUSIVE FIELDS (Rendered only for Trainers)
+             ============================================== -->
+        <div class="col-12 mt-4 pt-3 border-top" *ngIf="user.role === 'Trainer'">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill fs-8 fw-bold">
+              <i class="bi bi-patch-check-fill me-1"></i> Trainer Credentials & Coaching
+            </span>
+            <span class="text-muted fs-8">Customize your coaching profile and direct WhatsApp contact.</span>
+          </div>
+
+          <div class="row g-3">
+            <!-- Specialization Category -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Specialization Category</label>
+              <select formControlName="specializationCategoryId" class="form-select settings-input">
+                <option [ngValue]="null">Select your specialization...</option>
+                <option *ngFor="let cat of categoriesList" [value]="cat.id">{{ cat.name }}</option>
+              </select>
+            </div>
+
+            <!-- Years of Experience -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Years of Experience</label>
+              <input type="number" formControlName="yearsOfExperience" min="0" max="60" class="form-control settings-input" placeholder="e.g. 5">
+            </div>
+
+            <!-- Certifications -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Certifications & Credentials</label>
+              <input type="text" formControlName="certifications" class="form-control settings-input" placeholder="e.g. NSCA-CSCS, NASM-CPT, Precision Nutrition">
+            </div>
+
+            <!-- Availability -->
+            <div class="col-md-6">
+              <label class="form-label fs-7 fw-bold text-muted">Availability Schedule</label>
+              <input type="text" formControlName="availability" class="form-control settings-input" placeholder="e.g. Mon–Fri, 6:00 AM – 4:00 PM">
+            </div>
+
+            <!-- WhatsApp Number -->
+            <div class="col-12">
+              <label class="form-label fs-7 fw-bold text-muted">
+                WhatsApp Business / Coaching Number
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-body-tertiary text-success border-end-0">
+                  <i class="bi bi-whatsapp"></i>
+                </span>
+                <input type="text" formControlName="whatsAppNumber" class="form-control settings-input border-start-0" placeholder="e.g. +923001234567">
+              </div>
+              <small class="text-muted fs-8 d-block mt-1">
+                Clients and members will be able to click directly on your profile to message you on WhatsApp (opens <code>wa.me/&lt;number&gt;</code>).
+              </small>
+            </div>
+          </div>
+        </div>
+
         <!-- Form Actions -->
         <div class="col-12 d-flex align-items-center justify-content-end gap-2 pt-3 border-top mt-4">
           <button type="submit" class="btn btn-mint rounded-pill px-4 fw-bold shadow-sm" [disabled]="profileForm.invalid || isTaken">

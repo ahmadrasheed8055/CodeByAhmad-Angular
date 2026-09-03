@@ -6086,3 +6086,65 @@ select.form-select option,
   transition: opacity 0.12s linear !important;
 }
 
+/* Global FitJoin Custom AI Engine Metadata Badges */
+.ai-meta-tag {
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.ai-intent-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 11px;
+  border-radius: 20px;
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+}
+
+.ai-intent-badge i {
+  color: #60a5fa !important;
+  font-size: 0.82rem;
+}
+
+.ai-intent-badge strong {
+  color: #93c5fd !important;
+  font-weight: 600;
+}
+
+.ai-intent-badge .confidence-pill {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+  border-radius: 12px;
+  margin-left: 6px;
+}
+
+/* Safety Alert Mode (Red High Contrast) */
+.ai-intent-badge.safety-badge {
+  background: #2d1217 !important;
+  color: #ffe4e6 !important;
+  border: 1px solid #f43f5e !important;
+}
+
+.ai-intent-badge.safety-badge i {
+  color: #fb7185 !important;
+}
+
+.ai-intent-badge.safety-badge strong {
+  color: #fda4af !important;
+}
+
+.ai-intent-badge.safety-badge .confidence-pill {
+  background: #e11d48 !important;
+  color: #ffffff !important;
+}
+
+

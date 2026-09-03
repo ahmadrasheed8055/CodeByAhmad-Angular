@@ -9,6 +9,7 @@ export interface PostComment {
   // User Data
   userName: string;
   userImage?: string | null;
+  userRole?: string | null;
 
   // Comments System Metadata
   parentCommentId?: number | null;

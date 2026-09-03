@@ -29,6 +29,7 @@ import { PollCardComponent } from '../../posts/poll-card/poll-card.component';
 import { ProfileSkeletonComponent, PostCardSkeletonComponent } from '../../../Shared/skeleton';
 import { ReportModalComponent } from '../../../Shared/components/report-modal/report-modal.component';
 import { ReportService } from '../../../Shared/report.service';
+import { getTrainerAvatar } from '../../../Shared/trainer-avatars';
 
 @Component({
   selector: 'app-profile-view',
@@ -82,6 +83,13 @@ export class ProfileViewComponent {
   ];
 
   initEditProfileForm() {
+    if (!this.categoriesObj || this.categoriesObj.length === 0) {
+      this.masterService.getAllCategories().subscribe({
+        next: (cats) => this.categoriesObj = cats || [],
+        error: () => this.categoriesObj = []
+      });
+    }
+
     this.editProfileForm = new FormGroup({
       username: new FormControl(this.user.username || '', [Validators.required]),
       uniqueName: new FormControl(this.user.uniqueName || '', [
@@ -95,7 +103,12 @@ export class ProfileViewComponent {
       location: new FormControl(this.user.location || ''),
       country: new FormControl(this.user.country || ''),
       facebookLink: new FormControl(this.user.facebookLink || ''),
-      instagramLink: new FormControl(this.user.instagramLink || '')
+      instagramLink: new FormControl(this.user.instagramLink || ''),
+      specializationCategoryId: new FormControl(this.user.specializationCategoryId || null),
+      yearsOfExperience: new FormControl(this.user.yearsOfExperience || null),
+      certifications: new FormControl(this.user.certifications || ''),
+      availability: new FormControl(this.user.availability || ''),
+      whatsAppNumber: new FormControl(this.user.whatsAppNumber || '')
     });
 
     this.isUniqueNameTaken = false;
@@ -138,6 +151,11 @@ export class ProfileViewComponent {
     this.isEditingProfile = false;
   }
 
+  cleanWhatsApp(number?: string): string {
+    if (!number) return '';
+    return number.replace(/\+/g, '').replace(/\s+/g, '').replace(/-/g, '');
+  }
+
   saveProfile() {
     if (this.editProfileForm.invalid || this.isUniqueNameTaken) {
       this.snackBar.showError('Please check the required fields or unique handle');
@@ -155,7 +173,12 @@ export class ProfileViewComponent {
       location: formVal.location,
       country: formVal.country,
       facebookLink: formVal.facebookLink,
-      instagramLink: formVal.instagramLink
+      instagramLink: formVal.instagramLink,
+      specializationCategoryId: formVal.specializationCategoryId ? Number(formVal.specializationCategoryId) : undefined,
+      yearsOfExperience: formVal.yearsOfExperience !== null && formVal.yearsOfExperience !== '' ? Number(formVal.yearsOfExperience) : undefined,
+      certifications: formVal.certifications,
+      availability: formVal.availability,
+      whatsAppNumber: formVal.whatsAppNumber
     };
 
     this.masterService.updateAppUser(this.user.id, updatedUser).subscribe({
@@ -195,6 +218,14 @@ export class ProfileViewComponent {
     }, 500);
   }
 
+  onAvatarError() {
+    if (this.user && this.user.role === 'Trainer') {
+      this.userPhotos = { ...this.userPhotos, profilePhoto: getTrainerAvatar(this.user.username, this.user.id) };
+    } else {
+      this.userPhotos = { ...this.userPhotos, profilePhoto: '' };
+    }
+  }
+
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -228,9 +259,24 @@ export class ProfileViewComponent {
           next: (user: PublicAppUserDTO) => {
             this.user = user;
             this.isProfileLoading = false;
+            
+            if (user.role === 'Trainer') {
+              this.userPhotos.profilePhoto = getTrainerAvatar(user.username, user.id);
+            }
+
             // Also need to fetch background and profile photos using existing APIs
             this.masterService.getProfilePicture(this.profileUserId).subscribe({
-              next: (pic: any) => { this.userPhotos = { ...this.userPhotos, profilePhoto: pic ? `data:image/jpeg;base64,${pic}` : '' }; },
+              next: (pic: any) => {
+                if (pic && typeof pic === 'string' && pic.length > 50) {
+                  let photoUrl = pic.startsWith('data:') ? pic : `data:image/jpeg;base64,${pic}`;
+                  if (pic.includes('<svg') || pic.startsWith('PHN2Zy')) {
+                    photoUrl = pic.startsWith('<svg') 
+                      ? `data:image/svg+xml;utf8,${encodeURIComponent(pic)}`
+                      : `data:image/svg+xml;base64,${pic}`;
+                  }
+                  this.userPhotos = { ...this.userPhotos, profilePhoto: photoUrl };
+                }
+              },
               error: () => {}
             });
             this.masterService.getBackgroundPicture(this.profileUserId).subscribe({

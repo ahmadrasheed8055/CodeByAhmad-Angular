@@ -7,6 +7,9 @@ import { AuthService } from '../../Shared/auth.service';
 import { SnackBarServiceService } from '../../Shared/snack-bar-service.service';
 import { SkeletonComponent } from '../../Shared/skeleton';
 
+import { forkJoin } from 'rxjs';
+import { getTrainerAvatar } from '../../Shared/trainer-avatars';
+
 export interface PeopleMember {
   id: number;
   username: string;
@@ -16,6 +19,7 @@ export interface PeopleMember {
   isTrainer: boolean;
   isFollowing: boolean;
   postsCount: number;
+  whatsAppNumber?: string;
 }
 
 @Component({
@@ -32,7 +36,9 @@ export class PeopleComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
 
-  activeTab: 'all' | 'trainers' | 'following' = 'all';
+  getTrainerAvatar = getTrainerAvatar;
+
+  activeTab: 'all' | 'members' | 'trainers' | 'following' = 'all';
   searchQuery: string = '';
   isLoading: boolean = true;
 
@@ -42,6 +48,8 @@ export class PeopleComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (params['filter'] === 'trainers') {
         this.activeTab = 'trainers';
+      } else if (params['filter'] === 'members' || params['filter'] === 'friends') {
+        this.activeTab = 'members';
       } else if (params['filter'] === 'following') {
         this.activeTab = 'following';
       } else {
@@ -56,12 +64,48 @@ export class PeopleComponent implements OnInit {
     this.isLoading = true;
     const currentUserId = Number(sessionStorage.getItem('appUserId')) || 0;
 
-    this.masterService.getAllPosts(currentUserId > 0 ? currentUserId : null, true).subscribe({
-      next: (posts) => {
+    forkJoin({
+      trainers: this.masterService.getTrainers(),
+      posts: this.masterService.getAllPosts(currentUserId > 0 ? currentUserId : null, true)
+    }).subscribe({
+      next: ({ trainers, posts }) => {
         this.isLoading = false;
-        if (posts && Array.isArray(posts)) {
-          const memberMap = new Map<number, PeopleMember>();
+        const memberMap = new Map<number, PeopleMember>();
 
+        // 1. First add all verified trainers from database
+        if (trainers && Array.isArray(trainers)) {
+          trainers.forEach(t => {
+            let avatar = getTrainerAvatar(t.username, t.id);
+            this.masterService.getProfilePicture(t.id).subscribe({
+              next: (pic: any) => {
+                if (pic && typeof pic === 'string' && pic.length > 50) {
+                  const m = memberMap.get(t.id);
+                  if (m) m.avatarUrl = pic.startsWith('data:') ? pic : `data:image/jpeg;base64,${pic}`;
+                }
+              },
+              error: () => {}
+            });
+
+            const role = t.specializationCategoryName 
+              ? `${t.specializationCategoryName} Specialist` 
+              : 'Certified Fitness Trainer';
+
+            memberMap.set(t.id, {
+              id: t.id,
+              username: t.username,
+              avatarUrl: avatar,
+              roleOrBio: role,
+              location: t.location ? `${t.location}, ${t.country || 'Pakistan'}` : (t.country || 'Pakistan'),
+              isTrainer: true,
+              isFollowing: !!t.isFollowing,
+              postsCount: t.totalPosts || 0,
+              whatsAppNumber: t.whatsAppNumber
+            });
+          });
+        }
+
+        // 2. Add or enrich with active community authors from posts
+        if (posts && Array.isArray(posts)) {
           posts.forEach(p => {
             if (p.userId && p.userName) {
               let avatar = 'img/avatar/default.png';
@@ -69,13 +113,8 @@ export class PeopleComponent implements OnInit {
                 avatar = p.userImage.startsWith('data:') ? p.userImage : 'data:image/jpeg;base64,' + p.userImage;
               }
 
-              const role = p.categoryName ? `${p.categoryName} Specialist` : 'Fitness Enthusiast';
-              const isCoach = (p.categoryName || '').toLowerCase().includes('coach') ||
-                              (p.categoryName || '').toLowerCase().includes('bodybuilding') ||
-                              (p.categoryName || '').toLowerCase().includes('personal') ||
-                              (p.categoryName || '').toLowerCase().includes('recovery') ||
-                              (p.categoryName || '').toLowerCase().includes('nutrition') ||
-                              (p.categoryName || '').toLowerCase().includes('gym');
+              const role = p.categoryName ? `${p.categoryName} Enthusiast` : 'Fitness Enthusiast';
+              const isTrainer = p.authorRole === 'Trainer';
 
               if (!memberMap.has(p.userId)) {
                 memberMap.set(p.userId, {
@@ -84,7 +123,7 @@ export class PeopleComponent implements OnInit {
                   avatarUrl: avatar,
                   roleOrBio: role,
                   location: 'Pakistan',
-                  isTrainer: isCoach,
+                  isTrainer: isTrainer,
                   isFollowing: !!p.isFollowingAuthor,
                   postsCount: 1
                 });
@@ -94,12 +133,15 @@ export class PeopleComponent implements OnInit {
                 if (p.isFollowingAuthor) {
                   existing.isFollowing = true;
                 }
+                if (avatar !== 'img/avatar/default.png') {
+                  existing.avatarUrl = avatar;
+                }
               }
             }
           });
-
-          this.allMembers = Array.from(memberMap.values());
         }
+
+        this.allMembers = Array.from(memberMap.values());
       },
       error: () => {
         this.isLoading = false;
@@ -116,6 +158,7 @@ export class PeopleComponent implements OnInit {
       if (currentUserId > 0 && m.id === currentUserId) return false;
 
       // Tab filter
+      if (this.activeTab === 'members' && m.isTrainer) return false;
       if (this.activeTab === 'trainers' && !m.isTrainer) return false;
       if (this.activeTab === 'following' && !m.isFollowing) return false;
 
@@ -130,7 +173,7 @@ export class PeopleComponent implements OnInit {
     });
   }
 
-  setTab(tab: 'all' | 'trainers' | 'following'): void {
+  setTab(tab: 'all' | 'members' | 'trainers' | 'following'): void {
     this.activeTab = tab;
   }
 

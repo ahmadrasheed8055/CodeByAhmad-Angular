@@ -23,6 +23,14 @@ export interface IAppUser {
   location: string;
   country: string;
 
+  role?: string;
+  specializationCategoryId?: number;
+  specializationCategoryName?: string;
+  yearsOfExperience?: number;
+  certifications?: string;
+  availability?: string;
+  whatsAppNumber?: string;
+
   profilePhoto: string;
   backgroundPhoto: string;
 }
@@ -46,8 +54,16 @@ export class AppUser {
   instagramLink: string;
   location: string;
   country: string;
+  role: string;
+  specializationCategoryId?: number;
+  specializationCategoryName?: string;
+  yearsOfExperience?: number;
+  certifications?: string;
+  availability?: string;
+  whatsAppNumber?: string;
   profilePhoto: string;
   backgroundPhoto: string;
+
   constructor() {
     this.id = 0;
     this.username = '';
@@ -66,6 +82,7 @@ export class AppUser {
     this.instagramLink = '';
     this.location = '';
     this.country = '';
+    this.role = 'User';
     this.profilePhoto = '';
     this.backgroundPhoto = '';
   }
@@ -92,6 +109,11 @@ export class UpdateAppUserDTO {
   instagramLink: string;
   location: string;
   country: string;
+  specializationCategoryId?: number;
+  yearsOfExperience?: number;
+  certifications?: string;
+  availability?: string;
+  whatsAppNumber?: string;
 
   constructor() {
     this.id = 0;
@@ -108,7 +130,7 @@ export class UpdateAppUserDTO {
 }
 
 
-export class PublicAppUserDTO{
+export class PublicAppUserDTO {
   id: number;
   username: string;
   email: string;
@@ -125,6 +147,14 @@ export class PublicAppUserDTO{
   instagramLink?: string;
   location?: string;
   country?: string;
+
+  role: string = 'User';
+  specializationCategoryId?: number;
+  specializationCategoryName?: string;
+  yearsOfExperience?: number;
+  certifications?: string;
+  availability?: string;
+  whatsAppNumber?: string;
 
   followersCount: number = 0;
   followingCount: number = 0;
@@ -150,10 +180,11 @@ export class PublicAppUserDTO{
     this.instagramLink = '';
     this.location = '';
     this.country = '';
+    this.role = 'User';
   }
 }
 
-export class AppUserPhotos{
+export class AppUserPhotos {
   profilePhoto: string;
   backgroundPhoto: string;
   constructor(){
@@ -162,26 +193,27 @@ export class AppUserPhotos{
   }
 }
 
-export class RegisterUserDTO{
-  Id:number;
-  Username:string;
-  Email:string;
-  PasswordHash:string;
+export class RegisterUserDTO {
+  Id: number;
+  Username: string;
+  Email: string;
+  PasswordHash: string;
+  Role: string;
   
-  constructor(){
+  constructor() {
     this.Id = 0;
     this.Username = '';
     this.Email = '';
     this.PasswordHash = '';
+    this.Role = 'User';
   }
 }
 
-export class changePasswordDTO{
- 
-  currentPassword:string;
-  newPassword:string;  
-    constructor(){
+export class changePasswordDTO {
+  currentPassword: string;
+  newPassword: string;  
+  constructor() {
     this.currentPassword = '';
     this.newPassword = '';
-    }
+  }
 }

@@ -37,6 +37,27 @@
                 <input formControlName="email" type="email" class="form-control" placeholder="name@gmail.com" readonly>
               </div>
 
+              <!-- Role Selection: Member vs Trainer -->
+              <div class="mb-3">
+                <label class="form-label mx-1">Account Type</label>
+                <div class="d-flex gap-2">
+                  <label class="btn btn-outline-secondary flex-fill text-center py-2 rounded-3 cursor-pointer d-flex align-items-center justify-content-center gap-2"
+                         [class.active]="appForm.get('role')?.value === 'User'"
+                         [class.btn-mint]="appForm.get('role')?.value === 'User'"
+                         [class.text-white]="appForm.get('role')?.value === 'User'">
+                    <input type="radio" value="User" formControlName="role" class="d-none">
+                    <i class="bi bi-person-fill"></i> Regular User
+                  </label>
+                  <label class="btn btn-outline-secondary flex-fill text-center py-2 rounded-3 cursor-pointer d-flex align-items-center justify-content-center gap-2"
+                         [class.active]="appForm.get('role')?.value === 'Trainer'"
+                         [class.btn-mint]="appForm.get('role')?.value === 'Trainer'"
+                         [class.text-white]="appForm.get('role')?.value === 'Trainer'">
+                    <input type="radio" value="Trainer" formControlName="role" class="d-none">
+                    <i class="bi bi-patch-check-fill"></i> Trainer
+                  </label>
+                </div>
+              </div>
+
               <!-- Password Field -->
               <div class="mb-4">
                 <label class="form-label mx-1">Password</label>

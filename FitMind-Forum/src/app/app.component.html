@@ -1,7 +1,8 @@
 <div class="vine-wrapper">
-  
-
-<!-- Your other content -->
+  <!-- Top Slim Route Transition Loader -->
+  <div class="global-route-loader" [class.active]="isNavigating">
+    <div class="loader-bar"></div>
+  </div>
 
   <router-outlet></router-outlet> 
 
@@ -15,4 +16,9 @@
 
   <!-- Chatbot Widget Floating Assistant -->
   <app-chatbot-widget></app-chatbot-widget>
+
+  <!-- Root-level Global Auth Modals -->
+  <app-login></app-login>
+  <app-emailVarification></app-emailVarification>
+  <app-forget-password></app-forget-password>
 </div>

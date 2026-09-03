@@ -25,7 +25,7 @@
         <span class="status-indicator"></span>
       </div>
       <div>
-        <h6 class="mb-0 fw-bold chat-title">FitJoin AI Assistant</h6>
+        <h6 class="mb-0 fw-bold chat-title">FitJoin Custom AI Model</h6>
         <small class="chat-subtitle"><i class="bi bi-lightning-charge-fill me-1"></i>Always Active</small>
       </div>
     </div>
@@ -60,10 +60,20 @@
            [class.user-bubble]="msg.sender === 'user'" 
            [class.bot-bubble]="msg.sender === 'bot'">
         
-        <div class="chat-bubble">
+        <div class="chat-bubble" [class.alert-border]="msg.isSafetyAlert">
           <img *ngIf="msg.imagePreview" [src]="msg.imagePreview" class="chat-img-thumb mb-2" alt="Attachment" />
           <div [innerHTML]="msg.text | markdown"></div>
         </div>
+
+        <!-- AI Intent & Safety Metadata Tag -->
+        <div class="ai-meta-tag d-flex align-items-center gap-1 mt-1" *ngIf="msg.sender === 'bot' && msg.intentDisplayName && !msg.isError">
+          <span class="ai-intent-badge" [class.safety-badge]="msg.isSafetyAlert">
+            <i class="bi bi-cpu-fill me-1"></i>
+            <strong class="me-1">AI Intent:</strong> {{ msg.intentDisplayName }}
+            <span class="confidence-pill ms-1" *ngIf="msg.confidenceScore">{{ (msg.confidenceScore * 100) | number:'1.0-0' }}%</span>
+          </span>
+        </div>
+
         <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
       </div>
 

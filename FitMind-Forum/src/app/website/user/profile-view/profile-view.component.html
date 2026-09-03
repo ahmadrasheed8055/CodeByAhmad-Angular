@@ -43,7 +43,8 @@
               
               <img *ngIf="userPhotos.profilePhoto && userPhotos.profilePhoto !== 'data:image/jpeg;base64,null'" 
                    [src]="userPhotos.profilePhoto" 
-                   alt="User Profile Photo" 
+                   (error)="onAvatarError()"
+                   [alt]="user.username || 'Profile Photo'" 
                    class="profile-avatar-img rounded-circle shadow">
               
               <div *ngIf="!userPhotos.profilePhoto || userPhotos.profilePhoto === 'data:image/jpeg;base64,null'" 
@@ -68,11 +69,25 @@
             <!-- Name & Action Header Row -->
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
               <div>
-                <h3 class="profile-fullname fw-bold mb-1">{{ user.username }}</h3>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <h3 class="profile-fullname fw-bold mb-0">{{ user.username }}</h3>
+                  <span *ngIf="user.role === 'Trainer'" class="badge-trainer">
+                    <i class="bi bi-patch-check-fill"></i> Trainer
+                  </span>
+                </div>
                 <span *ngIf="user.uniqueName" class="profile-unique-handle text-muted fs-7">&#64;{{ user.uniqueName }}</span>
               </div>
 
-              <div class="d-flex align-items-center gap-2">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <!-- WhatsApp CTA (Visible if trainer has WhatsAppNumber) -->
+                <a *ngIf="user.role === 'Trainer' && user.whatsAppNumber" 
+                   [href]="'https://wa.me/' + cleanWhatsApp(user.whatsAppNumber)" 
+                   target="_blank" 
+                   class="btn btn-sm btn-whatsapp rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm"
+                   title="Contact on WhatsApp">
+                  <i class="bi bi-whatsapp"></i> Chat on WhatsApp
+                </a>
+
                 <!-- Owner: Edit Profile Button (Converts card into Inline Edit Form) -->
                 <button *ngIf="user && userId === user.id" 
                         type="button"
@@ -115,6 +130,31 @@
                       </li>
                     </ul>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trainer Spotlight Card (If Trainer Role) -->
+            <div class="trainer-spotlight-card mb-3" *ngIf="user.role === 'Trainer'">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill fw-bold">
+                    <i class="bi bi-bookmark-star-fill me-1"></i> {{ user.specializationCategoryName || 'Fitness Specialization' }}
+                  </span>
+                  <span class="badge bg-secondary bg-opacity-10 text-secondary border px-2 py-1 rounded-pill" *ngIf="user.yearsOfExperience">
+                    <i class="bi bi-award-fill me-1"></i> {{ user.yearsOfExperience }}+ Years Experience
+                  </span>
+                </div>
+              </div>
+              
+              <div class="row g-2 fs-7">
+                <div class="col-12 col-md-6" *ngIf="user.certifications">
+                  <span class="text-muted fw-semibold">Certifications: </span>
+                  <span class="fw-medium">{{ user.certifications }}</span>
+                </div>
+                <div class="col-12 col-md-6" *ngIf="user.availability">
+                  <span class="text-muted fw-semibold">Availability: </span>
+                  <span class="fw-medium">{{ user.availability }}</span>
                 </div>
               </div>
             </div>
@@ -278,6 +318,46 @@
             <div class="col-12">
               <label class="form-label fs-7 fw-bold text-muted">Bio / About Me</label>
               <textarea formControlName="bio" rows="3" class="form-control profile-edit-input" placeholder="Tell the FitJoin community about yourself..."></textarea>
+            </div>
+
+            <!-- Trainer Fields (If Trainer Role) -->
+            <div class="col-12 mt-3 pt-3 border-top" *ngIf="user.role === 'Trainer'">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill fs-8 fw-bold">
+                  <i class="bi bi-patch-check-fill me-1"></i> Trainer Credentials & Coaching
+                </span>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fs-7 fw-bold text-muted">Specialization Category</label>
+                  <select formControlName="specializationCategoryId" class="form-select profile-edit-input">
+                    <option [ngValue]="null">Select specialization...</option>
+                    <option *ngFor="let cat of categoriesObj" [value]="cat.id">{{ cat.name }}</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fs-7 fw-bold text-muted">Years of Experience</label>
+                  <input type="number" formControlName="yearsOfExperience" min="0" max="60" class="form-control profile-edit-input" placeholder="e.g. 5">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fs-7 fw-bold text-muted">Certifications</label>
+                  <input type="text" formControlName="certifications" class="form-control profile-edit-input" placeholder="e.g. NSCA-CSCS, NASM-CPT">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fs-7 fw-bold text-muted">Availability Schedule</label>
+                  <input type="text" formControlName="availability" class="form-control profile-edit-input" placeholder="e.g. Mon–Fri, 6:00 AM – 4:00 PM">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label fs-7 fw-bold text-muted">WhatsApp Number</label>
+                  <input type="text" formControlName="whatsAppNumber" class="form-control profile-edit-input" placeholder="e.g. +923001234567">
+                  <small class="text-muted fs-8">Direct chat link will open <code>wa.me/&lt;number&gt;</code> on your public profile.</small>
+                </div>
+              </div>
             </div>
 
             <!-- Form Action Buttons -->

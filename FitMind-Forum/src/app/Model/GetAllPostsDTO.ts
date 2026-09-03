@@ -23,4 +23,5 @@ export interface GetAllPostsDTO {
   poll?: PollDTO;
   isDeleted?: boolean;
   isFollowingAuthor?: boolean;
+  authorRole?: string;
 }

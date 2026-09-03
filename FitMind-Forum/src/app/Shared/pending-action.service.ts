@@ -1,6 +1,4 @@
-/* CodeByAhmad - FitMind Forum Standard Professional Module */
-
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, NgZone } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -25,6 +23,7 @@ export type PendingAction =
 export class PendingActionService {
   private pendingAction: PendingAction | null = null;
   private platformId = inject(PLATFORM_ID);
+  private ngZone = inject(NgZone);
   private authService = inject(AuthService);
   private router = inject(Router);
   private modalDismissListenerSet = false;
@@ -119,30 +118,32 @@ export class PendingActionService {
   // ========== Private Helpers ==========
 
   /**
-   * Programmatically opens the Bootstrap 5 login modal using the JS API immediately.
+   * Programmatically opens the Bootstrap 5 login modal using the JS API immediately outside Angular zone.
    */
   private openLoginModal(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.ensureModalDismissListener();
 
-    const modalEl = document.getElementById('loginModal');
-    if (modalEl) {
-      const bs = (window as any).bootstrap;
-      if (bs?.Modal) {
-        const modal = bs.Modal.getOrCreateInstance(modalEl, {
-          backdrop: true,
-          keyboard: true,
-          focus: true
-        });
-        modal.show();
-      } else {
-        const trigger = document.querySelector('[data-bs-target="#loginModal"]') as HTMLElement;
-        if (trigger) {
-          trigger.click();
+    this.ngZone.runOutsideAngular(() => {
+      const modalEl = document.getElementById('loginModal');
+      if (modalEl) {
+        const bs = (window as any).bootstrap;
+        if (bs?.Modal) {
+          const modal = bs.Modal.getOrCreateInstance(modalEl, {
+            backdrop: true,
+            keyboard: true,
+            focus: true
+          });
+          modal.show();
+        } else {
+          const trigger = document.querySelector('[data-bs-target="#loginModal"]') as HTMLElement;
+          if (trigger) {
+            trigger.click();
+          }
         }
       }
-    }
+    });
   }
 
   /**
@@ -152,15 +153,19 @@ export class PendingActionService {
   private ensureModalDismissListener(): void {
     if (this.modalDismissListenerSet) return;
 
-    const modalEl = document.getElementById('loginModal');
-    if (modalEl) {
-      modalEl.addEventListener('hidden.bs.modal', () => {
-        // Only clear if user dismissed without logging in
-        if (!this.authService.isLoggedIn()) {
-          this.clearPendingAction();
-        }
-      });
-      this.modalDismissListenerSet = true;
-    }
+    this.ngZone.runOutsideAngular(() => {
+      const modalEl = document.getElementById('loginModal');
+      if (modalEl) {
+        modalEl.addEventListener('hidden.bs.modal', () => {
+          // Only clear if user dismissed without logging in
+          if (!this.authService.isLoggedIn()) {
+            this.ngZone.run(() => {
+              this.clearPendingAction();
+            });
+          }
+        });
+        this.modalDismissListenerSet = true;
+      }
+    });
   }
 }

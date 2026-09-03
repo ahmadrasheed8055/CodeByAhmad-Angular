@@ -6,6 +6,7 @@ import {
   PublicAppUserDTO,
   UpdateAppUserDTO,
 } from '../../../Model/AppUsers';
+import { ICategories } from '../../../Model/categories';
 import { AuthService } from '../../../Shared/auth.service';
 import { MasterService } from '../../../Shared/master.service';
 import { CommonModule } from '@angular/common';
@@ -59,6 +60,7 @@ export class ProfileSettingComponent implements OnInit {
   activeTab: 'profile' | 'password' | 'notifications' | 'account' = 'profile';
   isSavingUser: boolean = false;
   isChangingPassword: boolean = false;
+  categoriesList: ICategories[] = [];
 
   countriesList: string[] = [
     'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France',
@@ -79,6 +81,11 @@ export class ProfileSettingComponent implements OnInit {
 
  
   ngOnInit() {
+    this.masterServices.getAllCategories().subscribe({
+      next: (cats) => this.categoriesList = cats || [],
+      error: () => this.categoriesList = []
+    });
+
     // Initialize form with empty values
     this.profileForm = new FormGroup({
       id: new FormControl(null),
@@ -95,6 +102,11 @@ export class ProfileSettingComponent implements OnInit {
       country: new FormControl(null, [Validators.required]),
       facebookLink: new FormControl(null),
       instagramLink: new FormControl(null),
+      specializationCategoryId: new FormControl(null),
+      yearsOfExperience: new FormControl(null),
+      certifications: new FormControl(null),
+      availability: new FormControl(null),
+      whatsAppNumber: new FormControl(null),
     });
 
     this.profileForm.controls['uniqueName'].valueChanges.subscribe(() => {
@@ -214,14 +226,20 @@ export class ProfileSettingComponent implements OnInit {
     if(this.isTaken){ this.showError('Username is already taken'); return; }
 
     const updateAppUserData: UpdateAppUserDTO = {
-      id: this.user.id,username: this.profileForm.value.username,
-      uniqueName: this.profileForm.value.uniqueName , //string | null issue
-      // userVisibility: this.formGroup.value.visibility,
-      bio: this.profileForm.value.bio,phone: this.profileForm.value.phone,
+      id: this.user.id,
+      username: this.profileForm.value.username,
+      uniqueName: this.profileForm.value.uniqueName,
+      bio: this.profileForm.value.bio,
+      phone: this.profileForm.value.phone,
       facebookLink: this.profileForm.value.facebookLink,
       instagramLink: this.profileForm.value.instagramLink,
       location: this.profileForm.value.location,
       country: this.profileForm.value.country,
+      specializationCategoryId: this.profileForm.value.specializationCategoryId ? Number(this.profileForm.value.specializationCategoryId) : undefined,
+      yearsOfExperience: this.profileForm.value.yearsOfExperience !== null && this.profileForm.value.yearsOfExperience !== '' ? Number(this.profileForm.value.yearsOfExperience) : undefined,
+      certifications: this.profileForm.value.certifications,
+      availability: this.profileForm.value.availability,
+      whatsAppNumber: this.profileForm.value.whatsAppNumber,
     };
 
     this.user = { ...this.user, ...updateAppUserData };

@@ -1,5 +1,4 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
@@ -9,9 +8,9 @@ describe('EmailVarificationComponent', () => {
   let component: EmailVarificationComponent;
   let fixture: ComponentFixture<EmailVarificationComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ EmailVarificationComponent ]
+      imports: [ EmailVarificationComponent ]
     })
     .compileComponents();
   }));

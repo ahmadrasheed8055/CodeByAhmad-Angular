@@ -22,4 +22,7 @@ export interface SearchResultDTO {
   posts?: SearchGroup<GetAllPostsDTO>;
   categories?: SearchGroup<ICategories>;
   polls?: SearchGroup<PollDTO>;
+  detectedIntent?: string;
+  intentDisplayName?: string;
+  confidenceScore?: number;
 }

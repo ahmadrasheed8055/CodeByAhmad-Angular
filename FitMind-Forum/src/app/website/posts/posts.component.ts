@@ -51,6 +51,10 @@ export class PostsComponent implements OnInit {
   aiFollowUpQuestion: string = '';
   aiChatHistory: ChatMessage[] = [];
   activeAiPromptType: 'summary' | 'action' | 'science' | 'custom' = 'summary';
+  aiPostIntent: string | null = null;
+  aiPostIntentDisplayName: string | null = null;
+  aiPostConfidence: number | null = null;
+  aiPostSafetyAlert: boolean = false;
 
   selectedCategory: ICategories | null = null;
   selectedCategoryId: number | null = null;
@@ -218,12 +222,14 @@ export class PostsComponent implements OnInit {
 
   onPollDeleted(pollId: number) {
     this.posts = this.posts.filter(p => !p.poll || p.poll.pollId !== pollId);
+    this.updateFilteredPosts();
   }
 
   ngOnInit() {
     // Subscribe to selected category state from CategoryFilterService
     this.categoryFilterService.selectedCategory$.subscribe((cat) => {
       this.selectedCategory = cat;
+      this.updateFilteredPosts();
     });
 
     this.categoryFilterService.selectedCategoryId$.subscribe((catId) => {
@@ -232,6 +238,7 @@ export class PostsComponent implements OnInit {
         this.selectedPollCategory = catId;
         this.inlinePostForm.patchValue({ category: catId });
       }
+      this.updateFilteredPosts();
     });
 
     if (isPlatformBrowser(this.platformId)) {
@@ -333,21 +340,48 @@ export class PostsComponent implements OnInit {
   activeFilter: 'latest' | 'popular' | 'polls' | 'myposts' = 'latest';
   isRefreshing: boolean = false;
 
+  filteredPosts: GetAllPostsDTO[] = [];
+  currentCategoryItems: GetAllPostsDTO[] = [];
+  currentCategoryPostsCount: number = 0;
+  currentCategoryPollsCount: number = 0;
+  pollsCount: number = 0;
+  myPostsCount: number = 0;
+
   setFilter(filter: 'latest' | 'popular' | 'polls' | 'myposts') {
     this.activeFilter = filter;
+    this.updateFilteredPosts();
   }
 
-  get filteredPosts(): GetAllPostsDTO[] {
-    if (!this.posts) return [];
+  updateFilteredPosts() {
+    if (!this.posts) {
+      this.filteredPosts = [];
+      this.currentCategoryItems = [];
+      this.currentCategoryPostsCount = 0;
+      this.currentCategoryPollsCount = 0;
+      this.pollsCount = 0;
+      this.myPostsCount = 0;
+      return;
+    }
 
+    // 1. Current category items
+    if (this.selectedCategoryId) {
+      this.currentCategoryItems = this.posts.filter(p => p.categoryId === this.selectedCategoryId && !p.isDeleted);
+    } else {
+      this.currentCategoryItems = this.posts.filter(p => !p.isDeleted);
+    }
+
+    this.currentCategoryPostsCount = this.currentCategoryItems.filter(p => !p.poll).length;
+    this.currentCategoryPollsCount = this.currentCategoryItems.filter(p => !!p.poll).length;
+    this.pollsCount = this.currentCategoryPollsCount;
+    this.myPostsCount = (this.currentCategoryItems && this.userId) ? this.currentCategoryItems.filter(p => p.userId === this.userId).length : 0;
+
+    // 2. Filter by Active Tab Filter
     let result = [...this.posts];
 
-    // 1. Filter by Selected Category
     if (this.selectedCategoryId !== null && this.selectedCategoryId > 0) {
       result = result.filter((p) => p.categoryId === this.selectedCategoryId);
     }
 
-    // 2. Filter by Active Tab Filter
     switch (this.activeFilter) {
       case 'popular':
         result.sort((a, b) => {
@@ -375,31 +409,7 @@ export class PostsComponent implements OnInit {
         break;
     }
 
-    return result;
-  }
-
-  get currentCategoryItems(): GetAllPostsDTO[] {
-    if (!this.posts) return [];
-    if (this.selectedCategoryId) {
-      return this.posts.filter(p => p.categoryId === this.selectedCategoryId && !p.isDeleted);
-    }
-    return this.posts.filter(p => !p.isDeleted);
-  }
-
-  get currentCategoryPostsCount(): number {
-    return this.currentCategoryItems.filter(p => !p.poll).length;
-  }
-
-  get currentCategoryPollsCount(): number {
-    return this.currentCategoryItems.filter(p => !!p.poll).length;
-  }
-
-  get pollsCount(): number {
-    return this.currentCategoryItems.filter(p => !!p.poll).length;
-  }
-
-  get myPostsCount(): number {
-    return (this.currentCategoryItems && this.userId) ? this.currentCategoryItems.filter(p => p.userId === this.userId).length : 0;
+    this.filteredPosts = result;
   }
 
   clearCategoryFilter() {
@@ -441,6 +451,10 @@ export class PostsComponent implements OnInit {
     this.aiFollowUpQuestion = '';
     this.aiChatHistory = [];
     this.activeAiPromptType = 'summary';
+    this.aiPostIntent = null;
+    this.aiPostIntentDisplayName = null;
+    this.aiPostConfidence = null;
+    this.aiPostSafetyAlert = false;
 
     // Auto-generate initial breakdown/summary
     this.generatePostAiInsight('summary');
@@ -469,30 +483,44 @@ ${this.selectedAiPost.poll ? `[POLL QUESTION]: ${this.selectedAiPost.poll.questi
 
 [REQUEST]: ${promptGoal}`;
 
-    // Safety timeout: Ensure loader stops within 6s regardless of network
-    const safetyTimeout = setTimeout(() => {
-      if (this.isAiAnalyzing && this.selectedAiPost) {
-        this.aiAnalysisResult = this.generateFallbackInsight(promptType, this.selectedAiPost);
-        this.isAiAnalyzing = false;
-      }
-    }, 6000);
-
-    this.chatbotService.askChatbot(postContext, []).subscribe({
+    this.chatbotService.askChatbot(
+      postContext, 
+      [], 
+      undefined, 
+      undefined, 
+      this.selectedAiPost.categoryId, 
+      this.selectedAiPost.categoryName
+    ).subscribe({
       next: (res: any) => {
-        clearTimeout(safetyTimeout);
         if (res && res.response && !res.response.includes('error') && !res.response.includes('high demand')) {
           this.aiAnalysisResult = res.response;
         } else {
           this.aiAnalysisResult = this.generateFallbackInsight(promptType, this.selectedAiPost!);
         }
+
+        if (res) {
+          this.aiPostIntent = res.detectedIntent || null;
+          this.aiPostIntentDisplayName = res.intentDisplayName || null;
+          this.aiPostConfidence = res.confidenceScore || null;
+          this.aiPostSafetyAlert = res.isSafetyAlert || false;
+        }
+
         this.isAiAnalyzing = false;
         this.aiChatHistory = [
           { id: '1', sender: 'user', text: promptGoal, timestamp: new Date() },
-          { id: '2', sender: 'bot', text: this.aiAnalysisResult, timestamp: new Date() }
+          { 
+            id: '2', 
+            sender: 'bot', 
+            text: this.aiAnalysisResult, 
+            timestamp: new Date(),
+            detectedIntent: this.aiPostIntent || undefined,
+            intentDisplayName: this.aiPostIntentDisplayName || undefined,
+            confidenceScore: this.aiPostConfidence || undefined,
+            isSafetyAlert: this.aiPostSafetyAlert
+          }
         ];
       },
       error: () => {
-        clearTimeout(safetyTimeout);
         if (this.selectedAiPost) {
           this.aiAnalysisResult = this.generateFallbackInsight(promptType, this.selectedAiPost);
         } else {
@@ -546,17 +574,36 @@ ${this.selectedAiPost.poll ? `[POLL QUESTION]: ${this.selectedAiPost.poll.questi
     const followUpPrompt = `Context: Post titled "${this.selectedAiPost.title}".
 User Question: ${userQ}`;
 
-    this.chatbotService.askChatbot(followUpPrompt, this.aiChatHistory).subscribe({
+    this.chatbotService.askChatbot(
+      followUpPrompt, 
+      this.aiChatHistory, 
+      undefined, 
+      undefined, 
+      this.selectedAiPost.categoryId, 
+      this.selectedAiPost.categoryName
+    ).subscribe({
       next: (res: any) => {
         const answer = (res && res.response && !res.response.includes('error')) 
           ? res.response 
           : `Great question regarding **${this.selectedAiPost?.title}**! In general, for optimal results in ${this.selectedAiPost?.categoryName || 'fitness'}, focus on structured progression, balanced macronutrient distribution, and at least 7–8 hours of restorative sleep.`;
+        
+        if (res) {
+          this.aiPostIntent = res.detectedIntent || this.aiPostIntent;
+          this.aiPostIntentDisplayName = res.intentDisplayName || this.aiPostIntentDisplayName;
+          this.aiPostConfidence = res.confidenceScore || this.aiPostConfidence;
+          this.aiPostSafetyAlert = res.isSafetyAlert || false;
+        }
+
         this.isAiAnalyzing = false;
         this.aiChatHistory.push({
           id: (Date.now() + 1).toString(),
           sender: 'bot',
           text: answer,
-          timestamp: new Date()
+          timestamp: new Date(),
+          detectedIntent: res?.detectedIntent,
+          intentDisplayName: res?.intentDisplayName,
+          confidenceScore: res?.confidenceScore,
+          isSafetyAlert: res?.isSafetyAlert
         });
       },
       error: () => {
@@ -608,6 +655,7 @@ User Question: ${userQ}`;
     this.MasterService.getAllPosts(this.userId, true).subscribe({
       next: (posts: GetAllPostsDTO[]) => {
         this.posts = posts;
+        this.updateFilteredPosts();
         this.categoryFilterService.updateCounts(this.posts);
         setTimeout(() => {
           this.isRefreshing = false;
@@ -637,6 +685,7 @@ User Question: ${userQ}`;
       next: (posts: GetAllPostsDTO[]) => {
         this.posts = posts;
         this.isLoadingPosts = false;
+        this.updateFilteredPosts();
         this.categoryFilterService.updateCounts(this.posts);
         console.log('Posts fetched:', this.posts);
         this.pendingActionService.resumeReplay();
@@ -779,6 +828,7 @@ User Question: ${userQ}`;
     this.MasterService.hidePost(this.userId, post.postId).subscribe({
       next: () => {
         this.posts = this.posts.filter(p => p.postId !== post.postId);
+        this.updateFilteredPosts();
         this.snackBarService.showSuccess('Post hidden');
       },
       error: () => {

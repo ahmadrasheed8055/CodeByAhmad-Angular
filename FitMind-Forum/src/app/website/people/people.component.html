@@ -25,21 +25,28 @@
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
     <ul class="nav nav-pills people-nav-pills gap-2 p-1 rounded-pill bg-body-tertiary">
       <li class="nav-item">
-        <button class="nav-link rounded-pill fs-7 fw-semibold px-4" 
+        <button class="nav-link rounded-pill fs-7 fw-semibold px-3" 
                 [class.active]="activeTab === 'all'" 
                 (click)="setTab('all')">
-          <i class="bi bi-people-fill me-1"></i> All Members
+          <i class="bi bi-grid-fill me-1"></i> All
         </button>
       </li>
       <li class="nav-item">
-        <button class="nav-link rounded-pill fs-7 fw-semibold px-4" 
+        <button class="nav-link rounded-pill fs-7 fw-semibold px-3" 
+                [class.active]="activeTab === 'members'" 
+                (click)="setTab('members')">
+          <i class="bi bi-people-fill me-1"></i> Friends & Members
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link rounded-pill fs-7 fw-semibold px-3" 
                 [class.active]="activeTab === 'trainers'" 
                 (click)="setTab('trainers')">
-          <i class="bi bi-award-fill me-1 text-warning"></i> Trainers & Coaches
+          <i class="bi bi-award-fill me-1 text-success"></i> Trainers & Coaches
         </button>
       </li>
       <li class="nav-item" *ngIf="authService.isLoggedIn()">
-        <button class="nav-link rounded-pill fs-7 fw-semibold px-4" 
+        <button class="nav-link rounded-pill fs-7 fw-semibold px-3" 
                 [class.active]="activeTab === 'following'" 
                 (click)="setTab('following')">
           <i class="bi bi-person-check-fill me-1"></i> Following
@@ -73,11 +80,11 @@
         <div class="position-relative d-inline-block mx-auto mb-3" 
              [routerLink]="['/profile-view']" [queryParams]="{userId: member.id}" style="cursor: pointer;">
           <img [src]="member.avatarUrl" 
-               (error)="member.avatarUrl = 'img/avatar/default.png'" 
+               (error)="member.avatarUrl = (member.isTrainer ? getTrainerAvatar(member.username, member.id) : 'img/avatar/default.png')" 
                [alt]="member.username" 
                class="member-card-avatar rounded-circle shadow-sm" />
-          <span *ngIf="member.isTrainer" class="trainer-badge position-absolute bottom-0 end-0 badge rounded-pill bg-warning text-dark p-1 shadow-xs" title="Certified Trainer">
-            <i class="bi bi-award-fill fs-8"></i>
+          <span *ngIf="member.isTrainer" class="trainer-badge position-absolute bottom-0 end-0 badge rounded-pill bg-success text-white p-1 shadow-xs" title="Verified Trainer">
+            <i class="bi bi-patch-check-fill fs-8"></i>
           </span>
         </div>
 

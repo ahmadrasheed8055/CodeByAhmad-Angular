@@ -380,6 +380,9 @@
               <a [routerLink]="['/profile', postsData.userId]" class="author-name-link fw-bold text-decoration-none">
                 {{ postsData.userName }}
               </a>
+              <span *ngIf="postsData.authorRole === 'Trainer'" class="badge-trainer-mini" title="Verified FitJoin Trainer">
+                <i class="bi bi-patch-check-fill"></i> Trainer
+              </span>
               <span class="author-action-subtext text-muted fs-8">posted an update</span>
             </div>
             <div class="d-flex align-items-center gap-1 text-muted fs-8 mt-1">
@@ -686,6 +689,15 @@
                   (click)="generatePostAiInsight('science')">
             <i class="bi bi-check-circle-fill me-1"></i> Fact Check
           </button>
+        </div>
+
+        <!-- AI Intent & Safety Metadata Tag -->
+        <div class="ai-meta-tag d-flex align-items-center gap-2 mb-3" *ngIf="!isAiAnalyzing && aiPostIntentDisplayName">
+          <span class="ai-intent-badge" [class.safety-badge]="aiPostSafetyAlert">
+            <i class="bi bi-cpu-fill me-1"></i>
+            <strong class="me-1">AI Intent:</strong> {{ aiPostIntentDisplayName }}
+            <span class="confidence-pill ms-1" *ngIf="aiPostConfidence">{{ (aiPostConfidence * 100) | number:'1.0-0' }}%</span>
+          </span>
         </div>
 
         <!-- AI Output Box -->

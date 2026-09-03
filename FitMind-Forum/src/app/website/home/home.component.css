@@ -50,43 +50,54 @@
   margin-left: 4px;
 }
 
-/* Flex Wrap Avatar Grid (Left Aligned) */
+/* Flex Wrap Avatar Grid (Horizontal Row) */
 .following-avatar-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
   justify-content: flex-start;
 }
 
-/* Suggested Friends & Members Section */
+/* Suggested Friends & Trainers Sections */
 .suggested-friends-section,
 .suggested-trainers-section {
   border-color: var(--border-color, #e5e7eb) !important;
 }
 
-.friend-avatar,
-.trainer-avatar {
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
-  max-width: 40px !important;
-  min-height: 40px !important;
-  max-height: 40px !important;
+.avatar-frame {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  min-height: 36px;
+  max-height: 36px;
+}
+
+.suggestion-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
   object-fit: cover !important;
   border-radius: 50% !important;
   display: block !important;
   border: 1.5px solid var(--theme-white, #ffffff);
 }
 
-:host-context([data-theme="dark"]) .friend-avatar,
-:host-context([data-theme="dark"]) .trainer-avatar {
+:host-context([data-theme="dark"]) .suggestion-avatar {
   border-color: #16171d;
 }
 
-.friend-item-row,
-.trainer-item-row {
+.suggestion-item-row {
   transition: background-color 0.2s ease;
+  padding: 4px 6px !important;
+}
+
+.lh-sm {
+  line-height: 1.25 !important;
 }
 
 .hover-bg:hover {
@@ -113,17 +124,17 @@
 }
 
 .member-avatar {
-  width: 42px !important;
-  height: 42px !important;
-  min-width: 42px !important;
-  max-width: 42px !important;
-  min-height: 42px !important;
-  max-height: 42px !important;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
   object-fit: cover !important;
   border-radius: 50% !important;
   display: block !important;
   border: 2px solid var(--theme-white, #ffffff);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: border-color 0.2s ease;
 }
 
@@ -175,4 +186,24 @@
 .btn-mint:hover {
   background-color: var(--green-color-hover, #99d41a) !important;
   color: #ffffff !important;
+}
+
+.btn-whatsapp-icon {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  background-color: rgba(37, 211, 102, 0.12) !important;
+  color: #25d366 !important;
+  border: 1px solid rgba(37, 211, 102, 0.25) !important;
+  font-size: 0.85rem !important;
+  padding: 0 !important;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-whatsapp-icon:hover {
+  background-color: #25d366 !important;
+  color: #ffffff !important;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);
 }

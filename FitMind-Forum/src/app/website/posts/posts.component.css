@@ -292,6 +292,27 @@
   margin-left: 2px;
 }
 
+.badge-trainer-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background-color: rgba(135, 191, 23, 0.15) !important;
+  color: #87bf17 !important;
+  border: 1px solid rgba(135, 191, 23, 0.35) !important;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 50rem;
+  line-height: 1.2;
+}
+
+:host-context([data-theme="dark"]) .badge-trainer-mini,
+:host-context([data-bs-theme="dark"]) .badge-trainer-mini {
+  background-color: rgba(135, 191, 23, 0.2) !important;
+  color: #a4e022 !important;
+  border-color: rgba(164, 224, 34, 0.4) !important;
+}
+
 .post-cat-badge {
   background-color: rgba(135, 191, 23, 0.12) !important;
   color: var(--green-color, #87bf17) !important;
